@@ -11,4 +11,9 @@ class Supplier extends Model
         'no_hp',
         'alamat'
     ];
+
+    public function obats()
+{
+    return $this->hasMany(Obat::class);
+}
 }
