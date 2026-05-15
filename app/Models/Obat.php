@@ -26,4 +26,9 @@ class Obat extends Model
     {
         return $this->belongsTo(Supplier::class);
     }
+
+    public function detailTransaksis()
+    {
+        return $this->hasMany(DetailTransaksi::class);
+    }
 }
