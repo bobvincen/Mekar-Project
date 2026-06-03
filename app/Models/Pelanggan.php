@@ -11,4 +11,9 @@ class Pelanggan extends Model
         'no_hp',
         'alamat'
     ];
+
+    public function transaksis()
+    {
+        return $this->hasMany(Transaksi::class);
+    }
 }
