@@ -1,20 +1,23 @@
-<nav class="bg-white shadow-sm px-6 py-4">
+<nav class="bg-white shadow-sm px-8 py-5 flex justify-between items-center">
 
-    <div class="flex justify-between items-center">
+    <div>
 
-        <div>
-            <h1 class="text-xl font-bold">
-                Dashboard
-            </h1>
-        </div>
+        <h2 class="text-2xl font-bold text-slate-800">
+            @yield('title')
+        </h2>
 
-        <div>
+    </div>
 
-            <span class="font-medium">
-                Admin
-            </span>
+    <div class="flex items-center gap-4">
 
-        </div>
+        <input
+            type="text"
+            placeholder="Cari..."
+            class="border border-gray-300 rounded-xl px-4 py-2 w-64">
+
+        <button class="bg-slate-100 p-2 rounded-xl">
+            🔔
+        </button>
 
     </div>
 

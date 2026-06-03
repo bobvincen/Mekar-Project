@@ -7,7 +7,7 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-slate-100">
+<body class="bg-[#eef3f8]">
 
 <div class="flex min-h-screen">
 
@@ -15,7 +15,7 @@
     @include('layouts.sidebar')
 
     {{-- Content --}}
-    <div class="flex-1">
+    <div class="flex-1 ml-72">
 
         {{-- Navbar --}}
         @include('layouts.navbar')
@@ -28,6 +28,7 @@
     </div>
 
 </div>
+@stack('scripts')
 
 </body>
 </html>
