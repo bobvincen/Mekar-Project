@@ -11,4 +11,7 @@ Route::resource('supplier', SupplierController::class);
 Route::get('/', function () {
     return view('marketplace.home');
 });
+Route::get('/cart', function () {
+    return view('marketplace.cart');
+});
 
