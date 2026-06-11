@@ -11,7 +11,7 @@ class DetailTransaksi extends Model
         'obat_id',
         'jumlah',
         'harga',
-        'subtotal'
+        'subtotal',
     ];
 
     public function transaksi()
