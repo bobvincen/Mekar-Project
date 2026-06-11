@@ -8,8 +8,9 @@ class Supplier extends Model
 {
     protected $fillable = [
         'nama_supplier',
-        'no_hp',
-        'alamat'
+        'alamat',
+        'telepon',
+        'email',
     ];
 
     public function obats()
