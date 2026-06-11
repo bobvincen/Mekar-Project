@@ -181,7 +181,7 @@
 
             rows.forEach(row => {
                 let name = row.querySelector(".customer-name").innerText.toLowerCase();
-                let phone = row.querySelector(".fw-medium").innerText.toLowerCase(); // Updated class finder
+                let phone = row.querySelector(".fw-medium").innerText.toLowerCase();
 
                 if (name.includes(input) || phone.includes(input)) {
                     row.style.display = "";

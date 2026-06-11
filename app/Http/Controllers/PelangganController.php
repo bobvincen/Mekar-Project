@@ -26,30 +26,26 @@ class PelangganController extends Controller
             'nama_pelanggan' => 'required|string|max:255',
             'no_hp'          => 'required|string|max:15',
             'alamat'         => 'required|string',
-            'role'           => 'required|in:Admin,Kasir,Pelanggan', // << PASTIKAN HURUF BESAR
+            'role'           => 'required|in:Admin,Kasir,Pelanggan',
         ]);
 
         Pelanggan::create([
             'nama_pelanggan' => $request->nama_pelanggan,
             'no_hp'          => $request->no_hp,
             'alamat'         => $request->alamat,
-            'role'           => $request->role, // << KODE INI YANG MENYIMPAN ROLE BARU
+            'role'           => $request->role,
         ]);
 
         return redirect()->route('pelanggan.index')->with('success', 'Data pengguna berhasil ditambahkan!');
     }
 
-    // 1. FUNGSI UNTUK MENAMPILKAN HALAMAN EDIT (Ini yang hilang)
     public function edit($id)
     {
-        // Cari data pelanggan berdasarkan ID, jika tidak ketemu langsung munculkan error 404
         $pelanggan = Pelanggan::findOrFail($id);
 
-        // Buka file edit.blade.php sambil membawa data pelanggan tersebut
         return view('pelanggan.edit', compact('pelanggan'));
     }
 
-    // 2. FUNGSI UNTUK MENYIMPAN PERUBAHAN (Fungsi update Anda yang sudah ada)
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -70,15 +66,21 @@ class PelangganController extends Controller
         return redirect()->route('pelanggan.index')->with('success', 'Data pengguna berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    public function show($id)
     {
-        // 1. Cari data pelanggan berdasarkan ID
         $pelanggan = Pelanggan::findOrFail($id);
 
-        // 2. Hapus data dari database
+        return view('pelanggan.show', [
+            'pelanggan' => $pelanggan
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+
         $pelanggan->delete();
 
-        // 3. Alihkan kembali ke halaman indeks dengan membawa pesan sukses
         return redirect()->route('pelanggan.index')->with('success', 'Data pengguna berhasil dihapus!');
     }
 }
