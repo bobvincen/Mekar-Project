@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -28,5 +28,18 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the dashboard URL based on user role.
+     */
+    public function getDashboardUrl(): string
+    {
+        return match ($this->role) {
+            'admin' => route('dashboard', absolute: false),
+            'kasir' => route('kasir.dashboard', absolute: false),
+            'pelanggan' => route('home', absolute: false),
+            default => '/',
+        };
     }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,29 +8,31 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-slate-100">
 
-<div class="flex min-h-screen">
+<body class="bg-[#eef3f8]">
 
-    {{-- Sidebar --}}
-    @include('layouts.sidebar')
+    <div class="flex min-h-screen">
 
-    {{-- Content --}}
-    <div class="flex-1 ml-72">
+        {{-- Sidebar --}}
+        @include('layouts.sidebar')
 
-        {{-- Navbar --}}
-        @include('layouts.navbar')
+        {{-- Content --}}
+        <div class="flex-1 ml-72">
 
-        {{-- Main Content --}}
-        <main class="p-6">
-            @yield('content')
-        </main>
+            {{-- Navbar --}}
+            @include('layouts.navbar')
+
+            {{-- Main Content --}}
+            <main class="p-6">
+                @yield('content')
+            </main>
+
+        </div>
 
     </div>
 
-</div>
-
-@stack('scripts')
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 </body>
+
 </html>

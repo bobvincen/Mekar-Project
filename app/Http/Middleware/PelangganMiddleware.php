@@ -15,12 +15,10 @@ class PelangganMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
-
-        if ($user && $user->role === 'pelanggan') {
+        if (auth()->check() && auth()->user()->role === 'pelanggan') {
             return $next($request);
         }
 
-        abort(403);
+        abort(403, 'Unauthorized action.');
     }
 }

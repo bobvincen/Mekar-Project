@@ -15,12 +15,10 @@ class KasirMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
-
-        if ($user && $user->role === 'kasir') {
+        if (auth()->check() && auth()->user()->role === 'kasir') {
             return $next($request);
         }
 
-        abort(403);
+        abort(403, 'Unauthorized action.');
     }
 }
