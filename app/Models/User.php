@@ -38,7 +38,7 @@ class User extends Authenticatable
         return match ($this->role) {
             'admin' => route('dashboard', absolute: false),
             'kasir' => route('kasir.dashboard', absolute: false),
-            'pelanggan' => route('home', absolute: false),
+            'pelanggan' => '/marketplace',
             default => '/',
         };
     }

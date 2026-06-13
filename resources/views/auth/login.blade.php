@@ -16,28 +16,8 @@
     <div class="relative w-[58%] bg-gradient-to-br from-[#051D3B] to-[#00A9FF] flex items-center justify-center p-12 min-h-screen overflow-hidden">
         
         <div class="flex flex-col items-center justify-center text-center max-w-lg z-10">
-            <div class="flex items-center justify-center gap-6">
-                <!-- Custom SVG Leaf Cross Logo with mask -->
-                <svg class="w-24 h-24 text-white drop-shadow-md" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <mask id="cross-mask">
-                            <rect x="0" y="0" width="100" height="100" fill="white" />
-                            <path d="M44,53 H56 M50,47 V59" stroke="black" stroke-width="3.5" stroke-linecap="round" />
-                        </mask>
-                    </defs>
-                    <!-- Center Petal with Mask -->
-                    <path d="M50,15 C55,30 64,45 64,60 C64,71 58,77 50,77 C42,77 36,71 36,60 C36,45 45,30 50,15 Z" fill="white" mask="url(#cross-mask)" />
-                    <!-- Flanking Leaves -->
-                    <path d="M50,55 C40,42 22,38 15,48 C8,58 16,68 30,72 C38,74 46,68 50,55 Z" fill="white" />
-                    <path d="M50,55 C60,42 78,38 85,48 C92,58 84,68 70,72 C62,74 54,68 50,55 Z" fill="white" />
-                    <!-- Bottom Cradle -->
-                    <path d="M50,84 C32,84 18,73 12,59 C20,71 34,77 50,77 C66,77 80,71 88,59 C82,73 68,84 50,84 Z" fill="white" />
-                </svg>
-
-                <div class="flex flex-col text-left text-white leading-none">
-                    <h1 class="text-5xl font-black tracking-wider leading-none">MEKAR</h1>
-                    <p class="text-2xl font-light tracking-[0.2em] mt-1.5 leading-none">PHARMACY</p>
-                </div>
+            <div class="flex items-center justify-center">
+                <img src="{{ asset('logo-login.png') }}" alt="Mekar Pharmacy Logo" class="h-50 w-auto drop-shadow-md">
             </div>
 
             <p class="mt-8 text-[#00F0FF] text-lg font-bold tracking-wide">

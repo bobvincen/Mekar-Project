@@ -56,8 +56,24 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('kategori', KategoriController::class);
     Route::resource('supplier', SupplierController::class);
     Route::resource('obat', ObatController::class);
-    Route::resource('transaksi', TransaksiController::class);
     Route::resource('pelanggan', PelangganController::class);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin & Kasir Shared Routes (Auth & Admin/Kasir Middleware Required)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'admin_or_kasir'])->group(function () {
+    Route::resource('transaksi', TransaksiController::class);
+    
+    Route::get('/laporan', function () {
+        $totalTransaksi = \App\Models\Transaksi::count();
+        $totalPendapatan = \App\Models\Transaksi::sum('total_harga');
+        $transaksis = \App\Models\Transaksi::with('pelanggan')->latest()->limit(50)->get();
+
+        return view('laporan.index', compact('totalTransaksi', 'totalPendapatan', 'transaksis'));
+    })->name('laporan.index');
 });
 
 /*
@@ -77,7 +93,7 @@ Route::middleware(['auth', 'kasir'])->group(function () {
 */
 Route::middleware(['auth', 'pelanggan'])->group(function () {
     Route::get('/home', function () {
-        return view('pelanggan.home');
+        return redirect('/marketplace');
     })->name('home');
 });
 
