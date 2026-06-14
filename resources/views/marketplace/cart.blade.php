@@ -5,39 +5,11 @@
 @section('content')
 
 @php
-    // ===== DUMMY CART DATA =====
-    // Replace with session/DB cart later: $cartItems = session('cart', [])
-    $cartItems = [
-        [
-            'id'       => 1,
-            'image'    => '/premium_supplement_bottle.png',
-            'name'     => 'Mekar Multivitamin 60 Caps',
-            'category' => 'Vitamin & Suplemen',
-            'price'    => 115000,
-            'qty'      => 2,
-        ],
-        [
-            'id'       => 2,
-            'image'    => '/premium_medicine_box.png',
-            'name'     => 'Mekar Paracetamol 500mg Box',
-            'category' => 'Obat Bebas',
-            'price'    => 28000,
-            'qty'      => 1,
-        ],
-        [
-            'id'       => 3,
-            'image'    => '/premium_supplement_bottle.png',
-            'name'     => 'Omega-3 Fish Oil Pure',
-            'category' => 'Vitamin & Suplemen',
-            'price'    => 95000,
-            'qty'      => 3,
-        ],
-    ];
-
-    $subtotal  = collect($cartItems)->sum(fn($item) => $item['price'] * $item['qty']);
-    $ongkir    = 15000;
-    $diskon    = 20000;
-    $total     = $subtotal + $ongkir - $diskon;
+    $cartItems = $cartItems ?? session()->get('cart', []);
+    $subtotal  = $subtotal ?? 0;
+    $ongkir    = $ongkir ?? 0;
+    $diskon    = $diskon ?? 0;
+    $total     = $total ?? 0;
     $itemCount = count($cartItems);
 
     // Use a closure to avoid "Cannot redeclare function" on refresh
@@ -55,7 +27,7 @@
         </div>
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             Keranjang Belanja
-            <span class="text-blue-600">({{ $itemCount }} Produk)</span>
+            <span id="header-count" class="text-blue-600">({{ $itemCount }} Produk)</span>
         </h1>
         <p class="text-sm text-slate-400 font-light mt-1">Periksa kembali produk sebelum melanjutkan pembayaran</p>
     </div>
@@ -101,8 +73,7 @@
                             <input
                                 type="checkbox"
                                 class="sr-only peer"
-                                x-model="selected[{{ $index }}]"
-                                @change="updateAll()"
+                                x-model="selected[{{ $loop->index }}]"
                             >
                             <div class="w-5 h-5 rounded-md border-2 border-slate-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
                                 <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
@@ -137,42 +108,38 @@
                             <div class="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-4 shrink-0">
 
                                 {{-- DELETE BUTTON --}}
-                                <button
-                                    onclick="this.closest('.group').remove()"
+                                <a
+                                    href="/cart/remove/{{ $item['id'] }}"
                                     class="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200 order-last sm:order-first"
                                     title="Hapus produk"
                                 >
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
                                     </svg>
-                                </button>
+                                </a>
 
                                 {{-- QTY COUNTER --}}
-                                <div
-                                    x-data="{ qty: {{ $item['qty'] }}, price: {{ $item['price'] }} }"
-                                    class="flex items-center gap-0 border border-slate-200 rounded-xl overflow-hidden"
-                                >
+                                <div class="flex items-center gap-0 border border-slate-200 rounded-xl overflow-hidden">
                                     <button
-                                        @click="qty = Math.max(1, qty - 1)"
+                                        type="button"
+                                        @click="items[{{ $loop->index }}].qty = Math.max(1, items[{{ $loop->index }}].qty - 1); updateQty({{ $loop->index }}, {{ $item['id'] }}, items[{{ $loop->index }}].qty)"
                                         class="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 font-semibold text-lg"
                                     >−</button>
                                     <span
-                                        x-text="qty"
+                                        x-text="items[{{ $loop->index }}].qty"
                                         class="w-10 text-center text-sm font-bold text-slate-800 border-x border-slate-200 py-2"
                                     ></span>
                                     <button
-                                        @click="qty = Math.min(99, qty + 1)"
+                                        type="button"
+                                        @click="items[{{ $loop->index }}].qty = Math.min(99, items[{{ $loop->index }}].qty + 1); updateQty({{ $loop->index }}, {{ $item['id'] }}, items[{{ $loop->index }}].qty)"
                                         class="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 font-semibold text-lg"
                                     >+</button>
                                 </div>
 
                                 {{-- SUBTOTAL --}}
-                                <div
-                                    x-data="{ qty: {{ $item['qty'] }}, price: {{ $item['price'] }} }"
-                                    class="text-right hidden sm:block"
-                                >
+                                <div class="text-right hidden sm:block">
                                     <p class="text-[10px] text-slate-400 font-light mb-0.5">Subtotal</p>
-                                    <p class="text-sm font-bold text-slate-900" x-text="'Rp ' + (qty * price).toLocaleString('id-ID')"></p>
+                                    <p class="text-sm font-bold text-slate-900" x-text="formatRp(items[{{ $loop->index }}].qty * items[{{ $loop->index }}].price)"></p>
                                 </div>
 
                             </div>
@@ -181,7 +148,7 @@
                         {{-- MOBILE SUBTOTAL --}}
                         <div class="sm:hidden mt-3 pt-3 border-t border-slate-50 flex justify-between items-center">
                             <span class="text-xs text-slate-400 font-light">Subtotal</span>
-                            <span class="text-sm font-bold text-slate-900">{{ $formatRp($item['price'] * $item['qty']) }}</span>
+                            <span class="text-sm font-bold text-slate-900" x-text="formatRp(items[{{ $loop->index }}].qty * items[{{ $loop->index }}].price)"></span>
                         </div>
                     </div>
 
@@ -241,33 +208,33 @@
 
                 <div class="space-y-3 mb-5">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-slate-500 font-light">Subtotal ({{ $itemCount }} Produk)</span>
-                        <span class="text-sm font-semibold text-slate-800">{{ $formatRp($subtotal) }}</span>
+                        <span class="text-sm text-slate-500 font-light">Subtotal (<span x-text="selectedCount"></span> Produk)</span>
+                        <span class="text-sm font-semibold text-slate-800" x-text="formatRp(subtotal)"></span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-slate-500 font-light">Ongkos Kirim</span>
-                        <span class="text-sm font-semibold text-slate-800">{{ $formatRp($ongkir) }}</span>
+                        <span class="text-sm font-semibold text-slate-800" x-text="subtotal > 0 ? formatRp(ongkir) : 'Rp 0'"></span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-slate-500 font-light flex items-center gap-1">
                             Diskon
                             <span class="bg-red-50 text-red-500 border border-red-100 text-[9px] font-bold px-1.5 py-0.5 rounded-md">HEMAT</span>
                         </span>
-                        <span class="text-sm font-semibold text-red-500">− {{ $formatRp($diskon) }}</span>
+                        <span class="text-sm font-semibold text-red-500" x-text="subtotal > 0 ? '− ' + formatRp(diskon) : '− Rp 0'"></span>
                     </div>
                 </div>
 
                 <div class="border-t border-dashed border-slate-100 pt-4 mb-5">
                     <div class="flex justify-between items-center">
                         <span class="text-sm font-bold text-slate-900">Total Pembayaran</span>
-                        <span class="text-xl font-bold text-blue-600">{{ $formatRp($total) }}</span>
+                        <span class="text-xl font-bold text-blue-600" x-text="formatRp(total)"></span>
                     </div>
                     <p class="text-[10px] text-slate-400 font-light mt-1 text-right">Sudah termasuk pajak & biaya layanan</p>
                 </div>
 
                 {{-- CHECKOUT BUTTON --}}
                 <a
-                    href="#"
+                    href="/checkout"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-4 rounded-2xl shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-300 flex items-center justify-center gap-2 group"
                 >
                     <svg class="w-4.5 h-4.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -338,19 +305,48 @@
 <script>
 function cartPage() {
     return {
-        selected: [true, true, true],
+        selected: Array({{ count($cartItems) }}).fill(true),
+        items: {!! json_encode(array_values($cartItems)) !!},
+        ongkir: {{ $ongkir }},
+        diskon: {{ $diskon }},
         get allSelected() {
-            return this.selected.every(v => v);
+            return this.selected.length > 0 && this.selected.every(v => v);
         },
         get selectedCount() {
             return this.selected.filter(v => v).length;
+        },
+        get subtotal() {
+            let total = 0;
+            this.items.forEach((item, index) => {
+                if (this.selected[index]) {
+                    total += (item.qty * item.price);
+                }
+            });
+            return total;
+        },
+        get total() {
+            return this.subtotal > 0 ? (this.subtotal + this.ongkir - this.diskon) : 0;
         },
         toggleAll() {
             const val = this.allSelected;
             this.selected = this.selected.map(() => !val);
         },
-        updateAll() {
-            // triggers reactivity
+        formatRp(amount) {
+            return 'Rp ' + amount.toLocaleString('id-ID');
+        },
+        updateQty(index, itemId, newQty) {
+            this.items[index].qty = newQty;
+            fetch('/cart/update?id=' + itemId + '&qty=' + newQty, {
+                headers: { 'Accept': 'application/json' }
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const headerCount = document.getElementById('header-count');
+                    if (headerCount) {
+                        headerCount.innerText = '(' + data.itemCount + ' Produk)';
+                    }
+                }
+            });
         }
     }
 }
