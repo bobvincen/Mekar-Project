@@ -18,6 +18,15 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * The model's default values for attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'role' => 'pelanggan',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
