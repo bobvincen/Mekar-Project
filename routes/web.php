@@ -55,6 +55,10 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+
+    // API Route for dynamic sales summary chart data
+    Route::get('/api/sales-summary', [DashboardController::class, 'salesSummary'])
+        ->name('api.sales-summary');
 });
 
 

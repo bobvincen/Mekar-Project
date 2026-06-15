@@ -132,11 +132,27 @@
     <!-- Grafik -->
     <div class="lg:col-span-2 bg-white rounded-3xl shadow p-6">
 
-        <h3 class="text-xl font-semibold mb-4">
-            Ringkasan Penjualan
-        </h3>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <h3 class="text-xl font-semibold text-slate-800">
+                Ringkasan Penjualan
+            </h3>
+            
+            <div class="flex flex-wrap items-center gap-2">
+                {{-- Dropdown Filter --}}
+                <select id="filterAnalitik" class="border border-slate-200 rounded-xl px-3 py-1.5 text-sm font-medium text-slate-600 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <option value="harian">Harian</option>
+                    <option value="mingguan">Mingguan</option>
+                    <option value="bulanan" selected>Bulanan</option>
+                    <option value="tahunan">Tahunan</option>
+                    <option value="obat_terlaris">Obat Terlaris</option>
+                    <option value="pendapatan">Pendapatan</option>
+                </select>
+            </div>
+        </div>
 
-        <canvas id="salesChart"></canvas>
+        <div class="relative w-full" style="height: 300px;">
+            <canvas id="salesChart"></canvas>
+        </div>
 
     </div>
 
@@ -311,21 +327,136 @@
 <script>
 
 const ctx = document.getElementById('salesChart');
+const filterAnalitik = document.getElementById('filterAnalitik');
+let salesChart = null;
 
-new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: [
-            'Jan','Feb','Mar','Apr',
-            'Mei','Jun','Jul','Agu',
-            'Sep','Okt','Nov','Des'
-        ],
-        datasets: [{
-            label: 'Penjualan',
-            data: [20,25,18,40,45,28,75,30,42,20,48,55],
-            tension: 0.4
-        }]
+function renderChart(type, labels, data, datasetLabel, isCurrency) {
+    if (salesChart) {
+        salesChart.destroy();
     }
+
+    const config = {
+        type: type,
+        data: {
+            labels: labels,
+            datasets: [{
+                label: datasetLabel,
+                data: data,
+                tension: 0.4,
+                borderColor: '#0ea5e9', // Sky blue color matching a modern aesthetic
+                backgroundColor: type === 'line' ? 'rgba(14, 165, 233, 0.1)' : '#0ea5e9',
+                fill: type === 'line',
+                borderWidth: 3,
+                pointBackgroundColor: '#0ea5e9',
+                pointHoverRadius: 6,
+                pointRadius: type === 'line' ? 3 : 0,
+                borderRadius: type === 'bar' ? 8 : 0 // Rounded corners for bars
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#f8fafc',
+                    padding: 12,
+                    cornerRadius: 12,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                if (isCurrency) {
+                                    label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(context.parsed.y);
+                                } else {
+                                    label += new Intl.NumberFormat('id-ID').format(context.parsed.y);
+                                    if (filterAnalitik.value === 'obat_terlaris') {
+                                        label += ' Pcs';
+                                    } else {
+                                        label += ' Transaksi';
+                                    }
+                                }
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#f1f5f9'
+                    },
+                    ticks: {
+                        color: '#64748b',
+                        callback: function(value) {
+                            if (isCurrency) {
+                                if (value >= 1000000) {
+                                    return 'Rp ' + (value / 1000000).toFixed(1) + ' jt';
+                                } else if (value >= 1000) {
+                                    return 'Rp ' + (value / 1000).toFixed(0) + ' k';
+                                }
+                                return 'Rp ' + value;
+                            } else {
+                                return new Intl.NumberFormat('id-ID').format(value);
+                            }
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#64748b'
+                    }
+                }
+            }
+        }
+    };
+
+    salesChart = new Chart(ctx, config);
+}
+
+// Setup dynamic AJAX filters
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial Render: Bulanan (Total Transaksi per Bulan)
+    renderChart('line', @json($chartLabels), @json($chartData), 'Total Transaksi (Bulanan)', false);
+
+    function updateChart() {
+        const filter = filterAnalitik.value;
+        const url = `{{ route('api.sales-summary') }}?filter=${filter}`;
+
+        // Apply loading opacity to canvas
+        ctx.style.opacity = 0.5;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Gagal mengambil data') });
+                }
+                return response.json();
+            })
+            .then(data => {
+                renderChart(data.chart_type, data.labels, data.data, data.dataset_label, data.is_currency);
+                ctx.style.opacity = 1;
+            })
+            .catch(error => {
+                console.error('AJAX Error:', error);
+                alert('Gagal mengambil data penjualan: ' + error.message);
+                ctx.style.opacity = 1;
+            });
+    }
+
+    filterAnalitik.addEventListener('change', updateChart);
 });
 
 </script>
