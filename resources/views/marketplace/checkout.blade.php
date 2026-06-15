@@ -438,63 +438,51 @@ function checkoutPage() {
             return valid;
         },
 
-        submitOrder() {
+        async submitOrder() {
             if (!this.validate()) return;
 
             let currentOngkir = this.form.metode === 'Ambil di Apotek' ? 0 : this.ongkir;
             let total = this.calculateTotal();
 
-            let message = `Halo Admin Mekar Pharmacy 👋\n\nSaya ingin melakukan pemesanan obat.\n\n`;
-            message += `📌 *Informasi Pemesan*\n\n`;
-            message += `Nama:\n${this.form.nama}\n\n`;
-            message += `No WhatsApp:\n${this.form.whatsapp}\n\n`;
-            
-            message += `🚚 *Metode Pengambilan:*\n${this.form.metode}\n\n`;
+            // Setup data for API
+            let payload = {
+                nama: this.form.nama,
+                whatsapp: this.form.whatsapp,
+                alamat: this.form.alamat,
+                metode: this.form.metode,
+                lat: this.form.lat,
+                lng: this.form.lng,
+                jarak: this.jarak,
+                ongkir: currentOngkir,
+                subtotal: this.subtotal,
+                diskon: this.diskon,
+                total: total,
+                catatan: this.form.catatan,
+                _token: '{{ csrf_token() }}'
+            };
 
-            if (this.form.metode === 'Gunakan Lokasi Saya Saat Ini') {
-                message += `📍 *Lokasi Pelanggan (GPS)*\n\n`;
-                message += `Alamat:\n${this.form.alamat}\n\n`;
-                message += `Jarak:\n${this.jarak.toFixed(2)} KM\n\n`;
-                message += `Perkiraan Ongkir:\n${this.formatRp(currentOngkir)}\n\n`;
-                message += `Koordinat:\n${this.form.lat}, ${this.form.lng}\n\n`;
-                message += `Link Maps:\nhttps://maps.google.com/?q=${this.form.lat},${this.form.lng}\n\n`;
-            } else if (this.form.metode === 'Antar ke Alamat') {
-                message += `📍 *Lokasi Pengiriman*\n\n`;
-                message += `Alamat:\n${this.form.alamat}\n\n`;
-                message += `Jarak:\n${this.jarak.toFixed(2)} KM\n\n`;
-                message += `Perkiraan Ongkir:\n${this.formatRp(currentOngkir)}\n\n`;
-                message += `Koordinat:\n${this.form.lat}, ${this.form.lng}\n\n`;
-                message += `Link Maps:\nhttps://maps.google.com/?q=${this.form.lat},${this.form.lng}\n\n`;
-            } else {
-                message += `📍 *Lokasi Pengambilan*\n\n`;
-                message += `Alamat:\n(Ambil di Apotek)\n\n`;
+            try {
+                let response = await fetch('/checkout/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                let result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Redirect to WhatsApp
+                    window.location.href = result.wa_url;
+                } else {
+                    alert(result.message || 'Terjadi kesalahan saat memproses pesanan.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal terhubung ke server. Silakan coba lagi.');
             }
-            message += `🛒 *Detail Pesanan*\n\n`;
-
-            this.cartItems.forEach(item => {
-                message += `- ${item.name} x${item.qty} = ${this.formatRp(item.price * item.qty)}\n`;
-            });
-
-            message += `\n💰 *Ringkasan Pembayaran*\n\n`;
-            message += `Subtotal:\n${this.formatRp(this.subtotal)}\n\n`;
-            message += `Ongkir:\n${this.formatRp(currentOngkir)}\n\n`;
-            
-            if(this.diskon > 0) {
-                message += `Diskon:\n- ${this.formatRp(this.diskon)}\n\n`;
-            }
-
-            message += `*Total:*\n*${this.formatRp(total)}*\n\n`;
-
-            if (this.form.catatan.trim()) {
-                message += `📝 *Catatan:*\n${this.form.catatan}\n\n`;
-            }
-
-            message += `Mohon konfirmasi pesanan saya.\n\nTerima kasih 🙏`;
-
-            let url = `https://wa.me/${this.adminPhone}?text=${encodeURIComponent(message)}`;
-            
-            // Redirect to whatsapp
-            window.location.href = url;
         }
     }
 }
