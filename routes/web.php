@@ -14,6 +14,8 @@ use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\CartController;
 
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ResepDokterController;
+use App\Http\Controllers\AdminResepDokterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,8 +29,12 @@ Route::get('/products', [MarketplaceController::class, 'products'])->name('marke
 Route::get('/products/{id}', [MarketplaceController::class, 'showProduct'])->name('marketplace.showProduct');
 Route::get('/category/{id}', [MarketplaceController::class, 'category'])->name('marketplace.category');
 
+Route::get('/upload-resep', [ResepDokterController::class, 'create'])->name('resep.create');
+Route::post('/upload-resep', [ResepDokterController::class, 'store'])->name('resep.store');
+
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart/add/{id}', [CartController::class, 'add']); // Fallback GET method for simple links
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
@@ -51,6 +57,7 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes (Auth & Admin Middleware Required)
@@ -64,6 +71,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('supplier', SupplierController::class);
     Route::resource('obat', ObatController::class);
     Route::resource('pelanggan', PelangganController::class);
+    
+    // Admin Kelola Resep Dokter
+    Route::get('/resep-dokter', [AdminResepDokterController::class, 'index'])->name('admin.resep.index');
+    Route::delete('/resep-dokter/{id}', [AdminResepDokterController::class, 'destroy'])->name('admin.resep.destroy');
+    
+    // Admin Kelola Transaksi Online
+    Route::get('/transaksi-online', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'index'])->name('admin.transaksi-online.index');
+    Route::get('/transaksi-online/{id}', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'show'])->name('admin.transaksi-online.show');
+    Route::patch('/transaksi-online/{id}/status', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'updateStatus'])->name('admin.transaksi-online.update-status');
 });
 
 /*
