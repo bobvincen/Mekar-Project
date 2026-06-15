@@ -127,7 +127,7 @@
 
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-8">
 
     <!-- Grafik -->
     <div class="lg:col-span-2 bg-white rounded-3xl shadow p-6">
@@ -143,44 +143,87 @@
     <!-- Stok Rendah -->
     <div class="bg-white rounded-3xl shadow p-6">
 
-    <h3 class="text-xl font-semibold text-orange-600 mb-4">
-        ⚠ Peringatan Stok Rendah
-    </h3>
+        <h3 class="text-xl font-semibold text-orange-600 mb-4">
+            ⚠ Peringatan Stok Rendah
+        </h3>
 
-    <div class="space-y-3">
+        <div class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
 
-        @forelse($stokRendah as $obat)
+            @forelse($stokRendah as $obat)
 
-            <div class="bg-yellow-50 rounded-xl p-4">
+                <div class="bg-yellow-50 rounded-xl p-4">
 
-                <p class="font-semibold">
-                    {{ $obat->nama_obat }}
-                </p>
+                    <p class="font-semibold">
+                        {{ $obat->nama_obat }}
+                    </p>
 
-                <p class="text-sm text-gray-500">
-                    Sisa stok:
-                    <span class="font-bold text-red-600">
-                        {{ $obat->stok }}
-                    </span>
-                </p>
+                    <p class="text-sm text-gray-500">
+                        Sisa stok:
+                        <span class="font-bold text-red-600">
+                            {{ $obat->stok }}
+                        </span>
+                    </p>
 
-            </div>
+                </div>
 
-        @empty
+            @empty
 
-            <div class="bg-green-50 rounded-xl p-4">
+                <div class="bg-green-50 rounded-xl p-4">
 
-                <p class="text-green-700">
-                    Semua stok masih aman
-                </p>
+                    <p class="text-green-700">
+                        Semua stok masih aman
+                    </p>
 
-            </div>
+                </div>
 
-        @endforelse
+            @endforelse
+
+        </div>
 
     </div>
 
-</div>
+    <!-- Mendekati Kadaluarsa -->
+    <div class="bg-white rounded-3xl shadow p-6">
+
+        <h3 class="text-xl font-semibold text-red-600 mb-4">
+            ⏰ Mendekati Kadaluarsa
+        </h3>
+
+        <div class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+
+            @forelse($obatKadaluarsa as $obat)
+
+                <div class="bg-red-50 rounded-xl p-4">
+
+                    <p class="font-semibold">
+                        {{ $obat->nama_obat }}
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        Kadaluarsa:
+                        <span class="font-bold text-red-600">
+                            {{ \Carbon\Carbon::parse($obat->tanggal_kadaluarsa)->format('d M Y') }}
+                        </span>
+                    </p>
+
+                </div>
+
+            @empty
+
+                <div class="bg-green-50 rounded-xl p-4">
+
+                    <p class="text-green-700">
+                        Semua obat masih aman dari kadaluarsa
+                    </p>
+
+                </div>
+
+            @endforelse
+
+        </div>
+
+    </div>
+
 </div>
 <div class="bg-white rounded-3xl shadow p-6 mt-8">
 
