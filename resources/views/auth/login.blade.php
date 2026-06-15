@@ -60,7 +60,7 @@
                             type="email"
                             name="email"
                             value="{{ old('email') }}"
-                            placeholder="Nama"
+                            placeholder="Alamat Email"
                             required
                             autofocus
                             class="w-full bg-transparent border-none py-3.5 pl-4 pr-5 text-[#1E3A8A] placeholder-[#1E3A8A]/60 focus:ring-0 focus:outline-none rounded-r-full font-medium"
