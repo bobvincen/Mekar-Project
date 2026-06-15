@@ -13,7 +13,11 @@ class DashboardController extends Controller
     {
         $stokRendah = Obat::where('stok', '<=', 20)
             ->orderBy('stok')
-            ->limit(5)
+            ->get();
+
+        $obatKadaluarsa = Obat::whereNotNull('tanggal_kadaluarsa')
+            ->where('tanggal_kadaluarsa', '<=', now()->addDays(30))
+            ->orderBy('tanggal_kadaluarsa')
             ->get();
 
         $transaksiTerbaru = Transaksi::with('pelanggan')
@@ -27,6 +31,7 @@ class DashboardController extends Controller
             'totalPelanggan' => Pelanggan::count(),
             'totalTransaksi' => Transaksi::count(),
             'stokRendah' => $stokRendah,
+            'obatKadaluarsa' => $obatKadaluarsa,
             'transaksiTerbaru' => $transaksiTerbaru,
         ]);
     }
