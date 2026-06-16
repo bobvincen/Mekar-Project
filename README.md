@@ -12,15 +12,11 @@ Sistem Informasi Apotek Mekar berbasis website dibuat untuk membantu pengelolaan
 
 Sebelum adanya sistem, apotek sering menghadapi beberapa kendala, yaitu:
 
-# 1. Pencatatan data masih manual --> Data obat, supplier, dan pelanggan rentan hilang atau salah catat
-
-# 2. Kesulitan memantau obat kadaluarsa --> Stok habis atau menumpuk karena tidak ada pemantauan yang terstruktur
-
-# 3. Sulit mendeteksi obat kadaluarsa --> Obat yang mendekati masa kadaluarsa berisiko terlewat
-
-# 4. Proses transaksi kurang efisien --> Perhitungan total pembayaran dan kembalian dilakukan secara manual
-
-# 5. Pembuatan laporan memakan waktu --> Laporan penjualan harus direkap secara manual sehingga rentan kesalahan
+- Pencatatan data masih manual --> Data obat, supplier, dan pelanggan rentan hilang atau salah catat
+- Kesulitan memantau obat kadaluarsa --> Stok habis atau menumpuk karena tidak ada pemantauan yang terstruktur
+- Sulit mendeteksi obat kadaluarsa --> Obat yang mendekati masa kadaluarsa berisiko terlewat
+- Proses transaksi kurang efisien --> Perhitungan total pembayaran dan kembalian dilakukan secara manual
+- Pembuatan laporan memakan waktu --> Laporan penjualan harus direkap secara manual sehingga rentan kesalahan
 
 3. Fitur Utama
 
@@ -105,16 +101,11 @@ http://127.0.0.1:8000/
 
 7. Tim Pengembang
    Nama Anggota Kelompok:
-
-### 1. Nabil Okta Pratama
-
-### 2. M. Habibi Ariski
-
-### 3. Resti Febriani
-
-### 4. Rifa Afdela
-
-### 5. Mufti Ibrahim
+    1. Nabil Okta Pratama
+    2. M. Habibi Ariski
+    3. Resti Febriani
+    4. Rifa Afdela
+    5. Mufti Ibrahim
 
 ---
 
