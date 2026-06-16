@@ -37,10 +37,5 @@ Route::get('/dashboard', [DashboardController::class, 'index']);
 Route::resource('kategori', KategoriController::class);
 Route::resource('supplier', SupplierController::class);
 Route::resource('obat', ObatController::class);
-<<<<<<< HEAD
 Route::resource('transaksi', TransaksiController::class);
-
 Route::resource('pelanggan', PelangganController::class);
-=======
-Route::resource('transaksi', TransaksiController::class);
->>>>>>> develop
