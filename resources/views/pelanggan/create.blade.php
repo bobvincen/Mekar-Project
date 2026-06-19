@@ -38,10 +38,13 @@
                             <label class="form-label-custom">Nama Pengguna <span style="color: #EF4444;">*</span></label>
                             <div class="input-icon-wrapper">
                                 <span class="input-icon"><i class="fa-solid fa-user"></i></span>
-                                <input type="text" name="nama_pelanggan" class="form-input"
+                                <input type="text" name="nama_pelanggan" class="form-input @error('nama_pelanggan') border-red-500 bg-red-50 @enderror"
                                     placeholder="Masukkan nama lengkap pengguna" value="{{ old('nama_pelanggan') }}"
                                     required>
                             </div>
+                            @error('nama_pelanggan')
+                                <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="form-group mb-4">
@@ -49,9 +52,12 @@
                                     style="color: #EF4444;">*</span></label>
                             <div class="input-icon-wrapper">
                                 <span class="input-icon"><i class="fa-solid fa-phone"></i></span>
-                                <input type="text" name="no_hp" class="form-input" placeholder="Contoh: 081234567890"
+                                <input type="text" name="no_hp" class="form-input @error('no_hp') border-red-500 bg-red-50 @enderror" placeholder="Contoh: 081234567890"
                                     value="{{ old('no_hp') }}" required>
                             </div>
+                            @error('no_hp')
+                                <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="form-group mb-4">
@@ -59,16 +65,19 @@
                                     style="color: #EF4444;">*</span></label>
                             <div class="input-icon-wrapper align-items-start">
                                 <span class="input-icon mt-2.5"><i class="fa-solid fa-location-dot"></i></span>
-                                <textarea name="alamat" class="form-input textarea-custom" rows="4"
+                                <textarea name="alamat" class="form-input textarea-custom @error('alamat') border-red-500 bg-red-50 @enderror" rows="4"
                                     placeholder="Masukkan alamat lengkap rumah saat ini..." required>{{ old('alamat') }}</textarea>
                             </div>
+                            @error('alamat')
+                                <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="form-group mb-2">
                             <label class="form-label-custom">Role / Hak Akses <span style="color: #EF4444;">*</span></label>
                             <div class="input-icon-wrapper">
                                 <span class="input-icon"><i class="fa-solid fa-user-shield"></i></span>
-                                <select name="role" class="form-input" style="padding-top: 2px;" required>
+                                <select name="role" class="form-input @error('role') border-red-500 bg-red-50 @enderror" style="padding-top: 2px;" required>
                                     <option value="" disabled {{ old('role') == '' ? 'selected' : '' }}>— Pilih Hak
                                         Akses —</option>
                                     <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin Apotek
@@ -79,6 +88,9 @@
                                         Member</option>
                                 </select>
                             </div>
+                            @error('role')
+                                <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 

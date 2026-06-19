@@ -2,197 +2,180 @@
 
     <!-- Logo -->
     <div class="p-8">
-
         <h1 class="text-4xl font-bold text-cyan-300">
             MEKAR
         </h1>
-
         <p class="text-lg text-gray-200">
             Pharmacy
         </p>
-
     </div>
 
     <!-- Menu -->
-    <nav class="mt-8 flex-1">
+    <nav class="flex-1 overflow-y-auto custom-scrollbar px-4 pb-6">
+        
+        <!-- Dashboard -->
+        <a href="{{ Auth::user()->getDashboardUrl() }}"
+           class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-4 mt-2
+           {{ (request()->routeIs('dashboard') || request()->routeIs('kasir.dashboard') || request()->routeIs('apoteker.dashboard')) ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 11V9m0 12h6" />
+            </svg>
+            Dashboard
+        </a>
 
-        @if(Auth::user()->role === 'admin')
-            <!-- Admin Navigation -->
-            <a href="/dashboard"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('dashboard') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 12l2-2m0 0l7-7 7 7m-9 11V9m0 12h6" />
-                </svg>
-                Dashboard
-            </a>
+        <!-- Master Data Group -->
+        @if(auth()->user()->can('Kelola Kategori') || auth()->user()->can('Kelola Supplier') || auth()->user()->can('Kelola Obat') || auth()->user()->can('Lihat Stok Obat'))
+            <div class="px-5 py-2 text-xs font-bold text-cyan-200/60 uppercase tracking-wider mt-4 mb-1">
+                Master Data
+            </div>
 
-            <a href="/kategori"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('kategori*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 7h16M4 12h16M4 17h16"/>
-                </svg>
-                Kategori
-            </a>
+            @can('Kelola Kategori')
+                <a href="/kategori"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ request()->routeIs('kategori.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/>
+                    </svg>
+                    Kategori
+                </a>
+            @endcan
 
-            <a href="/supplier"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('supplier*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 17v-6h13v6M3 7h18M5 17h2m10 0h2"/>
-                </svg>
-                Supplier
-            </a>
+            @can('Kelola Supplier')
+                <a href="/supplier"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ request()->routeIs('supplier.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6M3 7h18M5 17h2m10 0h2"/>
+                    </svg>
+                    Supplier
+                </a>
+            @endcan
 
-            <a href="/obat"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('obat*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M10 14L21 3m0 0h-6m6 0v6M3 21l7-7"/>
-                </svg>
-                Obat
-            </a>
-
-            <a href="/pelanggan"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('pelanggan*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M17 20h5V4H2v16h5m10 0v-2a4 4 0 00-8 0v2m8 0H9m4-10a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
-                Pelanggan
-            </a>
-
-            <a href="/transaksi"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('transaksi*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8c-1.657 0-3 1.12-3 2.5S10.343 13 12 13s3-1.12 3-2.5S13.657 8 12 8zm0 0V6m0 7v2m0 0c1.657 0 3 1.12 3 2.5S13.657 20 12 20s-3-1.12-3-2.5S10.343 15 12 15z"/>
-                </svg>
-                Transaksi
-            </a>
-
-            <a href="/laporan"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('laporan*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 17v-6h4v6m4 0V7H5v10m14 4H3"/>
-                </svg>
-                Laporan
-            </a>
-
-            <a href="{{ route('admin.resep.index') }}"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('resep-dokter*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-                Resep Dokter
-            </a>
-
-            <a href="{{ route('admin.transaksi-online.index') }}"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('transaksi-online*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 1.5l8 4v13l-8 4-8-4v-13l8-4zm0 2.236l-6 3v10.528l6 3 6-3V6.736l-6-3zM13.5 14a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
-                </svg>
-                Pesanan Online
-            </a>
-
-        @elseif(Auth::user()->role === 'kasir')
-            <!-- Kasir Navigation -->
-            <a href="/kasir/dashboard"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('kasir/dashboard') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 12l2-2m0 0l7-7 7 7m-9 11V9m0 12h6" />
-                </svg>
-                Dashboard Kasir
-            </a>
-
-            <a href="/transaksi"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('transaksi*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8c-1.657 0-3 1.12-3 2.5S10.343 13 12 13s3-1.12 3-2.5S13.657 8 12 8zm0 0V6m0 7v2m0 0c1.657 0 3 1.12 3 2.5S13.657 20 12 20s-3-1.12-3-2.5S10.343 15 12 15z"/>
-                </svg>
-                Transaksi
-            </a>
-
-            <a href="/laporan"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('laporan*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 17v-6h4v6m4 0V7H5v10m14 4H3"/>
-                </svg>
-                Laporan
-            </a>
-
-            <a href="/marketplace"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition hover:bg-white/20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z" />
-                </svg>
-                Ke Marketplace
-            </a>
-
-        @elseif(Auth::user()->role === 'pelanggan')
-            <!-- Pelanggan Navigation -->
-            <a href="/home"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
-            {{ request()->is('home') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 12l2-2m0 0l7-7 7 7m-9 11V9m0 12h6" />
-                </svg>
-                Beranda
-            </a>
-
-            <a href="/marketplace"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition hover:bg-white/20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z" />
-                </svg>
-                Marketplace
-            </a>
-
-            <a href="/cart"
-            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition hover:bg-white/20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.7 2.766-7.254m-14.71 7.254L4.765 4.5H2.25m3.75 0h14.25M7.5 14.25v2.25M16.5 14.25v2.25m-9-2.25h9M7.5 21a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm9 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                </svg>
-                Keranjang Belanja
-            </a>
+            @if(auth()->user()->can('Kelola Obat') || auth()->user()->can('Lihat Stok Obat'))
+                @php
+                    $isObatActive = request()->routeIs('obat.*') || request()->routeIs('apoteker.obat.*');
+                    $obatUrl = auth()->user()->can('Kelola Obat') ? '/obat' : route('apoteker.obat.index');
+                @endphp
+                <a href="{{ $obatUrl }}"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ $isObatActive ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14L21 3m0 0h-6m6 0v6M3 21l7-7"/>
+                    </svg>
+                    Obat
+                </a>
+            @endif
         @endif
+
+        <!-- Pengguna Group -->
+        @if(auth()->user()->can('Kelola Pelanggan') || auth()->user()->can('Kelola User') || auth()->user()->can('Kelola Role') || auth()->user()->can('Kelola Permission'))
+            <div class="px-5 py-2 text-xs font-bold text-cyan-200/60 uppercase tracking-wider mt-4 mb-1">
+                Pengguna
+            </div>
+
+            @can('Kelola Pelanggan')
+                <a href="/pelanggan"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ request()->routeIs('pelanggan.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5V4H2v16h5m10 0v-2a4 4 0 00-8 0v2m8 0H9m4-10a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    Pelanggan
+                </a>
+            @endcan
+
+            @can('Kelola User')
+                <a href="{{ route('user.index') }}"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ request()->routeIs('user.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    User Management
+                </a>
+            @endcan
+
+            @can('Kelola Role')
+                <a href="{{ route('role.index') }}"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ request()->routeIs('role.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    Role Management
+                </a>
+            @endcan
+
+            @can('Kelola Permission')
+                <a href="{{ route('permission.index') }}"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ request()->routeIs('permission.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-5 4a3 3 0 10-6 0 3 3 0 006 0zm7-5a2 2 0 11-4 0 2 2 0 014 0zM12 11l4.5 4.5M16.5 15.5l1.5-1.5M15.5 16.5l1.5 1.5" />
+                    </svg>
+                    Permission Management
+                </a>
+            @endcan
+        @endif
+
+        <!-- Transaksi Group -->
+        @if(auth()->user()->can('Kelola Transaksi') || auth()->user()->can('Verifikasi Resep') || auth()->user()->can('Kelola Pesanan Online') || auth()->user()->role === 'admin')
+            <div class="px-5 py-2 text-xs font-bold text-cyan-200/60 uppercase tracking-wider mt-4 mb-1">
+                Transaksi
+            </div>
+
+            @can('Kelola Transaksi')
+                <a href="/transaksi"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ request()->routeIs('transaksi.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.12-3 2.5S10.343 13 12 13s3-1.12 3-2.5S13.657 8 12 8zm0 0V6m0 7v2m0 0c1.657 0 3 1.12 3 2.5S13.657 20 12 20s-3-1.12-3-2.5S10.343 15 12 15z"/>
+                    </svg>
+                    Transaksi
+                </a>
+            @endcan
+
+            @if(auth()->user()->role === 'admin' || auth()->user()->can('Verifikasi Resep'))
+                @php
+                    $isResepActive = request()->routeIs('admin.resep.*') || request()->routeIs('apoteker.resep.*');
+                    $resepUrl = auth()->user()->role === 'admin' ? route('admin.resep.index') : route('apoteker.resep.index');
+                @endphp
+                <a href="{{ $resepUrl }}"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ $isResepActive ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    Resep Dokter
+                </a>
+            @endif
+
+            @can('Kelola Pesanan Online')
+                <a href="{{ route('admin.transaksi-online.index') }}"
+                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+                   {{ request()->routeIs('admin.transaksi-online.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 1.5l8 4v13l-8 4-8-4v-13l8-4zm0 2.236l-6 3v10.528l6 3 6-3V6.736l-6-3zM13.5 14a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+                    </svg>
+                    Pesanan Online
+                </a>
+            @endcan
+        @endif
+
+        <!-- Laporan Group -->
+        @can('Kelola Laporan')
+            <div class="px-5 py-2 text-xs font-bold text-cyan-200/60 uppercase tracking-wider mt-4 mb-1">
+                Laporan
+            </div>
+            <a href="/laporan"
+               class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
+               {{ request()->routeIs('laporan.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h4v6m4 0V7H5v10m14 4H3"/>
+                </svg>
+                Laporan
+            </a>
+        @endcan
 
     </nav>
 

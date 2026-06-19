@@ -38,7 +38,7 @@ class ObatController extends Controller
             'supplier_id' => 'required',
             'stok' => 'required|integer|min:1',
             'harga_jual' => 'required|numeric|min:1',
-            'tanggal_kadaluarsa' => 'nullable|date',
+            'tanggal_kadaluarsa' => 'required|date',
             'deskripsi' => 'nullable'
         ], [
             'kode_obat.required' => 'Kode obat wajib diisi.',
@@ -50,7 +50,9 @@ class ObatController extends Controller
             'stok.min' => 'Stok minimal 1.',
             'harga_jual.required' => 'Harga jual wajib diisi.',
             'harga_jual.numeric' => 'Harga jual harus berupa angka.',
-            'harga_jual.min' => 'Harga jual minimal 1.'
+            'harga_jual.min' => 'Harga jual minimal 1.',
+            'tanggal_kadaluarsa.required' => 'Tanggal kadaluarsa wajib diisi.',
+            'tanggal_kadaluarsa.date' => 'Format tanggal kadaluarsa tidak valid.'
         ]);
 
         Obat::create([
@@ -90,7 +92,7 @@ class ObatController extends Controller
             'supplier_id' => 'required',
             'stok' => 'required|integer|min:1',
             'harga_jual' => 'required|numeric|min:1',
-            'tanggal_kadaluarsa' => 'nullable|date',
+            'tanggal_kadaluarsa' => 'required|date',
             'deskripsi' => 'nullable'
         ], [
             'kode_obat.required' => 'Kode obat wajib diisi.',
@@ -102,7 +104,9 @@ class ObatController extends Controller
             'stok.min' => 'Stok minimal 1.',
             'harga_jual.required' => 'Harga jual wajib diisi.',
             'harga_jual.numeric' => 'Harga jual harus berupa angka.',
-            'harga_jual.min' => 'Harga jual minimal 1.'
+            'harga_jual.min' => 'Harga jual minimal 1.',
+            'tanggal_kadaluarsa.required' => 'Tanggal kadaluarsa wajib diisi.',
+            'tanggal_kadaluarsa.date' => 'Format tanggal kadaluarsa tidak valid.'
         ]);
 
         $obat->update([

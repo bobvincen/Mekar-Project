@@ -20,6 +20,13 @@ class ResepDokterController extends Controller
             'whatsapp' => 'required|string|max:20',
             'catatan' => 'nullable|string',
             'foto_resep' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+        ], [
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
+            'foto_resep.required' => 'Foto resep wajib diunggah.',
+            'foto_resep.image' => 'File harus berupa gambar.',
+            'foto_resep.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
+            'foto_resep.max' => 'Ukuran gambar maksimal 5MB.',
         ]);
 
         if ($request->hasFile('foto_resep')) {

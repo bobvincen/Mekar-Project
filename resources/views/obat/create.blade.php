@@ -155,13 +155,22 @@
         </div>
 
         <div class="mb-4">
-            <label>Tanggal Kadaluarsa</label>
+            <label>Tanggal Kadaluarsa <span class="text-red-500">*</span></label>
 
             <input
                 type="date"
                 name="tanggal_kadaluarsa"
                 value="{{ old('tanggal_kadaluarsa') }}"
-                class="w-full border rounded-xl px-4 py-3">
+                class="w-full rounded-xl px-4 py-3 border
+                @error('tanggal_kadaluarsa')
+                    border-red-500 bg-red-50
+                @enderror">
+
+            @error('tanggal_kadaluarsa')
+                <p class="text-red-500 text-sm mt-1">
+                    {{ $message }}
+                </p>
+            @enderror
         </div>
 
         <div class="mb-4">

@@ -11,5 +11,7 @@ class ResepDokter extends Model
         'whatsapp',
         'catatan',
         'foto_resep',
+        'status',
+        'catatan_verifikasi',
     ];
 }
