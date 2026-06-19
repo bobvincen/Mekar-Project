@@ -11,7 +11,7 @@ class Kategori extends Model
     ];
 
     public function obats()
-{
-    return $this->hasMany(Obat::class);
-}
+    {
+        return $this->hasMany(Obat::class);
+    }
 }

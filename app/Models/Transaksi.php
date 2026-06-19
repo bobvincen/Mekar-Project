@@ -13,7 +13,21 @@ class Transaksi extends Model
         'tanggal_transaksi',
         'total_harga',
         'bayar',
-        'kembalian'
+        'kembalian',
+        
+        // Marketplace fields
+        'nama_pelanggan',
+        'whatsapp',
+        'alamat',
+        'metode_pengambilan',
+        'latitude',
+        'longitude',
+        'jarak',
+        'ongkir',
+        'subtotal',
+        'diskon',
+        'catatan',
+        'status',
     ];
 
     public function user()
