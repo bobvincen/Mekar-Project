@@ -32,6 +32,8 @@ Route::get('/category/{id}', [MarketplaceController::class, 'category'])->name('
 Route::get('/upload-resep', [ResepDokterController::class, 'create'])->name('resep.create');
 Route::post('/upload-resep', [ResepDokterController::class, 'store'])->name('resep.store');
 
+Route::post('/konsultasi-log', [MarketplaceController::class, 'logKonsultasi'])->name('konsultasi.log');
+
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');

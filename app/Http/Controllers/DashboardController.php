@@ -44,6 +44,11 @@ class DashboardController extends Controller
             $chartData[] = $count;
         }
 
+        $totalKonsultasiHariIni = \App\Models\KonsultasiLog::whereDate('waktu', today())->count();
+        $totalKonsultasiBulanIni = \App\Models\KonsultasiLog::whereMonth('waktu', now()->month)
+                                    ->whereYear('waktu', now()->year)
+                                    ->count();
+
         return view('dashboard.index', [
             'totalObat' => Obat::count(),
             'totalSupplier' => Supplier::count(),
@@ -54,6 +59,8 @@ class DashboardController extends Controller
             'transaksiTerbaru' => $transaksiTerbaru,
             'chartLabels' => $chartLabels,
             'chartData' => $chartData,
+            'totalKonsultasiHariIni' => $totalKonsultasiHariIni,
+            'totalKonsultasiBulanIni' => $totalKonsultasiBulanIni,
         ]);
     }
 

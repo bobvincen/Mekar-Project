@@ -48,10 +48,26 @@ class MarketplaceController extends Controller
         // Search filter
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function($q) use ($search) {
+            $searchTokens = array_filter(explode(' ', $search));
+            $noSpaceSearch = str_replace(' ', '', $search);
+
+            $query->where(function($q) use ($search, $searchTokens, $noSpaceSearch) {
+                // 1. Basic LIKE (already case-insensitive in MySQL by default)
                 $q->where('nama_obat', 'like', '%' . $search . '%')
                   ->orWhere('deskripsi', 'like', '%' . $search . '%')
                   ->orWhere('kode_obat', 'like', '%' . $search . '%');
+                
+                // 2. Space insensitive match (handles "para setamol" vs "paracetamol")
+                $q->orWhereRaw("REPLACE(nama_obat, ' ', '') LIKE ?", ['%' . $noSpaceSearch . '%']);
+
+                // 3. Tokenized match (handles order swapping, e.g., "sirup batuk" vs "batuk sirup")
+                if (count($searchTokens) > 1) {
+                    $q->orWhere(function($subQ) use ($searchTokens) {
+                        foreach($searchTokens as $token) {
+                            $subQ->where('nama_obat', 'like', '%' . $token . '%');
+                        }
+                    });
+                }
             });
         }
 
@@ -94,5 +110,14 @@ class MarketplaceController extends Controller
             'kategoris' => $kategoris,
             'selectedCategory' => $category
         ]);
+    }
+    public function logKonsultasi(Request $request)
+    {
+        \App\Models\KonsultasiLog::create([
+            'waktu' => now(),
+            'sumber' => $request->input('sumber', 'unknown'),
+            'ip_pengunjung' => $request->ip()
+        ]);
+        return response()->json(['success' => true]);
     }
 }
