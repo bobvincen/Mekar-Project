@@ -3,42 +3,49 @@
 @section('title', 'Edit Kategori')
 
 @section('content')
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-2xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-2xl md:text-3xl text-slate-800 font-bold">Edit Kategori 🏷️</h1>
-            <p class="text-slate-500 text-sm mt-1">Perbarui nama kategori obat Apotek Mekar.</p>
-        </div>
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+        <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-3xl border border-slate-100 p-6 sm:p-8">
 
-        <div class="bg-white shadow-lg rounded-xl border border-slate-200 p-6 sm:p-8">
+            <div class="flex items-start gap-4 mb-8">
+                <a href="{{ route('kategori.index') }}"
+                    class="inline-flex items-center justify-center p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors shadow-sm">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">Edit Data Kategori</h1>
+                    <p class="text-slate-400 text-sm mt-0.5">Ubah informasi detail untuk kategori
+                        "{{ $kategori->nama_kategori }}"</p>
+                </div>
+            </div>
+
             <form action="{{ route('kategori.update', $kategori->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-slate-600 mb-2">
-                        Nama Kategori
-                    </label>
+                <!-- Nama Kategori -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Nama Kategori <span
+                            class="text-red-500">*</span></label>
                     <input type="text" name="nama_kategori" value="{{ old('nama_kategori', $kategori->nama_kategori) }}"
-                        class="w-full rounded-lg px-4 py-2.5 border border-slate-200 text-slate-800 focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none transition-colors @error('nama_kategori') border-red-500 bg-red-50 @enderror">
+                        class="w-full rounded-xl px-4 py-3 border border-slate-200 text-slate-800 focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none transition-colors @error('nama_kategori') border-red-500 bg-red-50 @enderror">
 
                     @error('nama_kategori')
-                        <p class="text-red-500 text-xs mt-1.5 font-medium">
+                        <p class="text-red-500 text-sm mt-1">
                             {{ $message }}
                         </p>
                     @enderror
                 </div>
 
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                <div class="flex items-center justify-end gap-3 pt-2">
                     <a href="{{ route('kategori.index') }}"
-                        class="px-4 py-2.5 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-700 rounded-lg text-sm font-medium transition-colors text-decoration-none">
-                        Batal
+                        class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-medium transition-colors text-decoration-none">
+                        Kembali
                     </a>
                     <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-colors flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>Update Kategori</span>
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm transition-colors">
+                        Update Kategori
                     </button>
                 </div>
             </form>
