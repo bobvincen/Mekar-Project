@@ -101,16 +101,6 @@
                             <span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-[10px] font-bold text-white rounded-full flex items-center justify-center border-2 border-white shadow-sm">{{ $cartCount }}</span>
                         @endif
                     </a>
-                        <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-blue-500 text-[9px] font-bold text-white rounded-full flex items-center justify-center">2</span>
-                    </a>
-
-                    <!-- Notifications -->
-                    <a href="#" class="relative p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50/50 rounded-xl transition-all duration-300">
-                        <svg class="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a9.049 9.049 0 01-5.12-.135m0 0a3.003 3.003 0 12-5.961-1.425m5.961 1.425a3.003 3.003 0 006.185-1.806m-9.042-4.148c0-2.317 1.258-4.28 3.204-5.289m4.846 5.29c0 2.317-1.258 4.28-3.204 5.289m-6.236-4.664A9.016 9.016 0 009 12.25v1.5m6-1.5v1.5m-6-1.5a9.03 9.03 0 015.072-4.148m0 0A9.015 9.015 0 0115 12.25v1.5" />
-                        </svg>
-                        <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
-                    </a>
 
                     <!-- User Profile / Login -->
                     @guest

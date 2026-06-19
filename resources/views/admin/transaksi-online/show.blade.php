@@ -95,12 +95,6 @@
                             <span class="text-slate-500">Ongkos Kirim:</span>
                             <span class="font-medium text-slate-800">Rp {{ number_format($transaksi->ongkir, 0, ',', '.') }}</span>
                         </div>
-                        @if($transaksi->diskon > 0)
-                        <div class="flex justify-between text-sm">
-                            <span class="text-slate-500">Diskon:</span>
-                            <span class="font-medium text-red-500">- Rp {{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
-                        </div>
-                        @endif
                         <div class="flex justify-between text-base border-t border-slate-200 pt-3">
                             <span class="font-bold text-slate-800">Total Pembayaran:</span>
                             <span class="font-bold text-blue-600">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span>

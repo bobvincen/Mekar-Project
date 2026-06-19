@@ -266,8 +266,8 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             <!-- Value 1 -->
-            <div class="flex flex-col items-center text-center p-6 bg-slate-50 border border-slate-100 rounded-3xl shadow-sm hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300">
-                <div class="w-14 h-14 bg-blue-50 border border-blue-100/60 text-blue-600 rounded-2xl flex items-center justify-center mb-4">
+            <div class="group flex flex-col items-center text-center p-6 bg-white border border-slate-100 rounded-3xl shadow-sm hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300">
+                <div class="w-14 h-14 bg-blue-50 border border-blue-100/60 text-blue-600 rounded-2xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                     </svg>
@@ -277,8 +277,8 @@
             </div>
 
             <!-- Value 2 -->
-            <div class="flex flex-col items-center text-center p-6 bg-white border border-slate-100 rounded-3xl hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
-                <div class="w-14 h-14 bg-indigo-50 border border-indigo-100/60 text-indigo-600 rounded-2xl flex items-center justify-center mb-4">
+            <div class="group flex flex-col items-center text-center p-6 bg-white border border-slate-100 rounded-3xl shadow-sm hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300">
+                <div class="w-14 h-14 bg-indigo-50 border border-indigo-100/60 text-indigo-600 rounded-2xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -288,8 +288,8 @@
             </div>
 
             <!-- Value 3 -->
-            <div class="flex flex-col items-center text-center p-6 bg-white border border-slate-100 rounded-3xl hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
-                <div class="w-14 h-14 bg-blue-50 border border-blue-100/60 text-blue-600 rounded-2xl flex items-center justify-center mb-4">
+            <div class="group flex flex-col items-center text-center p-6 bg-white border border-slate-100 rounded-3xl shadow-sm hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300">
+                <div class="w-14 h-14 bg-blue-50 border border-blue-100/60 text-blue-600 rounded-2xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM15.008 12.008a.75.75 0 11-.75-.75.75.75 0 01.75.75zm-6.75 0a.75.75 0 11-.75-.75.75.75 0 01.75.75zM12 18.75a.75.75 0 100-1.5.75.75 0 000 1.5z" />
                     </svg>
@@ -299,8 +299,8 @@
             </div>
 
             <!-- Value 4 -->
-            <div class="flex flex-col items-center text-center p-6 bg-white border border-slate-100 rounded-3xl hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
-                <div class="w-14 h-14 bg-indigo-50 border border-indigo-100/60 text-indigo-600 rounded-2xl flex items-center justify-center mb-4">
+            <div class="group flex flex-col items-center text-center p-6 bg-white border border-slate-100 rounded-3xl shadow-sm hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300">
+                <div class="w-14 h-14 bg-indigo-50 border border-indigo-100/60 text-indigo-600 rounded-2xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751A11.956 11.956 0 0112 2.714z" />
                     </svg>
@@ -311,6 +311,70 @@
 
         </div>
         </div>{{-- end white card --}}
+    </div>
+</section>
+
+{{-- ===== PENILAIAN PENGGUNA ===== --}}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-8">
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100/80 p-6 sm:p-8">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+            <div>
+                <span class="inline-block bg-amber-50 text-amber-600 border border-amber-100/60 text-[10px] font-semibold px-2.5 py-1 rounded-lg mb-2">
+                    ⭐ Penilaian Pengguna
+                </span>
+                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Apa Kata Pengguna Tentang Mekar Pharmacy?</h2>
+                <p class="text-xs sm:text-sm text-slate-400 font-light mt-1 max-w-xl">Masukan dan pengalaman pengguna yang telah menggunakan website Mekar Pharmacy.</p>
+            </div>
+            
+            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex items-center gap-4 shrink-0">
+                <div class="flex items-center gap-1.5">
+                    <svg class="w-8 h-8 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <div>
+                        <div class="text-xl font-bold text-slate-900 leading-none">{{ number_format($rataRata, 1) }} <span class="text-slate-400 text-sm font-medium">/ 5</span></div>
+                    </div>
+                </div>
+                <div class="w-px h-8 bg-slate-200"></div>
+                <div>
+                    <div class="text-sm font-bold text-slate-700">{{ number_format($totalPenilaian, 0, ',', '.') }}</div>
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">Penilaian</div>
+                </div>
+            </div>
+        </div>
+
+        @if($ulasanTerbaru->count() > 0)
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach($ulasanTerbaru as $ulasan)
+            <div class="group bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col h-full">
+                <div class="flex text-amber-400 mb-4">
+                    @for($i=1; $i<=5; $i++)
+                        @if($i <= $ulasan->rating)
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        @else
+                            <svg class="w-4 h-4 text-slate-200" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        @endif
+                    @endfor
+                </div>
+                <p class="text-slate-600 text-sm leading-relaxed mb-6 flex-1">"{{ $ulasan->komentar }}"</p>
+                <div class="flex items-center gap-3 mt-auto">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
+                        {{ strtoupper(substr($ulasan->nama_pelanggan ?: 'Pengguna', 0, 1)) }}
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-slate-800">{{ $ulasan->nama_pelanggan ?: 'Pengguna Mekar Pharmacy' }}</div>
+                        <div class="text-[10px] text-slate-400">{{ $ulasan->created_at->diffForHumans() }}</div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @else
+        <div class="flex flex-col items-center justify-center py-12 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+            <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+            <p class="text-slate-500 text-sm font-medium">Belum ada penilaian pengguna.</p>
+        </div>
+        @endif
+
     </div>
 </section>
 

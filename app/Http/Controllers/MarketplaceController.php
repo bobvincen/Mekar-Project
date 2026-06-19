@@ -24,7 +24,19 @@ class MarketplaceController extends Controller
             ->take(8)
             ->get();
 
-        return view('marketplace.home', compact('kategoris', 'latestProducts', 'bestSellerProducts'));
+        // Penilaian Pengguna
+        $ulasanTerbaru = \App\Models\FeedbackLayanan::whereIn('rating', [4, 5])
+            ->latest()
+            ->take(6)
+            ->get();
+            
+        $totalPenilaian = \App\Models\FeedbackLayanan::count();
+        $rataRata = $totalPenilaian > 0 ? \App\Models\FeedbackLayanan::avg('rating') : 0;
+
+        return view('marketplace.home', compact(
+            'kategoris', 'latestProducts', 'bestSellerProducts', 
+            'ulasanTerbaru', 'totalPenilaian', 'rataRata'
+        ));
     }
 
     public function products(Request $request)

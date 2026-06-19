@@ -41,6 +41,9 @@ Route::post('/cart/update', [CartController::class, 'update'])->name('cart.updat
 Route::get('/cart/update', [CartController::class, 'update']); // Fallback GET method for easy query param updates
 Route::get('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
+Route::post('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'store'])->name('feedback.store');
+
+
 /*
 |--------------------------------------------------------------------------
 | Profile Routes (Auth Required)
@@ -84,6 +87,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/transaksi-online', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'index'])->name('admin.transaksi-online.index');
     Route::get('/transaksi-online/{id}', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'show'])->name('admin.transaksi-online.show');
     Route::patch('/transaksi-online/{id}/status', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'updateStatus'])->name('admin.transaksi-online.update-status');
+
+    // Admin Penilaian Layanan
+    Route::get('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'index'])->name('admin.feedback-layanan.index');
+    Route::delete('/feedback-layanan/{id}', [\App\Http\Controllers\FeedbackLayananController::class, 'destroy'])->name('admin.feedback-layanan.destroy');
 });
 
 /*

@@ -126,11 +126,6 @@ class TransaksiSeeder extends Seeder
                 ];
             }
 
-            $diskon = $faker->boolean(30) ? rand(1, 3) * 5000 : 0; // 30% discount
-            if ($diskon >= $subtotal) {
-                $diskon = 0;
-            }
-
             $metode = $faker->randomElement(['Kirim', 'Ambil di Apotek']);
             if ($metode === 'Kirim') {
                 $jarak = $faker->randomFloat(2, 0.5, 12.0); // 0.5 to 12 km
@@ -146,7 +141,7 @@ class TransaksiSeeder extends Seeder
                 $lng = null;
             }
 
-            $total = $subtotal - $diskon + $ongkir;
+            $total = $subtotal + $ongkir;
 
             // For completed online orders, set bayar/kembalian. For others, set bayar=0/kembalian=0
             $bayar = ($status === 'Selesai') ? $total : 0;
@@ -171,7 +166,6 @@ class TransaksiSeeder extends Seeder
                 'jarak' => $jarak,
                 'ongkir' => $ongkir,
                 'subtotal' => $subtotal,
-                'diskon' => $diskon,
                 'catatan' => $faker->boolean(40) ? $faker->sentence(6) : null,
                 'status' => $status,
             ]);

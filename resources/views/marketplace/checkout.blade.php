@@ -10,7 +10,6 @@
     $cartItems = $cartItems ?? [];
     $subtotal  = $subtotal ?? 0;
     $ongkir    = $ongkir ?? 0;
-    $diskon    = $diskon ?? 0;
     $total     = $total ?? 0;
 
     $formatRp = fn(int $amount): string => 'Rp ' . number_format($amount, 0, ',', '.');
@@ -199,10 +198,6 @@
                         <span class="text-sm text-slate-500 font-light">Perkiraan Ongkir</span>
                         <span class="text-sm font-semibold text-slate-800" x-text="form.metode === 'Ambil di Apotek' ? 'Rp 0' : formatRp(ongkir)"></span>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-slate-500 font-light">Diskon</span>
-                        <span class="text-sm font-semibold text-red-500">− {{ $formatRp($diskon) }}</span>
-                    </div>
                 </div>
 
                 <div class="border-t border-dashed border-slate-200 pt-4 mb-6">
@@ -240,6 +235,71 @@
 
     </div>
 
+    {{-- MODAL PENILAIAN LAYANAN --}}
+    <div x-show="showFeedbackModal" 
+         class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         style="display: none;">
+        
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden"
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+             @click.away="!isSubmittingFeedback && closeFeedbackModal()">
+            
+            <div class="bg-blue-600 p-6 text-center text-white relative">
+                <button @click="closeFeedbackModal()" class="absolute top-4 right-4 text-blue-200 hover:text-white" x-show="!isSubmittingFeedback">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
+                </div>
+                <h3 class="text-xl font-bold">Terima Kasih Telah Memesan di Mekar Pharmacy</h3>
+                <p class="text-blue-100 text-sm mt-2">Bagaimana pengalaman Anda menggunakan website kami?</p>
+            </div>
+            
+            <div class="p-6">
+                <!-- Star Rating -->
+                <div class="flex justify-center gap-2 mb-6">
+                    <template x-for="star in 5">
+                        <button type="button" @click="feedback.rating = star" @mouseenter="hoverRating = star" @mouseleave="hoverRating = 0" class="focus:outline-none transition-transform hover:scale-110">
+                            <svg class="w-10 h-10 transition-colors" :class="(hoverRating >= star || (!hoverRating && feedback.rating >= star)) ? 'text-amber-400' : 'text-slate-200'" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        </button>
+                    </template>
+                </div>
+                <p x-show="feedbackErrors.rating" class="text-red-500 text-xs text-center -mt-4 mb-4">Silakan berikan rating bintang.</p>
+                
+                <!-- Textarea -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Tuliskan saran atau pengalaman Anda</label>
+                    <textarea x-model="feedback.komentar" rows="3" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 focus:bg-white transition-colors" placeholder="Komentar Anda sangat berarti bagi kami..."></textarea>
+                    <p x-show="feedbackErrors.komentar" class="text-red-500 text-xs mt-1">Komentar minimal 10 karakter.</p>
+                </div>
+                
+                <div x-show="feedbackSuccess" class="mb-4 p-3 bg-emerald-50 text-emerald-600 rounded-lg text-sm text-center font-medium border border-emerald-100">
+                    Terima kasih atas penilaian Anda.
+                </div>
+                
+                <!-- Buttons -->
+                <div class="flex gap-3">
+                    <button @click="closeFeedbackModal()" type="button" class="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 transition-colors" :disabled="isSubmittingFeedback">Tutup</button>
+                    <button @click="submitFeedback()" type="button" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors flex justify-center items-center gap-2" :disabled="isSubmittingFeedback">
+                        <span x-show="!isSubmittingFeedback">Kirim Penilaian</span>
+                        <span x-show="isSubmittingFeedback">Mengirim...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @endsection
@@ -264,6 +324,18 @@ function checkoutPage() {
             alamat: false,
             location: false
         },
+        showFeedbackModal: false,
+        hoverRating: 0,
+        isSubmittingFeedback: false,
+        feedbackSuccess: false,
+        feedback: {
+            rating: 0,
+            komentar: ''
+        },
+        feedbackErrors: {
+            rating: false,
+            komentar: false
+        },
         map: null,
         marker: null,
         apotekLat: -0.9493, // Koordinat Mekar Pharmacy akurat
@@ -274,13 +346,16 @@ function checkoutPage() {
 
         init() {
             this.total = this.calculateTotal();
+            this.logDebug();
 
             this.$watch('ongkir', () => {
                 this.total = this.calculateTotal();
+                this.logDebug();
             });
 
             this.$watch('distanceKm', () => {
                 this.total = this.calculateTotal();
+                this.logDebug();
             });
 
             this.$watch('form.metode', (val) => {
@@ -395,12 +470,18 @@ function checkoutPage() {
         cartItems: @json(array_values($cartItems)),
         subtotal: {{ $subtotal }},
         ongkir: {{ $ongkir }},
-        diskon: {{ $diskon }},
         adminPhone: '6282240432990',
 
         calculateTotal() {
             let currentOngkir = this.form.metode === 'Ambil di Apotek' ? 0 : this.ongkir;
-            return Math.max(0, this.subtotal + currentOngkir - this.diskon);
+            return Math.max(0, this.subtotal + currentOngkir);
+        },
+
+        logDebug() {
+            let currentOngkir = this.form.metode === 'Ambil di Apotek' ? 0 : this.ongkir;
+            console.log('Subtotal:', this.subtotal);
+            console.log('Ongkir:', currentOngkir);
+            console.log('Total:', this.total);
         },
 
         formatRp(amount) {
@@ -455,7 +536,6 @@ function checkoutPage() {
                 jarak: this.jarak,
                 ongkir: currentOngkir,
                 subtotal: this.subtotal,
-                diskon: this.diskon,
                 total: total,
                 catatan: this.form.catatan,
                 _token: '{{ csrf_token() }}'
@@ -474,8 +554,29 @@ function checkoutPage() {
                 let result = await response.json();
 
                 if (response.ok && result.success) {
-                    // Redirect to WhatsApp
-                    window.location.href = result.wa_url;
+                    // Open WhatsApp in new tab
+                    window.open(result.wa_url, '_blank');
+                    
+                    // Show modal when returning
+                    let focusHandler = () => {
+                        this.showFeedbackModal = true;
+                        window.removeEventListener('focus', focusHandler);
+                    };
+                    
+                    // Prevent spam: check localStorage just in case
+                    if (!localStorage.getItem('feedback_' + result.kode_transaksi)) {
+                        setTimeout(() => {
+                            window.addEventListener('focus', focusHandler);
+                        }, 500);
+                        
+                        // Fallback
+                        setTimeout(() => {
+                            window.removeEventListener('focus', focusHandler);
+                            this.showFeedbackModal = true;
+                        }, 5000);
+                        
+                        localStorage.setItem('feedback_' + result.kode_transaksi, 'pending');
+                    }
                 } else {
                     alert(result.message || 'Terjadi kesalahan saat memproses pesanan.');
                 }
@@ -483,6 +584,64 @@ function checkoutPage() {
                 console.error('Error:', error);
                 alert('Gagal terhubung ke server. Silakan coba lagi.');
             }
+        },
+
+        async submitFeedback() {
+            this.feedbackErrors = { rating: false, komentar: false };
+            let valid = true;
+            
+            if (this.feedback.rating === 0) {
+                this.feedbackErrors.rating = true;
+                valid = false;
+            }
+            if (this.feedback.komentar.trim().length < 10) {
+                this.feedbackErrors.komentar = true;
+                valid = false;
+            }
+            
+            if (!valid) return;
+            
+            this.isSubmittingFeedback = true;
+            
+            try {
+                let response = await fetch('{{ route('feedback.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        rating: this.feedback.rating,
+                        komentar: this.feedback.komentar,
+                        nama_pelanggan: this.form.nama,
+                        whatsapp: this.form.whatsapp,
+                        _token: '{{ csrf_token() }}'
+                    })
+                });
+                
+                let res = await response.json();
+                if (response.ok && res.success) {
+                    this.feedbackSuccess = true;
+                    localStorage.setItem('feedback_done', 'true');
+                    
+                    setTimeout(() => {
+                        this.closeFeedbackModal();
+                    }, 2000);
+                } else {
+                    alert('Gagal mengirim penilaian.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan jaringan.');
+            } finally {
+                this.isSubmittingFeedback = false;
+            }
+        },
+
+        closeFeedbackModal() {
+            this.showFeedbackModal = false;
+            // Arahkan ke halaman utama/marketplace setelah checkout selesai
+            window.location.href = '/marketplace';
         }
     }
 }
