@@ -21,7 +21,7 @@
 
                     <div class="pelanggan-body">
                         <div class="form-group mb-4">
-                            <label class="form-label-custom">Nama Pengguna</label>
+                            <label class="form-label-custom">Nama Pengguna <span style="color: #EF4444;">*</span></label>
                             <div class="input-icon-wrapper">
                                 <span class="input-icon"><i class="fa-solid fa-user"></i></span>
                                 <input type="text" name="nama_pelanggan"
@@ -37,7 +37,7 @@
                         </div>
 
                         <div class="form-group mb-4">
-                            <label class="form-label-custom">Nomor Handphone (HP)</label>
+                            <label class="form-label-custom">Nomor Handphone (HP) <span style="color: #EF4444;">*</span></label>
                             <div class="input-icon-wrapper">
                                 <span class="input-icon"><i class="fa-solid fa-phone"></i></span>
                                 <input type="text" name="no_hp" class="form-input @error('no_hp') is-invalid @enderror"
@@ -52,7 +52,7 @@
                         </div>
 
                         <div class="form-group mb-4">
-                            <label class="form-label-custom">Alamat Tempat Tinggal</label>
+                            <label class="form-label-custom">Alamat Tempat Tinggal <span style="color: #EF4444;">*</span></label>
                             <div class="input-icon-wrapper align-items-start">
                                 <span class="input-icon mt-2.5"><i class="fa-solid fa-location-dot"></i></span>
                                 <textarea name="alamat" class="form-input textarea-custom @error('alamat') is-invalid @enderror" rows="4"
@@ -66,7 +66,7 @@
                         </div>
 
                         <div class="form-group mb-2">
-                            <label class="form-label-custom">Role / Hak Akses</label>
+                            <label class="form-label-custom">Role / Hak Akses <span style="color: #EF4444;">*</span></label>
                             <div class="input-icon-wrapper">
                                 <span class="input-icon"><i class="fa-solid fa-user-shield"></i></span>
                                 <select name="role" class="form-input @error('role') is-invalid @enderror"

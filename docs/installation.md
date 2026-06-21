@@ -1,87 +1,111 @@
-# Installation Guide
+# Panduan Instalasi Project — Mekar Pharmacy
 
-## Persyaratan Sistem
-
-- PHP 8.2+
-- Composer
-- MySQL
-- Node.js
-- Git
+Ikuti panduan berikut untuk memasang dan menjalankan project **Mekar Pharmacy** di lingkungan pengembangan lokal dari nol.
 
 ---
 
-## Clone Repository
+## 1. Persyaratan Sistem (System Requirements)
 
+Sebelum memulai, pastikan perangkat Anda telah terpasang perangkat lunak dengan versi berikut:
+
+* **PHP**: $\ge$ `8.3` (Pastikan ekstensi PHP seperti `pdo_mysql`, `mbstring`, `openssl`, `xml`, dan `zip` aktif).
+* **Composer**: $\ge$ `2.0` (Untuk mengelola package PHP).
+* **Node.js**: $\ge$ `18.0` (Disertai `npm` untuk kompilasi asset frontend).
+* **MySQL**: $\ge$ `8.0` atau **MariaDB** $\ge$ `10.4`.
+* **Git**: Untuk clone repository.
+
+---
+
+## 2. Langkah-Langkah Instalasi (Installation Steps)
+
+### Langkah 1: Clone Repository
+Buka terminal/command prompt, lalu jalankan perintah berikut:
 ```bash
 git clone https://github.com/bobvincen/Mekar-Project.git
-```
-
-Masuk ke folder project:
-
-```bash
 cd Mekar-Project
 ```
 
----
-
-## Install Dependency
-
+### Langkah 2: Install Dependensi PHP (Composer)
+Unduh package php yang terdaftar pada `composer.json`:
 ```bash
 composer install
 ```
 
+### Langkah 3: Install Dependensi JavaScript (NPM)
+Unduh package frontend yang dibutuhkan oleh Vite & Tailwind CSS:
 ```bash
 npm install
 ```
 
----
+### Langkah 4: Setup Environment File
+Salin file konfigurasi environment `.env.example` menjadi `.env`:
+* **Bash / Linux / macOS**:
+  ```bash
+  cp .env.example .env
+  ```
+* **Windows (PowerShell)**:
+  ```powershell
+  copy .env.example .env
+  ```
 
-## Setup Environment
-
-```bash
-cp .env.example .env
-```
-
-Generate key:
-
+### Langkah 5: Generate Application Key
+Buat key enkripsi unik untuk keamanan aplikasi Laravel Anda:
 ```bash
 php artisan key:generate
 ```
 
----
-
-## Setup Database
-
-Buat database:
-
-```sql
-CREATE DATABASE mekar_project;
-```
-
-Atur konfigurasi database pada file .env
-
+### Langkah 6: Konfigurasi Database di `.env`
+Buka file `.env` yang baru dibuat menggunakan text editor Anda, lalu sesuaikan koneksi database MySQL:
 ```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
 DB_DATABASE=mekar_project
 DB_USERNAME=root
 DB_PASSWORD=
 ```
+*Catatan: Pastikan Anda sudah membuat database kosong bernama `mekar_project` di server MySQL lokal Anda.*
 
----
-
-## Migrasi Database
-
+### Langkah 7: Migrasi Database & Seeding
+Jalankan migrasi tabel database beserta data seeder bawaan (untuk role, permission, user demo, dan katalog obat awal):
 ```bash
-php artisan migrate
+php artisan migrate --seed
+```
+*Perintah di atas akan menjalankan `RolePermissionSeeder`, `UserSeeder`, `MarketplaceSeeder`, `PelangganSeeder`, `ResepDokterSeeder`, dan `TransaksiSeeder` secara berurutan.*
+
+### Langkah 8: Buat Tautan Storage (Storage Link)
+Aplikasi menyimpan file unggahan resep dokter ke folder `storage/app/public`. Agar berkas ini dapat diakses oleh browser, buat tautan symbolic link ke folder `public`:
+```bash
+php artisan storage:link
 ```
 
 ---
 
-## Menjalankan Aplikasi
+## 3. Akun Demo Bawaan (Default Demo Accounts)
 
-```bash
-php artisan serve
-```
+Setelah proses seeding selesai, Anda dapat masuk ke dalam sistem menggunakan akun demo berikut:
 
-Buka browser:
+| Peran (Role) | Email | Password | Hak Akses Utama |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin@mekar.com` | `password` | Mengelola Master Data, User, Role, Permission |
+| **Kasir** | `kasir@mekar.com` | `password` | Mengelola Transaksi Kasir, Melihat Laporan |
+| **Apoteker** | `apoteker@mekar.com` | `password` | Memeriksa Stok Obat, Verifikasi Resep Dokter |
+| **Pelanggan** | `pelanggan@mekar.com` | `password` | Belanja Online di Marketplace & Upload Resep |
 
-http://127.0.0.1:8000
+---
+
+## 4. Menjalankan Aplikasi di Lokal (Running the Application)
+
+Untuk menjalankan server lokal, Anda harus mengaktifkan dua server secara paralel:
+
+1. **Jalankan Laravel Web Server**:
+   ```bash
+   php artisan serve
+   ```
+   Aplikasi akan berjalan di alamat: [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+2. **Jalankan Vite Asset Bundler (Kompilasi CSS/JS)**:
+   ```bash
+   npm run dev
+   ```
+   Server ini digunakan untuk mengompilasi assets Tailwind CSS secara real-time selama proses pengembangan.
