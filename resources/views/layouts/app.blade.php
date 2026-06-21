@@ -64,6 +64,31 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.toggle-password');
+            if (btn) {
+                const container = btn.parentElement;
+                const input = container.querySelector('input');
+                if (!input) return;
+
+                const eyeIcon = btn.querySelector('.eye-icon');
+                const eyeSlashIcon = btn.querySelector('.eye-slash-icon');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    eyeIcon.classList.add('hidden');
+                    eyeSlashIcon.classList.remove('hidden');
+                    btn.setAttribute('aria-label', 'Sembunyikan Password');
+                } else {
+                    input.type = 'password';
+                    eyeIcon.classList.remove('hidden');
+                    eyeSlashIcon.classList.add('hidden');
+                    btn.setAttribute('aria-label', 'Tampilkan Password');
+                }
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 

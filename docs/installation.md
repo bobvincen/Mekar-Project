@@ -74,7 +74,7 @@ php artisan migrate --seed
 *Perintah di atas akan menjalankan `RolePermissionSeeder`, `UserSeeder`, `MarketplaceSeeder`, `PelangganSeeder`, `ResepDokterSeeder`, dan `TransaksiSeeder` secara berurutan.*
 
 ### Langkah 8: Buat Tautan Storage (Storage Link)
-Aplikasi menyimpan file unggahan resep dokter ke folder `storage/app/public`. Agar berkas ini dapat diakses oleh browser, buat tautan symbolic link ke folder `public`:
+Aplikasi menyimpan file unggahan resep dokter serta file gambar obat ke folder `storage/app/public`. Agar berkas-berkas ini dapat diakses oleh browser, buat tautan symbolic link ke folder `public`:
 ```bash
 php artisan storage:link
 ```

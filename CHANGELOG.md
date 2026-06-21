@@ -4,6 +4,29 @@ Semua perubahan penting pada project **Mekar Pharmacy** akan didokumentasikan di
 
 ---
 
+## [v1.1.0] - 2026-06-21
+
+### Added
+* **Fitur Gambar Obat**:
+  * Menambahkan kolom `image_path` (nullable string) pada tabel `obats` melalui migrasi database terpisah.
+  * Menambahkan accessor `image_url` pada model `Obat` untuk mengambil path publik asset gambar atau menampilkan default placeholder.
+  * Form Tambah Obat: input upload file gambar dengan pratinjau instan di sisi client menggunakan JavaScript.
+  * Form Edit Obat: menampilkan gambar terunggah saat ini, opsi mengganti gambar dengan berkas baru, dan opsi menghapus gambar secara permanen dari server dan database.
+  * Halaman Indeks Obat: kolom gambar dengan visualisasi thumbnail gambar obat, atau badge bertuliskan "Tidak Ada Gambar" jika gambar kosong.
+  * Fitur Import Batch dengan ZIP Gambar: mendukung pengunggahan file ZIP berisi kumpulan gambar obat bersamaan dengan file Excel. Sistem secara otomatis mengekstrak ZIP ke direktori temporer, mencocokkan nama file di kolom `gambar` Excel secara case-insensitive, merelokasi gambar yang cocok dengan nama unik, dan membersihkan berkas temporer secara aman.
+* **Placeholder Image Premium**:
+  * Menyediakan gambar fallback default `public/images/no-image.png` dengan desain modern dan estetika premium apotek.
+* **Fitur Show/Hide Password**:
+  * Menambahkan tombol toggle visibilitas password (ikon mata Eye / Eye Slash SVG) di dalam input field password di seluruh form sistem (Login, Register, Tambah User, Edit User, Reset Password, Confirm Password, Update Password Profile, Delete Account Modal).
+  * Mengimplementasikan event listener JavaScript ringan global via event delegation pada layouts utama (app.blade.php dan guest.blade.php) untuk fleksibilitas dan performa maksimal.
+  * Melengkapi tombol dengan atribut aria-label yang berganti dinamis demi aksesibilitas yang baik.
+
+### Changed
+* **Pencarian Real-Time**:
+  * Menyesuaikan indeks kolom JavaScript pada fitur pencarian real-time di tabel indeks obat dari `nth-child(2)` ke `nth-child(3)` akibat penambahan kolom gambar baru di sebelah kiri kolom nama obat.
+
+---
+
 ## [v1.0.0] - 2026-06-19
 
 ### Added
