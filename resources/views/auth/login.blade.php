@@ -49,7 +49,7 @@
 
                 <!-- Input Email / Nama -->
                 <div>
-                    <div class="relative flex items-center rounded-full bg-gradient-to-r from-[#93A9D1] to-[#9DE2F0] border border-[#7D95C0]/30 shadow-sm transition-all focus-within:ring-2 focus-within:ring-cyan-500 focus-within:border-transparent">
+                    <div class="relative flex items-center rounded-full border shadow-sm transition-all focus-within:ring-2 focus-within:ring-cyan-500 focus-within:border-transparent @error('email') bg-red-50 border-red-500 @else bg-gradient-to-r from-[#93A9D1] to-[#9DE2F0] border-[#7D95C0]/30 @enderror">
                         <div class="flex items-center justify-center pl-5 pr-3 text-[#1E3A8A]">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -75,7 +75,7 @@
 
                 <!-- Input Password / Kata Sandi -->
                 <div>
-                    <div class="relative flex items-center rounded-full bg-gradient-to-r from-[#93A9D1] to-[#9DE2F0] border border-[#7D95C0]/30 shadow-sm transition-all focus-within:ring-2 focus-within:ring-cyan-500 focus-within:border-transparent">
+                    <div class="relative flex items-center rounded-full border shadow-sm transition-all focus-within:ring-2 focus-within:ring-cyan-500 focus-within:border-transparent @error('password') bg-red-50 border-red-500 @else bg-gradient-to-r from-[#93A9D1] to-[#9DE2F0] border-[#7D95C0]/30 @enderror">
                         <div class="flex items-center justify-center pl-5 pr-3 text-[#1E3A8A]">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>

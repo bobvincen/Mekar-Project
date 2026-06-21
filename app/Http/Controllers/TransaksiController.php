@@ -46,7 +46,25 @@ class TransaksiController extends Controller
             'obat_id'               => 'required|array|min:1',
             'obat_id.*'             => 'required|exists:obats,id',
             'jumlah.*'              => 'required|integer|min:1',
+        ], [
+            'tanggal_transaksi.required' => 'Tanggal transaksi wajib diisi.',
+            'bayar.required'             => 'Jumlah bayar wajib diisi.',
+            'bayar.numeric'              => 'Jumlah bayar harus berupa angka.',
+            'bayar.min'                  => 'Jumlah bayar minimal 0.',
+            'obat_id.required'           => 'Minimal pilih satu obat.',
+            'obat_id.min'                => 'Minimal pilih satu obat.',
         ]);
+
+        // Validate stock availability
+        foreach ($request->obat_id as $i => $obatId) {
+            $obat   = Obat::findOrFail($obatId);
+            $jumlah = $request->jumlah[$i];
+            if ($jumlah > $obat->stok) {
+                return back()->withInput()->withErrors([
+                    'jumlah.' . $i => "Stok obat {$obat->nama_obat} tidak mencukupi (Tersedia: {$obat->stok})."
+                ]);
+            }
+        }
 
         DB::beginTransaction();
         try {
@@ -134,7 +152,27 @@ class TransaksiController extends Controller
             'obat_id'               => 'required|array|min:1',
             'obat_id.*'             => 'required|exists:obats,id',
             'jumlah.*'              => 'required|integer|min:1',
+        ], [
+            'tanggal_transaksi.required' => 'Tanggal transaksi wajib diisi.',
+            'bayar.required'             => 'Jumlah bayar wajib diisi.',
+            'bayar.numeric'              => 'Jumlah bayar harus berupa angka.',
+            'bayar.min'                  => 'Jumlah bayar minimal 0.',
+            'obat_id.required'           => 'Minimal pilih satu obat.',
+            'obat_id.min'                => 'Minimal pilih satu obat.',
         ]);
+
+        // Validate stock availability
+        $oldDetails = $transaksi->detailTransaksis->pluck('jumlah', 'obat_id')->toArray();
+        foreach ($request->obat_id as $i => $obatId) {
+            $obat = Obat::findOrFail($obatId);
+            $jumlah = $request->jumlah[$i];
+            $oldJumlah = $oldDetails[$obatId] ?? 0;
+            if ($jumlah > ($obat->stok + $oldJumlah)) {
+                return back()->withInput()->withErrors([
+                    'jumlah.' . $i => "Stok obat {$obat->nama_obat} tidak mencukupi (Tersedia: " . ($obat->stok + $oldJumlah) . ")."
+                ]);
+            }
+        }
 
         DB::beginTransaction();
         try {

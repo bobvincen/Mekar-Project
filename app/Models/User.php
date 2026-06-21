@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use Spatie\Permission\Traits\HasRoles;
+
 #[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The model's default values for attributes.
@@ -47,6 +49,7 @@ class User extends Authenticatable
         return match ($this->role) {
             'admin' => route('dashboard', absolute: false),
             'kasir' => route('kasir.dashboard', absolute: false),
+            'apoteker' => route('apoteker.dashboard', absolute: false),
             'pelanggan' => '/marketplace',
             default => '/',
         };

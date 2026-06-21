@@ -52,7 +52,7 @@
                     <div>
                         <label for="nama" class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
                         <input type="text" name="nama" id="nama" required value="{{ old('nama') }}"
-                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300"
+                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300 @error('nama') border-red-500 bg-red-50 @enderror"
                             placeholder="Contoh: Budi Santoso">
                         @error('nama')
                             <p class="text-red-500 text-xs mt-1.5 font-medium">{{ $message }}</p>
@@ -63,7 +63,7 @@
                     <div>
                         <label for="whatsapp" class="block text-sm font-semibold text-slate-700 mb-2">Nomor WhatsApp <span class="text-red-500">*</span></label>
                         <input type="text" name="whatsapp" id="whatsapp" required value="{{ old('whatsapp') }}"
-                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300"
+                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300 @error('whatsapp') border-red-500 bg-red-50 @enderror"
                             placeholder="Contoh: 08123456789">
                         @error('whatsapp')
                             <p class="text-red-500 text-xs mt-1.5 font-medium">{{ $message }}</p>
