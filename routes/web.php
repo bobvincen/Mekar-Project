@@ -83,11 +83,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::resource('obat', ObatController::class);
     Route::resource('pelanggan', PelangganController::class);
-    
+
     // Admin Kelola Resep Dokter
     Route::get('/resep-dokter', [AdminResepDokterController::class, 'index'])->name('admin.resep.index');
     Route::delete('/resep-dokter/{id}', [AdminResepDokterController::class, 'destroy'])->name('admin.resep.destroy');
-    
+
     // Admin Kelola Transaksi Online
     Route::get('/transaksi-online', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'index'])->name('admin.transaksi-online.index');
     Route::get('/transaksi-online/{id}', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'show'])->name('admin.transaksi-online.show');
@@ -106,7 +106,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 */
 Route::middleware(['auth', 'admin_or_kasir'])->group(function () {
     Route::resource('transaksi', TransaksiController::class);
-    
+
     Route::get('/laporan', function () {
         $totalTransaksi = \App\Models\Transaksi::count();
         $totalPendapatan = \App\Models\Transaksi::sum('total_harga');
@@ -159,4 +159,4 @@ Route::get('/logout-test', function () {
     return redirect('/login');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
