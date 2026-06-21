@@ -20,6 +20,8 @@ return new class extends Migration
 
         $table->text('alamat')->nullable();
 
+        $table->string('role')->default('Pelanggan');
+
         $table->timestamps();
         });
     }

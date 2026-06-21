@@ -13,7 +13,20 @@ class Transaksi extends Model
         'tanggal_transaksi',
         'total_harga',
         'bayar',
-        'kembalian'
+        'kembalian',
+        
+        // Marketplace fields
+        'nama_pelanggan',
+        'whatsapp',
+        'alamat',
+        'metode_pengambilan',
+        'latitude',
+        'longitude',
+        'jarak',
+        'ongkir',
+        'subtotal',
+        'catatan',
+        'status',
     ];
 
     public function user()
@@ -27,7 +40,9 @@ class Transaksi extends Model
     }
 
     public function detailTransaksis()
-{
-    return $this->hasMany(DetailTransaksi::class);
-}
+    {
+        return $this->hasMany(DetailTransaksi::class);
+    }
+
+    
 }
