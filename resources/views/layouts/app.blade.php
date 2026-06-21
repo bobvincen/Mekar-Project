@@ -7,11 +7,15 @@
     <title>Mekar Pharmacy</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- AlpineJS for interactive sidebar & accordion elements -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body class="bg-[#eef3f8]">
 
-    <div class="flex min-h-screen">
+    <div x-data="{ sidebarCollapsed: localStorage.getItem('sidebar_collapsed') === 'true' }"
+         x-init="$watch('sidebarCollapsed', val => localStorage.setItem('sidebar_collapsed', val))"
+         class="flex min-h-screen">
 
         {{-- Sidebar --}}
         @if (Auth::user()->can('Dashboard'))
@@ -19,7 +23,10 @@
         @endif
 
         {{-- Content --}}
-        <div class="flex-1 {{ Auth::user()->can('Dashboard') ? 'ml-72' : '' }}">
+        <div class="flex-1 transition-all duration-300 {{ Auth::user()->can('Dashboard') ? 'ml-[240px]' : '' }}"
+             @if(Auth::user()->can('Dashboard'))
+                 :class="{ 'ml-[240px]': !sidebarCollapsed, 'ml-[70px]': sidebarCollapsed }"
+             @endif>
 
             {{-- Navbar --}}
             @if (Auth::user()->can('Dashboard'))
