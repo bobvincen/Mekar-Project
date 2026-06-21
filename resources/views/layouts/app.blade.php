@@ -14,15 +14,15 @@
     <div class="flex min-h-screen">
 
         {{-- Sidebar --}}
-        @if (Auth::user()->role !== 'pelanggan')
+        @if (Auth::user()->can('Dashboard'))
             @include('layouts.sidebar')
         @endif
 
         {{-- Content --}}
-        <div class="flex-1 {{ Auth::user()->role !== 'pelanggan' ? 'ml-72' : '' }}">
+        <div class="flex-1 {{ Auth::user()->can('Dashboard') ? 'ml-72' : '' }}">
 
             {{-- Navbar --}}
-            @if (Auth::user()->role !== 'pelanggan')
+            @if (Auth::user()->can('Dashboard'))
                 @include('layouts.navbar')
             @else
                 {{-- Clean navbar for customer profile page --}}
@@ -48,7 +48,7 @@
             {{-- Main Content --}}
             {{-- Mengubah p-6 statis menjadi dinamis mengikuti breakpoints halaman data --}}
             <main class="p-4 sm:p-6 lg:p-8 w-full">
-                @if (Auth::user()->role === 'pelanggan')
+                @if (!Auth::user()->can('Dashboard'))
                     <div class="max-w-4xl mx-auto">
                         @yield('content')
                         {{ $slot ?? '' }}

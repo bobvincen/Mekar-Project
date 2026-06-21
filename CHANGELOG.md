@@ -25,6 +25,10 @@ Semua perubahan penting pada project **Mekar Pharmacy** akan didokumentasikan di
 * **Pencarian Real-Time**:
   * Menyesuaikan indeks kolom JavaScript pada fitur pencarian real-time di tabel indeks obat dari `nth-child(2)` ke `nth-child(3)` akibat penambahan kolom gambar baru di sebelah kiri kolom nama obat.
 
+### Fixed
+* **Penyelesaian SQL Warning Data Truncated 'role'**:
+  * Menambahkan migrasi database baru `modify_role_in_users_table` untuk memperluas cakupan ENUM kolom `users.role` agar menyertakan nilai `'apoteker'` (menjadi `['admin', 'kasir', 'apoteker', 'pelanggan']`). Ini menghentikan warning SQL 1265 ketika melakukan operasi CRUD User dengan role apoteker.
+
 ---
 
 ## [v1.0.0] - 2026-06-19

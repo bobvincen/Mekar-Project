@@ -52,7 +52,7 @@ Mengatur hak akses pengguna secara dinamis dan aman untuk mencegah akses tidak s
 * **Spatie Laravel Permission (v8.0)**: Mengontrol otorisasi berbasis hak akses (`permissions`) dan peran (`roles`).
 * **CRUD Role**: Membuat role baru, mengedit nama role non-sistem, dan menetapkan kumpulan permission yang diizinkan secara visual menggunakan checkbox.
 * **CRUD Permission**: Mendaftarkan permission baru dalam guard `web` untuk memproteksi modul rute tertentu.
-* **CRUD User**: Mendaftarkan akun user baru, mengganti password, dan menetapkan satu role aktif yang tersinkronisasi otomatis dengan Spatie Role.
+* **CRUD User**: Mendaftarkan akun user baru, mengganti password, dan menetapkan satu role aktif yang tersinkronisasi otomatis dengan Spatie Role. Kolom `role` pada tabel `users` disinkronkan sebagai ENUM (`'admin'`, `'kasir'`, `'apoteker'`, `'pelanggan'`) untuk mengontrol redirect dashboard dan middleware otorisasi.
 * **Middlewares**: Rute dilindungi di tingkat rute menggunakan middleware alias: `admin`, `kasir`, `pelanggan`, `admin_or_kasir`, `apoteker`, `role`, dan `permission`.
 
 ---

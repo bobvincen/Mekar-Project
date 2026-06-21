@@ -32,6 +32,8 @@ class PermissionController extends Controller
             'guard_name' => 'web'
         ]);
 
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         return redirect()->route('permission.index')->with('success', 'Permission berhasil ditambahkan');
     }
 
@@ -56,6 +58,8 @@ class PermissionController extends Controller
             'name' => $request->name,
         ]);
 
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         return redirect()->route('permission.index')->with('success', 'Permission berhasil diperbarui');
     }
 
@@ -63,6 +67,8 @@ class PermissionController extends Controller
     {
         $permission = Permission::findOrFail($id);
         $permission->delete();
+
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         return redirect()->route('permission.index')->with('success', 'Permission berhasil dihapus');
     }

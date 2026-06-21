@@ -39,6 +39,8 @@ class RoleController extends Controller
             $role->syncPermissions($request->permissions);
         }
 
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         return redirect()->route('role.index')->with('success', 'Role berhasil ditambahkan');
     }
 
@@ -77,6 +79,8 @@ class RoleController extends Controller
         $permissions = $request->input('permissions', []);
         $role->syncPermissions($permissions);
 
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         return redirect()->route('role.index')->with('success', 'Role berhasil diperbarui');
     }
 
@@ -89,6 +93,8 @@ class RoleController extends Controller
         }
 
         $role->delete();
+
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         return redirect()->route('role.index')->with('success', 'Role berhasil dihapus');
     }

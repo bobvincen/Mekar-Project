@@ -119,7 +119,7 @@
         @endif
 
         <!-- Transaksi Group -->
-        @if(auth()->user()->can('Kelola Transaksi') || auth()->user()->can('Verifikasi Resep') || auth()->user()->can('Kelola Pesanan Online') || auth()->user()->role === 'admin')
+        @if(auth()->user()->can('Kelola Transaksi') || auth()->user()->can('Verifikasi Resep') || auth()->user()->can('Kelola Pesanan Online') || auth()->user()->can('Kelola Laporan'))
             <div class="px-5 py-2 text-xs font-bold text-cyan-200/60 uppercase tracking-wider mt-4 mb-1">
                 Transaksi
             </div>
@@ -146,10 +146,10 @@
                 </a>
             @endcan
 
-            @if(auth()->user()->role === 'admin' || auth()->user()->can('Verifikasi Resep'))
+            @if(auth()->user()->can('Verifikasi Resep'))
                 @php
                     $isResepActive = request()->routeIs('admin.resep.*') || request()->routeIs('apoteker.resep.*');
-                    $resepUrl = auth()->user()->role === 'admin' ? route('admin.resep.index') : route('apoteker.resep.index');
+                    $resepUrl = auth()->user()->can('Kelola User') ? route('admin.resep.index') : route('apoteker.resep.index');
                 @endphp
                 <a href="{{ $resepUrl }}"
                    class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
@@ -182,54 +182,6 @@
                     Penilaian Layanan
                 </a>
             @endcan
-
-        @elseif(Auth::user()->role === 'kasir')
-            <!-- Kasir Navigation -->
-            <a href="/kasir/dashboard"
-               class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
-               {{ request()->is('kasir/dashboard') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 11V9m0 12h6" />
-                </svg>
-                Dashboard Kasir
-            </a>
-
-            @can('Kelola Transaksi')
-                <a href="{{ route('transaksi.index') }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
-                   {{ request()->routeIs('transaksi.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.12-3 2.5S10.343 13 12 13s3-1.12 3-2.5S13.657 8 12 8zm0 0V6m0 7v2m0 0c1.657 0 3 1.12 3 2.5S13.657 20 12 20s-3-1.12-3-2.5S10.343 15 12 15z"/>
-                    </svg>
-                    Transaksi
-                </a>
-            @endcan
-
-            @if(auth()->user()->role === 'admin' || auth()->user()->can('Verifikasi Resep'))
-                @php
-                    $isResepActive = request()->routeIs('admin.resep.*') || request()->routeIs('apoteker.resep.*');
-                    $resepUrl = auth()->user()->role === 'admin' ? route('admin.resep.index') : route('apoteker.resep.index');
-                @endphp
-                <a href="{{ $resepUrl }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
-                   {{ $isResepActive ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    Resep Dokter
-                </a>
-            @endif
-
-            @can('Kelola Pesanan Online')
-                <a href="{{ route('admin.transaksi-online.index') }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-xl transition mb-1
-                   {{ request()->routeIs('admin.transaksi-online.*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 1.5l8 4v13l-8 4-8-4v-13l8-4zm0 2.236l-6 3v10.528l6 3 6-3V6.736l-6-3zM13.5 14a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
-                    </svg>
-                    Pesanan Online
-                </a>
-            @endcan
         @endif
 
     </nav>
@@ -245,7 +197,7 @@
                     {{ Auth::user()->email }}
                 </p>
                 <span class="inline-block mt-1.5 px-2 py-0.5 text-[9px] font-bold bg-cyan-400/30 text-cyan-200 rounded-full uppercase tracking-wider">
-                    {{ Auth::user()->role }}
+                    {{ Auth::user()->roles->first()?->name ?? Auth::user()->role }}
                 </span>
             </div>
             

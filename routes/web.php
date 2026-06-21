@@ -72,87 +72,83 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes (Auth & Admin Middleware Required)
+| Dashboard & Administrative Routes (Auth & Permission Required)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'permission:Dashboard'])->group(function () {
+    // Admin Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->middleware('permission:Kelola User')
         ->name('dashboard');
 
-    Route::resource('kategori', KategoriController::class);
-    Route::resource('supplier', SupplierController::class);
-    // Custom Obat Import Routes
-    Route::get('/obat/download-template', [ObatController::class, 'downloadTemplate'])->name('obat.download-template');
-    Route::post('/obat/preview-import', [ObatController::class, 'previewImport'])->name('obat.preview-import');
-    Route::post('/obat/import', [ObatController::class, 'import'])->name('obat.import');
+    // Kasir Dashboard
+    Route::get('/kasir/dashboard', [DashboardController::class, 'index'])
+        ->middleware('permission:Kelola Transaksi')
+        ->name('kasir.dashboard');
 
-    Route::resource('obat', ObatController::class);
-    Route::resource('pelanggan', PelangganController::class);
-
-    // Admin Kelola Resep Dokter
-    Route::get('/resep-dokter', [AdminResepDokterController::class, 'index'])->name('admin.resep.index');
-    Route::delete('/resep-dokter/{id}', [AdminResepDokterController::class, 'destroy'])->name('admin.resep.destroy');
-
-    // Admin Kelola Transaksi Online
-    Route::get('/transaksi-online', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'index'])->name('admin.transaksi-online.index');
-    Route::get('/transaksi-online/{id}', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'show'])->name('admin.transaksi-online.show');
-    Route::patch('/transaksi-online/{id}/status', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'updateStatus'])->name('admin.transaksi-online.update-status');
-
-    // Admin Penilaian Layanan
-    Route::get('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'index'])->name('admin.feedback-layanan.index');
-    Route::delete('/feedback-layanan/{id}', [\App\Http\Controllers\FeedbackLayananController::class, 'destroy'])->name('admin.feedback-layanan.destroy');
-    // RBAC & User Management Routes
-    Route::resource('role', RoleController::class);
-    Route::resource('permission', PermissionController::class);
-    Route::resource('user', UserController::class);
+    // Apoteker Dashboard
+    Route::get('/apoteker/dashboard', [ApotekerDashboardController::class, 'index'])
+        ->middleware('permission:Verifikasi Resep')
+        ->name('apoteker.dashboard');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Admin & Kasir Shared Routes (Auth & Admin/Kasir Middleware Required)
+| Authorized Staff & Resource Management Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin_or_kasir'])->group(function () {
-    Route::resource('transaksi', TransaksiController::class);
+Route::middleware(['auth'])->group(function () {
+    Route::resource('kategori', KategoriController::class)->middleware('permission:Kelola Kategori');
+    Route::resource('supplier', SupplierController::class)->middleware('permission:Kelola Supplier');
 
+    // Obat Management
+    Route::middleware('permission:Kelola Obat')->group(function () {
+        Route::get('/obat/download-template', [ObatController::class, 'downloadTemplate'])->name('obat.download-template');
+        Route::post('/obat/preview-import', [ObatController::class, 'previewImport'])->name('obat.preview-import');
+        Route::post('/obat/import', [ObatController::class, 'import'])->name('obat.import');
+        Route::resource('obat', ObatController::class);
+    });
+
+    Route::resource('pelanggan', PelangganController::class)->middleware('permission:Kelola Pelanggan');
+
+    // Admin Online Orders & Resep Management (Admin-only, protected by Kelola Pesanan Online)
+    Route::middleware('permission:Kelola Pesanan Online')->group(function () {
+        Route::get('/resep-dokter', [AdminResepDokterController::class, 'index'])->name('admin.resep.index');
+        Route::delete('/resep-dokter/{id}', [AdminResepDokterController::class, 'destroy'])->name('admin.resep.destroy');
+        Route::get('/transaksi-online', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'index'])->name('admin.transaksi-online.index');
+        Route::get('/transaksi-online/{id}', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'show'])->name('admin.transaksi-online.show');
+        Route::patch('/transaksi-online/{id}/status', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'updateStatus'])->name('admin.transaksi-online.update-status');
+        Route::get('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'index'])->name('admin.feedback-layanan.index');
+        Route::delete('/feedback-layanan/{id}', [\App\Http\Controllers\FeedbackLayananController::class, 'destroy'])->name('admin.feedback-layanan.destroy');
+    });
+
+    // RBAC & User Management (Admin-only)
+    Route::resource('role', RoleController::class)->middleware('permission:Kelola Role');
+    Route::resource('permission', PermissionController::class)->middleware('permission:Kelola Permission');
+    Route::resource('user', UserController::class)->middleware('permission:Kelola User');
+
+    // POS & Reports (Shared/Individual Staff)
+    Route::resource('transaksi', TransaksiController::class)->middleware('permission:Kelola Transaksi');
     Route::get('/laporan', function () {
         $totalTransaksi = \App\Models\Transaksi::count();
         $totalPendapatan = \App\Models\Transaksi::sum('total_harga');
         $transaksis = \App\Models\Transaksi::with('pelanggan')->latest()->limit(50)->get();
 
         return view('laporan.index', compact('totalTransaksi', 'totalPendapatan', 'transaksis'));
-    })->name('laporan.index');
-});
+    })->middleware('permission:Kelola Laporan')->name('laporan.index');
 
-/*
-|--------------------------------------------------------------------------
-| Kasir Routes (Auth & Kasir Middleware Required)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'kasir'])->group(function () {
-    Route::get('/kasir/dashboard', [DashboardController::class, 'index'])
-        ->name('kasir.dashboard');
-});
+    // Apoteker Actions
+    Route::middleware('permission:Verifikasi Resep')->group(function () {
+        Route::get('/apoteker/resep-dokter', [ApotekerDashboardController::class, 'resepIndex'])->name('apoteker.resep.index');
+        Route::get('/apoteker/resep-dokter/{id}', [ApotekerDashboardController::class, 'resepShow'])->name('apoteker.resep.show');
+        Route::post('/apoteker/resep-dokter/{id}/verify', [ApotekerDashboardController::class, 'resepVerify'])->name('apoteker.resep.verify');
+    });
 
-/*
-|--------------------------------------------------------------------------
-| Apoteker Routes (Auth & Apoteker Middleware Required)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'apoteker'])->group(function () {
-    Route::get('/apoteker/dashboard', [ApotekerDashboardController::class, 'index'])->name('apoteker.dashboard');
-    Route::get('/apoteker/resep-dokter', [ApotekerDashboardController::class, 'resepIndex'])->name('apoteker.resep.index');
-    Route::get('/apoteker/resep-dokter/{id}', [ApotekerDashboardController::class, 'resepShow'])->name('apoteker.resep.show');
-    Route::post('/apoteker/resep-dokter/{id}/verify', [ApotekerDashboardController::class, 'resepVerify'])->name('apoteker.resep.verify');
-    Route::get('/apoteker/ketersediaan-obat', [ApotekerDashboardController::class, 'obatIndex'])->name('apoteker.obat.index');
-});
+    Route::get('/apoteker/ketersediaan-obat', [ApotekerDashboardController::class, 'obatIndex'])
+        ->middleware('permission:Lihat Stok Obat')
+        ->name('apoteker.obat.index');
 
-/*
-|--------------------------------------------------------------------------
-| Pelanggan Routes (Auth & Pelanggan Middleware Required)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'pelanggan'])->group(function () {
+    // Pelanggan Portal Redirect
     Route::get('/home', function () {
         return redirect('/marketplace');
     })->name('home');

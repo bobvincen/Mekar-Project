@@ -58,23 +58,18 @@
                         {{ $usr->email }}
                     </td>
                     <td class="py-4 px-6 whitespace-nowrap">
-                        @if($usr->role === 'admin')
-                            <span class="px-2.5 py-1 text-xs font-semibold bg-red-50 text-red-600 rounded-lg uppercase tracking-wider">
-                                admin
-                            </span>
-                        @elseif($usr->role === 'kasir')
-                            <span class="px-2.5 py-1 text-xs font-semibold bg-green-50 text-green-600 rounded-lg uppercase tracking-wider">
-                                kasir
-                            </span>
-                        @elseif($usr->role === 'apoteker')
-                            <span class="px-2.5 py-1 text-xs font-semibold bg-purple-50 text-purple-600 rounded-lg uppercase tracking-wider">
-                                apoteker
-                            </span>
-                        @else
-                            <span class="px-2.5 py-1 text-xs font-semibold bg-blue-50 text-blue-600 rounded-lg uppercase tracking-wider">
-                                pelanggan
-                            </span>
-                        @endif
+                        @php
+                            $roleName = $usr->roles->first()?->name ?? $usr->role ?? 'pelanggan';
+                            $badgeClasses = match($roleName) {
+                                'admin' => 'bg-red-50 text-red-600',
+                                'kasir' => 'bg-green-50 text-green-600',
+                                'apoteker' => 'bg-purple-50 text-purple-600',
+                                default => 'bg-blue-50 text-blue-600'
+                            };
+                        @endphp
+                        <span class="px-2.5 py-1 text-xs font-semibold {{ $badgeClasses }} rounded-lg uppercase tracking-wider">
+                            {{ $roleName }}
+                        </span>
                     </td>
                     <td class="py-4 px-6 text-right whitespace-nowrap">
                         <a href="{{ route('user.edit', $usr->id) }}" class="inline-block p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
