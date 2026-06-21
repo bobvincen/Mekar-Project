@@ -52,7 +52,7 @@ Mengatur hak akses pengguna secara dinamis dan aman untuk mencegah akses tidak s
 * **Spatie Laravel Permission (v8.0)**: Mengontrol otorisasi berbasis hak akses (`permissions`) dan peran (`roles`).
 * **CRUD Role**: Membuat role baru, mengedit nama role non-sistem, dan menetapkan kumpulan permission yang diizinkan secara visual menggunakan checkbox.
 * **CRUD Permission**: Mendaftarkan permission baru dalam guard `web` untuk memproteksi modul rute tertentu.
-* **CRUD User**: Mendaftarkan akun user baru, mengganti password, dan menetapkan satu role aktif yang tersinkronisasi otomatis dengan Spatie Role.
+* **CRUD User**: Mendaftarkan akun user baru, mengganti password, dan menetapkan satu role aktif yang tersinkronisasi otomatis dengan Spatie Role. Kolom `role` pada tabel `users` disinkronkan sebagai ENUM (`'admin'`, `'kasir'`, `'apoteker'`, `'pelanggan'`) untuk mengontrol redirect dashboard dan middleware otorisasi.
 * **Middlewares**: Rute dilindungi di tingkat rute menggunakan middleware alias: `admin`, `kasir`, `pelanggan`, `admin_or_kasir`, `apoteker`, `role`, dan `permission`.
 
 ---
@@ -158,3 +158,33 @@ Menyajikan rangkuman performa omzet penjualan apotek secara keseluruhan.
   * Menampilkan pesan kesalahan berbahasa Indonesia yang jelas tepat di bawah input field.
   * Menyorot border input dengan warna merah (`border-red-500`) dan background merah muda (`bg-red-50`) untuk kemudahan navigasi mata pengguna saat terjadi error input.
   * Mempertahankan data masukan lama (`old()`) agar pengguna tidak perlu mengisi ulang seluruh form dari awal.
+
+---
+
+## 10. Manajemen Gambar Obat & Import Batch ZIP
+
+### Aktor
+* Admin
+
+### Detail Implementasi
+* **Gambar Obat Opsional**: File gambar obat dapat diunggah melalui form tambah atau edit obat. Gambar bersifat opsional (`nullable`), disimpan di `storage/app/public/obat/` menggunakan nama file unik, dan direferensikan di kolom `image_path` pada tabel `obats`.
+* **Pratinjau Client-Side**: JavaScript secara real-time menampilkan pratinjau gambar yang dipilih oleh pengguna sebelum form dikirimkan.
+* **Manajemen Hapus/Ganti Gambar**: Pada form edit obat, pengguna dapat melihat gambar saat ini dan memilih untuk menggantinya dengan berkas baru atau menghapusnya secara permanen (menghapus berkas dari disk dan mereset nilai kolom database menjadi `NULL`).
+* **Import Batch dengan ZIP Gambar**:
+  * Pengguna dapat mengunggah file Excel bersamaan dengan file ZIP yang berisi kumpulan gambar obat.
+  * Sistem mengekstraksi file ZIP ke direktori temporer, kemudian mencocokkan nama file di kolom `gambar` pada Excel secara case-insensitive dengan berkas di dalam ZIP.
+  * Gambar yang cocok dipindahkan ke direktori penyimpanan utama (`public/obat/`) dengan nama unik baru, sedangkan gambar yang tidak cocok diabaikan secara aman.
+  * Seluruh direktori temporer dibersihkan secara otomatis setelah proses selesai.
+
+---
+
+## 11. Fitur Show/Hide Password
+
+### Aktor
+* Admin Apotek, Kasir / Staff, Apoteker, Pelanggan / Member
+
+### Detail Implementasi
+* **Toggling Visibilitas**: Tombol berikon mata (Eye / Eye Slash) ditambahkan di sisi kanan setiap field input password dan konfirmasi password. Klik ikon ini merubah atribut input `type="password"` menjadi `type="text"` (menampilkan teks password) dan sebaliknya.
+* **JavaScript Ringan Global**: Script vanilla JS didelegasikan pada root `document` di layouts utama (`app.blade.php` dan `guest.blade.php`), secara otomatis mengendalikan perilaku seluruh tombol toggler berkelas `toggle-password` secara dinamis tanpa mengganggu validasi atau loading.
+* **Aksesibilitas**: Tombol dilengkapi atribut `aria-label` yang berganti dinamis antara `"Tampilkan Password"` dan `"Sembunyikan Password"`.
+* **Desain Responsif**: Ikon terintegrasi di dalam input dengan padding yang telah disesuaikan agar teks password tidak tumpang tindih dengan ikon.

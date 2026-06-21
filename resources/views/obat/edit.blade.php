@@ -19,7 +19,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('obat.update', $obat->id) }}" method="POST">
+            <form action="{{ route('obat.update', $obat->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -101,6 +101,41 @@
                 </div>
 
                 <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Gambar Obat <span class="text-gray-400 font-normal">(Opsional, Maksimal 2MB)</span></label>
+                    
+                    <!-- Hidden input to track deletion state -->
+                    <input type="hidden" id="delete_image" name="delete_image" value="0">
+
+                    <!-- Current image display & actions -->
+                    @if($obat->image_path)
+                        <div id="current_image_container" class="mb-4 p-4 border border-slate-100 bg-slate-50/50 rounded-2xl flex items-center gap-4">
+                            <img src="{{ $obat->image_url }}" alt="Current Image" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shadow-sm">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 mb-1.5">Sudah ada gambar terunggah</p>
+                                <button type="button" onclick="hapusGambarLama()" 
+                                    class="px-3.5 py-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                                    ❌ Hapus Gambar
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- New Upload input -->
+                    <input type="file" id="gambar" name="gambar" accept="image/jpeg,image/png,image/jpg,image/webp"
+                        class="w-full border border-slate-200 focus:ring-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 transition duration-150 bg-white @error('gambar') border-red-500 focus:ring-red-100 bg-red-50/50 @enderror"
+                        onchange="previewEditImage(event)">
+                    @error('gambar')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+
+                    <!-- Preview Container -->
+                    <div id="editImagePreviewContainer" class="hidden mt-4">
+                        <p class="text-xs text-slate-500 mb-2 font-semibold">Pratinjau Gambar Baru:</p>
+                        <img id="editImagePreview" src="#" alt="Pratinjau Gambar Baru" class="max-h-48 rounded-xl border border-slate-200 shadow-sm object-cover">
+                    </div>
+                </div>
+
+                <div class="mb-4">
                     <label class="block text-sm font-medium text-slate-700 mb-2">Tanggal Kadaluarsa</label>
                     <input type="date" name="tanggal_kadaluarsa"
                         value="{{ old('tanggal_kadaluarsa', $obat->tanggal_kadaluarsa) }}"
@@ -126,4 +161,32 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function hapusGambarLama() {
+            document.getElementById('delete_image').value = '1';
+            const container = document.getElementById('current_image_container');
+            if (container) {
+                container.style.display = 'none';
+            }
+        }
+
+        function previewEditImage(event) {
+            const container = document.getElementById('editImagePreviewContainer');
+            const preview = document.getElementById('editImagePreview');
+            const file = event.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    container.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '#';
+                container.classList.add('hidden');
+            }
+        }
+    </script>
 @endsection

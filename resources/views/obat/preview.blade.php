@@ -137,6 +137,7 @@
                     <tr class="border-b text-gray-400 font-semibold uppercase text-xs">
                         <th class="text-left py-4 px-5">No</th>
                         <th class="text-left py-4 px-5">Nama Obat</th>
+                        <th class="text-center py-4 px-5">Gambar</th>
                         <th class="text-left py-4 px-5">Kategori</th>
                         <th class="text-left py-4 px-5">Supplier</th>
                         <th class="text-center py-4 px-5">Stok</th>
@@ -149,6 +150,19 @@
                         <tr class="hover:bg-slate-50/50 transition-colors">
                             <td class="py-3 px-5 font-semibold text-gray-400">{{ $loop->iteration }}</td>
                             <td class="py-3 px-5 font-bold text-gray-700">{{ $valRow['nama_obat'] }}</td>
+                            <td class="py-3 px-5 text-center">
+                                @if(!empty($valRow['gambar_temp_path']))
+                                    <img src="{{ asset('storage/' . $valRow['gambar_temp_path']) }}" alt="Preview" class="w-12 h-12 rounded-lg object-cover mx-auto border shadow-sm">
+                                    <span class="text-[9px] text-green-600 font-bold block mt-1">Sesuai ZIP</span>
+                                @elseif(!empty($valRow['gambar']))
+                                    <div class="text-[10px] text-amber-600 font-semibold leading-tight">
+                                        {{ $valRow['gambar'] }}
+                                        <span class="text-[8px] text-amber-500 block mt-0.5">(Tidak ada di ZIP)</span>
+                                    </div>
+                                @else
+                                    <span class="text-xs text-gray-400 italic">-</span>
+                                @endif
+                            </td>
                             <td class="py-3 px-5">{{ $valRow['kategori'] }}</td>
                             <td class="py-3 px-5">{{ $valRow['supplier'] }}</td>
                             <td class="py-3 px-5 text-center font-semibold text-gray-600">{{ $valRow['stok'] }}</td>
@@ -157,7 +171,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-8 text-gray-400 italic">Tidak ada data valid dalam file.</td>
+                            <td colspan="8" class="text-center py-8 text-gray-400 italic">Tidak ada data valid dalam file.</td>
                         </tr>
                     @endforelse
                 </tbody>

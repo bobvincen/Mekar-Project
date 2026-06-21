@@ -208,7 +208,7 @@
                                 </div>
                                 
                                 <div class="py-1">
-                                    @if(Auth::user()->role !== 'pelanggan')
+                                    @if(Auth::user()->can('Dashboard'))
                                         <a href="{{ Auth::user()->getDashboardUrl() }}" class="flex items-center gap-2.5 px-4 py-2 text-[13px] font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M7.5 9.75h9M3.375 19.5h17.25" />

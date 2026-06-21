@@ -15,7 +15,8 @@ class ObatTemplateExport implements FromArray, WithHeadings
             'supplier',
             'stok',
             'harga_jual',
-            'tanggal_kadaluarsa'
+            'tanggal_kadaluarsa',
+            'gambar'
         ];
     }
 
@@ -28,7 +29,8 @@ class ObatTemplateExport implements FromArray, WithHeadings
                 'PT Kimia Farma',
                 100,
                 5000,
-                '2027-01-01'
+                '2027-01-01',
+                'paracetamol.jpg'
             ],
             [
                 'Amoxicillin 250mg',
@@ -36,7 +38,8 @@ class ObatTemplateExport implements FromArray, WithHeadings
                 'PT Kalbe Farma',
                 50,
                 10000,
-                '2026-12-31'
+                '2026-12-31',
+                ''
             ]
         ];
     }

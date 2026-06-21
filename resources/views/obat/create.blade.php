@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <form action="{{ route('obat.store') }}" method="POST" onsubmit="return validasiObat()" class="m-0">
+        <form action="{{ route('obat.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return validasiObat()" class="m-0">
             @csrf
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -125,6 +125,24 @@
                 </div>
 
                 <div class="md:col-span-2">
+                    <label for="gambar" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Gambar Obat <span class="text-gray-400 font-normal">(Opsional, Maksimal 2MB)</span>
+                    </label>
+                    <input type="file" id="gambar" name="gambar" accept="image/jpeg,image/png,image/jpg,image/webp"
+                        class="w-full border border-gray-300 focus:ring-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 transition duration-150 bg-white @error('gambar') border-red-500 focus:ring-red-100 bg-red-50/50 @enderror"
+                        onchange="previewImage(event)">
+                    @error('gambar')
+                        <p class="text-red-500 text-xs mt-2 font-medium">{{ $message }}</p>
+                    @enderror
+
+                    <!-- Preview Container -->
+                    <div id="imagePreviewContainer" class="hidden mt-4">
+                        <p class="text-xs text-gray-500 mb-2 font-semibold">Pratinjau Gambar:</p>
+                        <img id="imagePreview" src="#" alt="Pratinjau Gambar" class="max-h-48 rounded-xl border border-gray-200 shadow-sm object-cover">
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
                     <label for="tanggal_kadaluarsa" class="block text-sm font-semibold text-gray-700 mb-2">Tanggal
                         Kadaluarsa</label>
                     <input type="date" id="tanggal_kadaluarsa" name="tanggal_kadaluarsa"
@@ -154,6 +172,24 @@
     </div>
 
     <script>
+        function previewImage(event) {
+            const container = document.getElementById('imagePreviewContainer');
+            const preview = document.getElementById('imagePreview');
+            const file = event.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    container.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '#';
+                container.classList.add('hidden');
+            }
+        }
+
         function validasiObat() {
             let kode_obat = document.getElementById('kode_obat').value.trim();
             let nama_obat = document.getElementById('nama_obat').value.trim();

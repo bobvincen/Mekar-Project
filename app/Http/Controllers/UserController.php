@@ -50,6 +50,8 @@ class UserController extends Controller
         // Sync with Spatie Permission roles
         $user->assignRole($request->role);
 
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan');
     }
 
@@ -94,6 +96,8 @@ class UserController extends Controller
 
         // Sync with Spatie roles
         $user->syncRoles([$request->role]);
+
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         return redirect()->route('user.index')->with('success', 'User berhasil diperbarui');
     }

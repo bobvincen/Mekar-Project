@@ -35,14 +35,11 @@
                     📄 Template Excel
                 </a>
 
-                <!-- Import Excel Form -->
-                <form action="{{ route('obat.preview-import') }}" method="POST" enctype="multipart/form-data" class="inline-flex m-0" id="importForm">
-                    @csrf
-                    <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl inline-flex items-center justify-center gap-1.5 font-semibold text-sm transition-all duration-200 shadow-sm whitespace-nowrap mb-0">
-                        📥 Import Excel
-                        <input type="file" name="file_excel" class="hidden" accept=".xlsx,.xls" onchange="document.getElementById('importForm').submit()">
-                    </label>
-                </form>
+                <!-- Import Data Button (Opens Modal) -->
+                <button type="button" onclick="document.getElementById('modalImport').classList.remove('hidden')"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl inline-flex items-center justify-center gap-1.5 font-semibold text-sm transition-all duration-200 shadow-sm whitespace-nowrap">
+                    📥 Import Data
+                </button>
 
                 <!-- Tambah Obat Link -->
                 <a href="{{ route('obat.create') }}"
@@ -86,6 +83,7 @@
                 <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-bold border-b border-gray-200 tracking-wider">
                     <tr>
                         <th class="px-6 py-4 w-32 text-center">Kode</th>
+                        <th class="px-4 py-4 w-24 text-center">Gambar</th>
                         <th class="px-4 py-4 w-42">Nama Obat</th>
                         <th class="px-4 py-4 w-44">Kategori</th>
                         <th class="px-4 py-4 w-52">Supplier</th>
@@ -99,6 +97,15 @@
                         <tr class="hover:bg-gray-50/80 transition-colors duration-150">
                             <td class="px-6 py-4 text-center font-medium text-gray-500 whitespace-nowrap">
                                 {{ $custom_obat->kode_obat }}
+                            </td>
+                            <td class="px-4 py-4 text-center whitespace-nowrap">
+                                @if($custom_obat->image_path)
+                                    <img src="{{ $custom_obat->image_url }}" alt="{{ $custom_obat->nama_obat }}" class="w-12 h-12 rounded-xl object-cover mx-auto border border-gray-200 shadow-sm">
+                                @else
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-400 border border-gray-200">
+                                        Tidak Ada Gambar
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-4 py-4 font-semibold text-gray-900 whitespace-nowrap">
                                 {{ $custom_obat->nama_obat }}
@@ -143,7 +150,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-12 text-gray-500 font-medium bg-gray-50/30">
+                            <td colspan="8" class="text-center py-12 text-gray-500 font-medium bg-gray-50/30">
                                 <div class="flex flex-col items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6M3 7h18M5 17h2m10 0h2" />
@@ -155,6 +162,51 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="modalImport" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-200">
+            <div class="flex justify-between items-center px-6 py-5 border-b border-gray-100">
+                <h2 class="text-xl font-bold text-gray-800">Import Data Obat</h2>
+                <button type="button" onclick="tutupModalImport()" class="text-gray-400 hover:text-red-500 transition-colors text-sm font-bold p-1">✕</button>
+            </div>
+
+            <form action="{{ route('obat.preview-import') }}" method="POST" enctype="multipart/form-data" class="p-6 m-0">
+                @csrf
+                
+                <!-- File Excel -->
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        File Excel <span class="text-red-500">*</span>
+                    </label>
+                    <input type="file" name="file_excel" accept=".xlsx,.xls" required
+                        class="w-full border border-gray-300 focus:ring-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 transition duration-150 text-sm bg-white">
+                    <p class="text-xs text-gray-400 mt-1.5">Unggah file excel template (.xlsx atau .xls).</p>
+                </div>
+
+                <!-- File ZIP Gambar -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        ZIP Gambar Obat <span class="text-gray-400 font-normal">(Opsional)</span>
+                    </label>
+                    <input type="file" name="file_zip" accept=".zip"
+                        class="w-full border border-gray-300 focus:ring-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 transition duration-150 text-sm bg-white">
+                    <p class="text-xs text-gray-400 mt-1.5">Unggah file ZIP yang berisi gambar-gambar obat. Nama file gambar di dalam ZIP harus sesuai dengan nama file di kolom <b>gambar</b> pada Excel.</p>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="tutupModalImport()"
+                        class="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-colors text-sm">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md transition-all text-sm">
+                        Preview Import
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -174,7 +226,7 @@
                 </div>
                 <div>
                     <p class="mb-3"><strong class="text-blue-600">LANGKAH 5</strong><br>Simpan file Excel Anda dalam format <strong>.xlsx</strong>.</p>
-                    <p class="mb-3"><strong class="text-blue-600">LANGKAH 6</strong><br>Klik tombol <strong>"Import Excel"</strong> dan pilih file yang telah Anda simpan.</p>
+                    <p class="mb-3"><strong class="text-blue-600">LANGKAH 6</strong><br>Klik tombol <strong>"Import Data"</strong> dan pilih file Excel serta ZIP gambar Anda.</p>
                     <p class="mb-3"><strong class="text-blue-600">LANGKAH 7</strong><br>Periksa hasil preview data di halaman preview. Pastikan statusnya valid.</p>
                     <p class="mb-3"><strong class="text-blue-600">LANGKAH 8</strong><br>Klik tombol <strong>"Konfirmasi Import"</strong> untuk menyimpan seluruh data obat ke sistem.</p>
                 </div>
@@ -199,6 +251,10 @@
 
     <!-- Active Search Filter Javascript -->
     <script>
+        function tutupModalImport() {
+            document.getElementById('modalImport').classList.add('hidden');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const inputCari = document.getElementById('inputCari');
             const btnClear = document.getElementById('btnClear');
@@ -217,7 +273,7 @@
 
                     barisTabel.forEach(function(baris) {
                         let kolomKode = baris.querySelector('td:nth-child(1)');
-                        let kolomNama = baris.querySelector('td:nth-child(2)');
+                        let kolomNama = baris.querySelector('td:nth-child(3)'); // Updated index from 2 to 3
 
                         if (kolomNama || kolomKode) {
                             let teksKode = kolomKode ? kolomKode.textContent.toLowerCase() : '';
@@ -239,7 +295,7 @@
                             let tr = document.createElement('tr');
                             tr.id = 'barisKosong';
                             tr.innerHTML = `
-                                <td colspan="7" class="text-center py-12 text-gray-400 font-medium bg-gray-50/10">
+                                <td colspan="8" class="text-center py-12 text-gray-400 font-medium bg-gray-50/10">
                                     <div class="flex flex-col items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

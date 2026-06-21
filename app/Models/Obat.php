@@ -16,8 +16,14 @@ class Obat extends Model
         'stok',
         'harga_jual',
         'tanggal_kadaluarsa',
-        'deskripsi'
+        'deskripsi',
+        'image_path'
     ];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image_path ? asset('storage/' . $this->image_path) : asset('images/no-image.png');
+    }
 
     public function kategori()
     {

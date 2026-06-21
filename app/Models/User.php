@@ -42,16 +42,22 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the dashboard URL based on user role.
+     * Get the dashboard URL based on user permissions.
      */
     public function getDashboardUrl(): string
     {
-        return match ($this->role) {
-            'admin' => route('dashboard', absolute: false),
-            'kasir' => route('kasir.dashboard', absolute: false),
-            'apoteker' => route('apoteker.dashboard', absolute: false),
-            'pelanggan' => '/marketplace',
-            default => '/',
-        };
+        if ($this->can('Kelola User')) {
+            return route('dashboard', absolute: false);
+        }
+        if ($this->can('Verifikasi Resep')) {
+            return route('apoteker.dashboard', absolute: false);
+        }
+        if ($this->can('Kelola Transaksi')) {
+            return route('kasir.dashboard', absolute: false);
+        }
+        if ($this->can('Dashboard')) {
+            return route('dashboard', absolute: false);
+        }
+        return '/marketplace';
     }
 }
