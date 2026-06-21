@@ -76,6 +76,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::resource('kategori', KategoriController::class);
     Route::resource('supplier', SupplierController::class);
+    // Custom Obat Import Routes
+    Route::get('/obat/download-template', [ObatController::class, 'downloadTemplate'])->name('obat.download-template');
+    Route::post('/obat/preview-import', [ObatController::class, 'previewImport'])->name('obat.preview-import');
+    Route::post('/obat/import', [ObatController::class, 'import'])->name('obat.import');
+
     Route::resource('obat', ObatController::class);
     Route::resource('pelanggan', PelangganController::class);
     
