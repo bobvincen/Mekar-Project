@@ -6,12 +6,26 @@ use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $cartItems = session()->get('cart', []);
 
+        if ($request->has('selected')) {
+            $selectedIds = explode(',', $request->query('selected'));
+            $filteredCart = [];
+            foreach ($cartItems as $id => $item) {
+                if (in_array($id, $selectedIds)) {
+                    $filteredCart[$id] = $item;
+                }
+            }
+            $cartItems = $filteredCart;
+            session()->put('checkout_cart', $cartItems);
+        } else {
+            $cartItems = session()->get('checkout_cart', $cartItems);
+        }
+
         if (empty($cartItems)) {
-            return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong.');
+            return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong atau tidak ada produk yang dipilih.');
         }
 
         $subtotal = 0;
@@ -19,11 +33,16 @@ class CheckoutController extends Controller
             $subtotal += $item['price'] * $item['qty'];
         }
 
-        $ongkir = 10000; // Dummy
-        $diskon = 0;     // Dummy
-        $total = $subtotal + $ongkir - $diskon;
+        $ongkir = 0;
+        $total = $subtotal;
 
-        return view('marketplace.checkout', compact('cartItems', 'subtotal', 'ongkir', 'diskon', 'total'));
+        \Illuminate\Support\Facades\Log::info('Checkout Index - Perhitungan Harga:', [
+            'subtotal' => $subtotal,
+            'ongkir' => $ongkir,
+            'total' => $total
+        ]);
+
+        return view('marketplace.checkout', compact('cartItems', 'subtotal', 'ongkir', 'total'));
     }
 
     public function process(Request $request)
@@ -38,7 +57,6 @@ class CheckoutController extends Controller
             'jarak' => 'nullable|numeric',
             'ongkir' => 'required|numeric',
             'subtotal' => 'required|numeric',
-            'diskon' => 'required|numeric',
             'total' => 'required|numeric',
             'catatan' => 'nullable|string',
         ], [
@@ -50,18 +68,24 @@ class CheckoutController extends Controller
             'total.required' => 'Total wajib diisi.',
         ]);
 
-        $cartItems = session()->get('cart', []);
+        $cartItems = session()->get('checkout_cart', session()->get('cart', []));
 
         if (empty($cartItems)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Keranjang kosong.'
+                'message' => 'Keranjang kosong atau produk belum dipilih.'
             ], 400);
         }
 
         // Generate Kode Transaksi
         $date = date('Ymd');
         $lastTrx = \App\Models\Transaksi::where('kode_transaksi', 'like', "TRX-{$date}-%")->orderBy('id', 'desc')->first();
+
+        \Illuminate\Support\Facades\Log::info('Checkout Process (Submit) - Perhitungan Harga:', [
+            'subtotal' => $validated['subtotal'],
+            'ongkir' => $validated['ongkir'],
+            'total' => $validated['total']
+        ]);
         if ($lastTrx) {
             $lastSequence = intval(substr($lastTrx->kode_transaksi, -4));
             $nextSequence = str_pad($lastSequence + 1, 4, '0', STR_PAD_LEFT);
@@ -88,7 +112,6 @@ class CheckoutController extends Controller
                 'jarak' => $validated['jarak'],
                 'ongkir' => $validated['ongkir'],
                 'subtotal' => $validated['subtotal'],
-                'diskon' => $validated['diskon'],
                 'catatan' => $validated['catatan'],
                 'status' => 'Menunggu Konfirmasi',
             ]);
@@ -107,7 +130,12 @@ class CheckoutController extends Controller
             \Illuminate\Support\Facades\DB::commit();
 
             // Clear session cart
-            session()->forget('cart');
+            session()->forget('checkout_cart');
+            $mainCart = session()->get('cart', []);
+            foreach ($cartItems as $id => $item) {
+                unset($mainCart[$id]);
+            }
+            session()->put('cart', $mainCart);
 
             // Generate WhatsApp URL
             $adminPhone = '6282240432990';
@@ -143,9 +171,6 @@ class CheckoutController extends Controller
             $message .= "\n💰 *Ringkasan Pembayaran*\n\n";
             $message .= "Subtotal:\nRp " . number_format($validated['subtotal'], 0, ',', '.') . "\n\n";
             $message .= "Ongkir:\nRp " . number_format($validated['ongkir'], 0, ',', '.') . "\n\n";
-            if ($validated['diskon'] > 0) {
-                $message .= "Diskon:\n- Rp " . number_format($validated['diskon'], 0, ',', '.') . "\n\n";
-            }
             $message .= "*Total:*\n*Rp " . number_format($validated['total'], 0, ',', '.') . "*\n\n";
             
             if (!empty($validated['catatan'])) {

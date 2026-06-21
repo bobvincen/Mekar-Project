@@ -79,7 +79,7 @@
             </div>
             <h3 class="text-lg font-bold text-slate-800 mb-2">Input Transaksi Baru (POS)</h3>
             <p class="text-sm text-slate-400 font-light leading-relaxed mb-6">
-                Modul kasir utama untuk memproses pembayaran belanja obat pelanggan, menghitung diskon/promo, kalkulasi kembalian uang, dan mencetak struk belanja fisik maupun digital.
+                Modul kasir utama untuk memproses pembayaran belanja obat pelanggan, kalkulasi kembalian uang, dan mencetak struk belanja fisik maupun digital.
             </p>
         </div>
         <div>

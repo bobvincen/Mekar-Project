@@ -14,7 +14,7 @@
 
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
     {{-- Total Obat --}}
    <div class="bg-white rounded-3xl shadow-md p-6">
@@ -124,6 +124,28 @@
 
     </div>
 
+
+    {{-- Konsultasi Hari Ini --}}
+    <div class="bg-white rounded-3xl shadow-md p-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-gray-500">Konsultasi Hari Ini</p>
+                <h2 class="text-4xl font-bold text-slate-800 mt-2">{{ $totalKonsultasiHariIni }}</h2>
+            </div>
+            <div class="bg-blue-100 p-4 rounded-2xl">📱</div>
+        </div>
+    </div>
+
+    {{-- Konsultasi Bulan Ini --}}
+    <div class="bg-white rounded-3xl shadow-md p-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-gray-500">Konsultasi Bulan Ini</p>
+                <h2 class="text-4xl font-bold text-slate-800 mt-2">{{ $totalKonsultasiBulanIni }}</h2>
+            </div>
+            <div class="bg-blue-100 p-4 rounded-2xl">💬</div>
+        </div>
+    </div>
 
 </div>
 

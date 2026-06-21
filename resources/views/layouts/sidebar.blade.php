@@ -122,7 +122,60 @@
         @if(auth()->user()->can('Kelola Transaksi') || auth()->user()->can('Verifikasi Resep') || auth()->user()->can('Kelola Pesanan Online') || auth()->user()->role === 'admin')
             <div class="px-5 py-2 text-xs font-bold text-cyan-200/60 uppercase tracking-wider mt-4 mb-1">
                 Transaksi
-            </div>
+            </a>
+
+            <a href="/laporan"
+            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
+            {{ request()->is('laporan*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 17v-6h4v6m4 0V7H5v10m14 4H3"/>
+                </svg>
+                Laporan
+            </a>
+
+            <a href="{{ route('admin.resep.index') }}"
+            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
+            {{ request()->is('resep-dokter*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                Resep Dokter
+            </a>
+
+            <a href="{{ route('admin.transaksi-online.index') }}"
+            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
+            {{ request()->is('transaksi-online*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 1.5l8 4v13l-8 4-8-4v-13l8-4zm0 2.236l-6 3v10.528l6 3 6-3V6.736l-6-3zM13.5 14a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+                </svg>
+                Pesanan Online
+            </a>
+
+            <a href="{{ route('admin.feedback-layanan.index') }}"
+            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
+            {{ request()->is('feedback-layanan*') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/>
+                </svg>
+                Penilaian Layanan
+            </a>
+
+
+        @elseif(Auth::user()->role === 'kasir')
+            <!-- Kasir Navigation -->
+            <a href="/kasir/dashboard"
+            class="flex items-center gap-3 mx-4 mb-2 px-5 py-3 rounded-xl transition
+            {{ request()->is('kasir/dashboard') ? 'bg-white text-blue-900 font-semibold shadow-lg' : 'hover:bg-white/20' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7m-9 11V9m0 12h6" />
+                </svg>
+                Dashboard Kasir
+            </a>
 
             @can('Kelola Transaksi')
                 <a href="/transaksi"

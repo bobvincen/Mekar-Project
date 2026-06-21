@@ -36,95 +36,62 @@
                 </span>
             </div>
         </div>
+    @endif
 
-        @if (session('success'))
-            <div x-data="{ open: true }" x-show="open"
-                class="mb-6 px-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-lg flex justify-between items-center shadow-sm">
-                <span class="text-sm font-medium">{{ session('success') }}</span>
-                <button @click="open = false" class="text-emerald-400 hover:text-emerald-600"><svg class="w-4 h-4"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg></button>
-            </div>
-        @endif
-        @if (session('error'))
-            <div x-data="{ open: true }" x-show="open"
-                class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-lg flex justify-between items-center shadow-sm">
-                <span class="text-sm font-medium">{{ session('error') }}</span>
-                <button @click="open = false" class="text-red-400 hover:text-red-600"><svg class="w-4 h-4" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg></button>
-            </div>
-        @endif
-
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-            <!-- Left Column: Order details & Items -->
-            <div class="xl:col-span-2 space-y-6">
-
-                <!-- Items Card -->
-                <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
-                    <div class="px-5 py-4 border-b border-slate-200 font-semibold text-slate-800">
-                        Produk yang Dipesan
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="table-auto w-full">
-                            <thead class="text-xs uppercase text-slate-400 bg-slate-50">
-                                <tr>
-                                    <th class="px-5 py-3 font-semibold text-left">Produk</th>
-                                    <th class="px-5 py-3 font-semibold text-center">Harga</th>
-                                    <th class="px-5 py-3 font-semibold text-center">Qty</th>
-                                    <th class="px-5 py-3 font-semibold text-right">Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm divide-y divide-slate-200">
-                                @foreach ($transaksi->detailTransaksis as $detail)
-                                    <tr>
-                                        <td class="px-5 py-4">
-                                            <div class="font-medium text-slate-800">
-                                                {{ $detail->obat->nama_obat ?? 'Produk tidak ditemukan' }}</div>
-                                            <div class="text-xs text-slate-500">Kategori:
-                                                {{ $detail->obat->kategori->nama_kategori ?? '-' }}</div>
-                                        </td>
-                                        <td class="px-5 py-4 text-center">
-                                            Rp {{ number_format($detail->harga, 0, ',', '.') }}
-                                        </td>
-                                        <td class="px-5 py-4 text-center">
-                                            {{ $detail->jumlah }}
-                                        </td>
-                                        <td class="px-5 py-4 text-right font-medium text-slate-800">
-                                            Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="bg-slate-50 px-5 py-4 flex justify-end">
-                        <div class="w-full max-w-sm space-y-3">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-500">Subtotal Produk:</span>
-                                <span class="font-medium text-slate-800">Rp
-                                    {{ number_format($transaksi->subtotal, 0, ',', '.') }}</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-500">Ongkos Kirim:</span>
-                                <span class="font-medium text-slate-800">Rp
-                                    {{ number_format($transaksi->ongkir, 0, ',', '.') }}</span>
-                            </div>
-                            @if ($transaksi->diskon > 0)
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-slate-500">Diskon:</span>
-                                    <span class="font-medium text-red-500">- Rp
-                                        {{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
-                                </div>
-                            @endif
-                            <div class="flex justify-between text-base border-t border-slate-200 pt-3">
-                                <span class="font-bold text-slate-800">Total Pembayaran:</span>
-                                <span class="font-bold text-blue-600">Rp
-                                    {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span>
-                            </div>
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        
+        <!-- Left Column: Order details & Items -->
+        <div class="xl:col-span-2 space-y-6">
+            
+            <!-- Items Card -->
+            <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-200 font-semibold text-slate-800">
+                    Produk yang Dipesan
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="table-auto w-full">
+                        <thead class="text-xs uppercase text-slate-400 bg-slate-50">
+                            <tr>
+                                <th class="px-5 py-3 font-semibold text-left">Produk</th>
+                                <th class="px-5 py-3 font-semibold text-center">Harga</th>
+                                <th class="px-5 py-3 font-semibold text-center">Qty</th>
+                                <th class="px-5 py-3 font-semibold text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-slate-200">
+                            @foreach ($transaksi->detailTransaksis as $detail)
+                            <tr>
+                                <td class="px-5 py-4">
+                                    <div class="font-medium text-slate-800">{{ $detail->obat->nama_obat ?? 'Produk tidak ditemukan' }}</div>
+                                    <div class="text-xs text-slate-500">Kategori: {{ $detail->obat->kategori->nama_kategori ?? '-' }}</div>
+                                </td>
+                                <td class="px-5 py-4 text-center">
+                                    Rp {{ number_format($detail->harga, 0, ',', '.') }}
+                                </td>
+                                <td class="px-5 py-4 text-center">
+                                    {{ $detail->jumlah }}
+                                </td>
+                                <td class="px-5 py-4 text-right font-medium text-slate-800">
+                                    Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-slate-50 px-5 py-4 flex justify-end">
+                    <div class="w-full max-w-sm space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Subtotal Produk:</span>
+                            <span class="font-medium text-slate-800">Rp {{ number_format($transaksi->subtotal, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Ongkos Kirim:</span>
+                            <span class="font-medium text-slate-800">Rp {{ number_format($transaksi->ongkir, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between text-base border-t border-slate-200 pt-3">
+                            <span class="font-bold text-slate-800">Total Pembayaran:</span>
+                            <span class="font-bold text-blue-600">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>

@@ -35,6 +35,8 @@ Route::get('/category/{id}', [MarketplaceController::class, 'category'])->name('
 Route::get('/upload-resep', [ResepDokterController::class, 'create'])->name('resep.create');
 Route::post('/upload-resep', [ResepDokterController::class, 'store'])->name('resep.store');
 
+Route::post('/konsultasi-log', [MarketplaceController::class, 'logKonsultasi'])->name('konsultasi.log');
+
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
@@ -43,6 +45,9 @@ Route::get('/cart/add/{id}', [CartController::class, 'add']); // Fallback GET me
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::get('/cart/update', [CartController::class, 'update']); // Fallback GET method for easy query param updates
 Route::get('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+Route::post('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'store'])->name('feedback.store');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +98,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/transaksi-online/{id}', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'show'])->name('admin.transaksi-online.show');
     Route::patch('/transaksi-online/{id}/status', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'updateStatus'])->name('admin.transaksi-online.update-status');
 
+    // Admin Penilaian Layanan
+    Route::get('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'index'])->name('admin.feedback-layanan.index');
+    Route::delete('/feedback-layanan/{id}', [\App\Http\Controllers\FeedbackLayananController::class, 'destroy'])->name('admin.feedback-layanan.destroy');
     // RBAC & User Management Routes
     Route::resource('role', RoleController::class);
     Route::resource('permission', PermissionController::class);

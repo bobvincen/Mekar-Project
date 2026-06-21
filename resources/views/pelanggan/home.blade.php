@@ -100,7 +100,7 @@
             </div>
             <h3 class="text-lg font-bold text-slate-800 mb-2">Keranjang Belanja Anda</h3>
             <p class="text-sm text-slate-400 font-light leading-relaxed mb-6">
-                Lihat daftar produk kesehatan yang telah Anda pilih. Periksa kuantitas item, masukkan voucher diskon, dan lakukan checkout untuk proses pembayaran yang mudah dan aman.
+                Lihat daftar produk kesehatan yang telah Anda pilih. Periksa kuantitas item dan lakukan checkout untuk proses pembayaran yang mudah dan aman.
             </p>
         </div>
         <div>
