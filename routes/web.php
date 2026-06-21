@@ -10,9 +10,12 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\TransaksiController;
 
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ApotekerDashboardController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\CartController;
-
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ResepDokterController;
 use App\Http\Controllers\AdminResepDokterController;
@@ -78,13 +81,18 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::resource('kategori', KategoriController::class);
     Route::resource('supplier', SupplierController::class);
+    // Custom Obat Import Routes
+    Route::get('/obat/download-template', [ObatController::class, 'downloadTemplate'])->name('obat.download-template');
+    Route::post('/obat/preview-import', [ObatController::class, 'previewImport'])->name('obat.preview-import');
+    Route::post('/obat/import', [ObatController::class, 'import'])->name('obat.import');
+
     Route::resource('obat', ObatController::class);
     Route::resource('pelanggan', PelangganController::class);
-    
+
     // Admin Kelola Resep Dokter
     Route::get('/resep-dokter', [AdminResepDokterController::class, 'index'])->name('admin.resep.index');
     Route::delete('/resep-dokter/{id}', [AdminResepDokterController::class, 'destroy'])->name('admin.resep.destroy');
-    
+
     // Admin Kelola Transaksi Online
     Route::get('/transaksi-online', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'index'])->name('admin.transaksi-online.index');
     Route::get('/transaksi-online/{id}', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'show'])->name('admin.transaksi-online.show');
@@ -93,6 +101,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Admin Penilaian Layanan
     Route::get('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'index'])->name('admin.feedback-layanan.index');
     Route::delete('/feedback-layanan/{id}', [\App\Http\Controllers\FeedbackLayananController::class, 'destroy'])->name('admin.feedback-layanan.destroy');
+    // RBAC & User Management Routes
+    Route::resource('role', RoleController::class);
+    Route::resource('permission', PermissionController::class);
+    Route::resource('user', UserController::class);
 });
 
 /*
@@ -102,7 +114,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 */
 Route::middleware(['auth', 'admin_or_kasir'])->group(function () {
     Route::resource('transaksi', TransaksiController::class);
-    
+
     Route::get('/laporan', function () {
         $totalTransaksi = \App\Models\Transaksi::count();
         $totalPendapatan = \App\Models\Transaksi::sum('total_harga');
@@ -120,6 +132,19 @@ Route::middleware(['auth', 'admin_or_kasir'])->group(function () {
 Route::middleware(['auth', 'kasir'])->group(function () {
     Route::get('/kasir/dashboard', [DashboardController::class, 'index'])
         ->name('kasir.dashboard');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Apoteker Routes (Auth & Apoteker Middleware Required)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'apoteker'])->group(function () {
+    Route::get('/apoteker/dashboard', [ApotekerDashboardController::class, 'index'])->name('apoteker.dashboard');
+    Route::get('/apoteker/resep-dokter', [ApotekerDashboardController::class, 'resepIndex'])->name('apoteker.resep.index');
+    Route::get('/apoteker/resep-dokter/{id}', [ApotekerDashboardController::class, 'resepShow'])->name('apoteker.resep.show');
+    Route::post('/apoteker/resep-dokter/{id}/verify', [ApotekerDashboardController::class, 'resepVerify'])->name('apoteker.resep.verify');
+    Route::get('/apoteker/ketersediaan-obat', [ApotekerDashboardController::class, 'obatIndex'])->name('apoteker.obat.index');
 });
 
 /*
@@ -142,4 +167,4 @@ Route::get('/logout-test', function () {
     return redirect('/login');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -45,6 +45,12 @@ class SupplierController extends Controller
             'alamat'        => 'required|string',
             'telepon'       => 'required|string|max:20',
             'email'         => 'required|email|max:255',
+        ], [
+            'nama_supplier.required' => 'Nama supplier wajib diisi.',
+            'alamat.required'        => 'Alamat wajib diisi.',
+            'telepon.required'       => 'Telepon wajib diisi.',
+            'email.required'         => 'Email wajib diisi.',
+            'email.email'            => 'Format email tidak valid.',
         ]);
 
         Supplier::create($request->all());
@@ -71,6 +77,12 @@ class SupplierController extends Controller
             'alamat'        => 'required|string',
             'telepon'       => 'required|string|max:20',
             'email'         => 'required|email|max:255',
+        ], [
+            'nama_supplier.required' => 'Nama supplier wajib diisi.',
+            'alamat.required'        => 'Alamat wajib diisi.',
+            'telepon.required'       => 'Telepon wajib diisi.',
+            'email.required'         => 'Email wajib diisi.',
+            'email.email'            => 'Format email tidak valid.',
         ]);
 
         $supplier->update($request->all());

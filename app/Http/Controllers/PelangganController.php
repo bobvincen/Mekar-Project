@@ -27,6 +27,12 @@ class PelangganController extends Controller
             'no_hp'          => 'required|string|max:15',
             'alamat'         => 'required|string',
             'role'           => 'required|in:Admin,Kasir,Pelanggan',
+        ], [
+            'nama_pelanggan.required' => 'Nama pengguna wajib diisi.',
+            'no_hp.required'          => 'Nomor handphone wajib diisi.',
+            'alamat.required'         => 'Alamat wajib diisi.',
+            'role.required'           => 'Role wajib dipilih.',
+            'role.in'                 => 'Role yang dipilih tidak valid.',
         ]);
 
         Pelanggan::create([
@@ -53,6 +59,12 @@ class PelangganController extends Controller
             'no_hp'          => 'required|string|max:15',
             'alamat'         => 'required|string',
             'role'           => 'required|in:Admin,Kasir,Pelanggan',
+        ], [
+            'nama_pelanggan.required' => 'Nama pengguna wajib diisi.',
+            'no_hp.required'          => 'Nomor handphone wajib diisi.',
+            'alamat.required'         => 'Alamat wajib diisi.',
+            'role.required'           => 'Role wajib dipilih.',
+            'role.in'                 => 'Role yang dipilih tidak valid.',
         ]);
 
         $pelanggan = Pelanggan::findOrFail($id);

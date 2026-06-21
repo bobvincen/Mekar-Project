@@ -59,6 +59,13 @@ class CheckoutController extends Controller
             'subtotal' => 'required|numeric',
             'total' => 'required|numeric',
             'catatan' => 'nullable|string',
+        ], [
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
+            'metode.required' => 'Metode pengambilan wajib dipilih.',
+            'ongkir.required' => 'Ongkir wajib diisi.',
+            'subtotal.required' => 'Subtotal wajib diisi.',
+            'total.required' => 'Total wajib diisi.',
         ]);
 
         $cartItems = session()->get('checkout_cart', session()->get('cart', []));

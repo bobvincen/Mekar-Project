@@ -34,7 +34,7 @@ class KategoriController extends Controller
             'nama_kategori' => 'required|unique:kategoris,nama_kategori'
         ], [
             'nama_kategori.required' => 'Nama kategori wajib diisi.',
-            'nama_kategori.unique' => 'Nama kategori sudah digunakan.'
+            'nama_kategori.unique' => 'Nama kategori sudah ada.'
         ]);
 
         Kategori::create([
@@ -43,9 +43,8 @@ class KategoriController extends Controller
 
         return redirect()
             ->route('kategori.index')
-            ->with('success', 'Kategori berhasil ditambahkan');
+            ->with('success', 'Kategori berhasil ditambahkan.');
     }
-
     /**
      * Form edit kategori
      */
@@ -60,19 +59,19 @@ class KategoriController extends Controller
     public function update(Request $request, Kategori $kategori)
     {
         $request->validate([
-            'nama_kategori' => 'required|unique:kategoris,nama_kategori,' . $kategori->id
+            'nama_kategori' => 'required|unique:kategoris,nama_kategori,' . $kategori->id,
         ], [
             'nama_kategori.required' => 'Nama kategori wajib diisi.',
-            'nama_kategori.unique' => 'Nama kategori sudah digunakan.'
+            'nama_kategori.unique' => 'Nama kategori sudah ada.',
         ]);
 
         $kategori->update([
-            'nama_kategori' => $request->nama_kategori
+            'nama_kategori' => $request->nama_kategori,
         ]);
 
         return redirect()
             ->route('kategori.index')
-            ->with('success', 'Kategori berhasil diubah');
+            ->with('success', 'Kategori berhasil diperbarui.');
     }
 
     /**
