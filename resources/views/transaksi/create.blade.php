@@ -66,7 +66,7 @@
                         Tanggal Transaksi <span class="text-red-500">*</span>
                     </label>
                     <input type="datetime-local" name="tanggal_transaksi"
-                           class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                           class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 @error('tanggal_transaksi') border-red-500 bg-red-50 @enderror"
                            value="{{ old('tanggal_transaksi', now()->format('Y-m-d\TH:i')) }}">
                     @error('tanggal_transaksi')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -91,7 +91,7 @@
                         Bayar <span class="text-red-500">*</span>
                     </label>
                     <input type="number" name="bayar" id="bayar"
-                           class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                           class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 @error('bayar') border-red-500 bg-red-50 @enderror"
                            value="{{ old('bayar', 0) }}" min="0" step="1000"
                            oninput="hitungKembalian()">
                     @error('bayar')
@@ -168,7 +168,7 @@ const obats = @json($obats);
 let barisIndex = 0;
 let totalHarga = 0;
 
-function tambahBaris(obatId = '', jumlah = 1) {
+function tambahBaris(obatId = '', jumlah = 1, errorMsg = '') {
     document.getElementById('empty-msg').style.display = 'none';
     const idx = barisIndex++;
 
@@ -179,29 +179,34 @@ function tambahBaris(obatId = '', jumlah = 1) {
         </option>`
     ).join('');
 
+    const errorClass = errorMsg ? 'border-red-500 bg-red-50' : 'border-gray-300';
+
     const html = `
-    <div class="grid grid-cols-12 gap-2 items-center baris-item" id="baris-${idx}">
-        <div class="col-span-6">
-            <select name="obat_id[]" onchange="updateSubtotal(${idx})"
-                    class="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-                <option value="">-- Pilih Obat --</option>
-                ${options}
-            </select>
+    <div class="baris-item space-y-1 mb-3" id="baris-${idx}">
+        <div class="grid grid-cols-12 gap-2 items-center">
+            <div class="col-span-6">
+                <select name="obat_id[]" onchange="updateSubtotal(${idx})"
+                        class="w-full border ${errorClass} rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="">-- Pilih Obat --</option>
+                    ${options}
+                </select>
+            </div>
+            <div class="col-span-2">
+                <input type="number" name="jumlah[]" value="${jumlah}" min="1"
+                       id="jumlah-${idx}"
+                       oninput="updateSubtotal(${idx})"
+                       class="w-full border ${errorClass} rounded-xl px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div class="col-span-3 text-right font-semibold text-sm text-gray-700 bg-gray-50 border rounded-xl px-3 py-2"
+                 id="subtotal-${idx}">Rp 0</div>
+            <div class="col-span-1 text-center">
+                <button type="button" onclick="hapusBaris(${idx})"
+                        class="bg-red-100 hover:bg-red-200 text-red-600 px-2 py-2 rounded-xl text-sm">
+                    ✕
+                </button>
+            </div>
         </div>
-        <div class="col-span-2">
-            <input type="number" name="jumlah[]" value="${jumlah}" min="1"
-                   id="jumlah-${idx}"
-                   oninput="updateSubtotal(${idx})"
-                   class="w-full border rounded-xl px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-400">
-        </div>
-        <div class="col-span-3 text-right font-semibold text-sm text-gray-700 bg-gray-50 border rounded-xl px-3 py-2"
-             id="subtotal-${idx}">Rp 0</div>
-        <div class="col-span-1 text-center">
-            <button type="button" onclick="hapusBaris(${idx})"
-                    class="bg-red-100 hover:bg-red-200 text-red-600 px-2 py-2 rounded-xl text-sm">
-                ✕
-            </button>
-        </div>
+        ${errorMsg ? `<p class="text-red-500 text-xs px-1 font-semibold">${errorMsg}</p>` : ''}
     </div>`;
 
     document.getElementById('item-container').insertAdjacentHTML('beforeend', html);
@@ -256,7 +261,18 @@ function hitungKembalian() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => tambahBaris());
+document.addEventListener('DOMContentLoaded', () => {
+    @if(old('obat_id'))
+        @foreach(old('obat_id') as $index => $oldObatId)
+            @php
+                $errorMsg = $errors->first('jumlah.'.$index) ?: $errors->first('obat_id.'.$index);
+            @endphp
+            tambahBaris('{{ $oldObatId }}', '{{ old('jumlah')[$index] ?? 1 }}', '{{ $errorMsg }}');
+        @endforeach
+    @else
+        tambahBaris();
+    @endif
+});
 </script>
 @endpush
 

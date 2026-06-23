@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use Spatie\Permission\Traits\HasRoles;
+
 #[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The model's default values for attributes.
@@ -40,15 +42,22 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the dashboard URL based on user role.
+     * Get the dashboard URL based on user permissions.
      */
     public function getDashboardUrl(): string
     {
-        return match ($this->role) {
-            'admin' => route('dashboard', absolute: false),
-            'kasir' => route('kasir.dashboard', absolute: false),
-            'pelanggan' => '/marketplace',
-            default => '/',
-        };
+        if ($this->can('Kelola User')) {
+            return route('dashboard', absolute: false);
+        }
+        if ($this->can('Verifikasi Resep')) {
+            return route('apoteker.dashboard', absolute: false);
+        }
+        if ($this->can('Kelola Transaksi')) {
+            return route('kasir.dashboard', absolute: false);
+        }
+        if ($this->can('Dashboard')) {
+            return route('dashboard', absolute: false);
+        }
+        return '/marketplace';
     }
 }

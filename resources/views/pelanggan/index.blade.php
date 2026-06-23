@@ -347,16 +347,26 @@
         }
 
         .btn-add-data {
-            background-color: #0F172A;
-            color: #ffffff !important;
-            font-size: 0.875rem;
-            font-weight: 600;
-            height: 40px;
-            padding: 0 16px;
-            border-radius: 10px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background-color: #2563EB;
+            color: #ffffff !important;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.15);
+            transition: all 150ms ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-add-data:hover {
+            background-color: #1D4ED8;
+            color: #ffffff !important;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25);
+            text-decoration: none;
         }
 
         .custom-dash-table {

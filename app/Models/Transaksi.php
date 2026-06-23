@@ -25,7 +25,6 @@ class Transaksi extends Model
         'jarak',
         'ongkir',
         'subtotal',
-        'diskon',
         'catatan',
         'status',
     ];

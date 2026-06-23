@@ -7,8 +7,6 @@
 @php
     $cartItems = $cartItems ?? session()->get('cart', []);
     $subtotal  = $subtotal ?? 0;
-    $ongkir    = $ongkir ?? 0;
-    $diskon    = $diskon ?? 0;
     $total     = $total ?? 0;
     $itemCount = count($cartItems);
 
@@ -172,34 +170,6 @@
         {{-- =================== RIGHT COLUMN (30%) =================== --}}
         <div class="w-full lg:w-[30%] lg:sticky lg:top-24 flex flex-col gap-4">
 
-            {{-- VOUCHER CARD --}}
-            <div class="bg-white border border-slate-100 rounded-3xl shadow-sm p-5">
-                <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-3.75-3.75 3.75-3.75-3.75-3.75 3.75V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
-                    </svg>
-                    Kode Voucher
-                </h3>
-                <div class="flex gap-2">
-                    <input
-                        type="text"
-                        id="voucher-input"
-                        placeholder="Masukkan kode voucher"
-                        class="flex-1 text-xs px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 text-slate-700 placeholder-slate-400 transition-all duration-200"
-                    >
-                    <button
-                        onclick="applyVoucher()"
-                        class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-sm shadow-blue-600/20 hover:shadow-md hover:shadow-blue-600/30 whitespace-nowrap"
-                    >
-                        Terapkan
-                    </button>
-                </div>
-                <div id="voucher-msg" class="hidden mt-2 text-xs font-medium text-emerald-600 flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                    Voucher berhasil diterapkan!
-                </div>
-            </div>
-
             {{-- ORDER SUMMARY CARD --}}
             <div class="bg-white border border-slate-100 rounded-3xl shadow-sm p-5">
                 <h3 class="text-base font-bold text-slate-900 mb-5 pb-4 border-b border-slate-50">
@@ -210,17 +180,6 @@
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-slate-500 font-light">Subtotal (<span x-text="selectedCount"></span> Produk)</span>
                         <span class="text-sm font-semibold text-slate-800" x-text="formatRp(subtotal)"></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-slate-500 font-light">Ongkos Kirim</span>
-                        <span class="text-sm font-semibold text-slate-800" x-text="subtotal > 0 ? formatRp(ongkir) : 'Rp 0'"></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-slate-500 font-light flex items-center gap-1">
-                            Diskon
-                            <span class="bg-red-50 text-red-500 border border-red-100 text-[9px] font-bold px-1.5 py-0.5 rounded-md">HEMAT</span>
-                        </span>
-                        <span class="text-sm font-semibold text-red-500" x-text="subtotal > 0 ? '− ' + formatRp(diskon) : '− Rp 0'"></span>
                     </div>
                 </div>
 
@@ -233,15 +192,15 @@
                 </div>
 
                 {{-- CHECKOUT BUTTON --}}
-                <a
-                    href="/checkout"
+                <button
+                    @click="proceedToCheckout()"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-4 rounded-2xl shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-300 flex items-center justify-center gap-2 group"
                 >
                     <svg class="w-4.5 h-4.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                     </svg>
                     Lanjut ke Checkout
-                </a>
+                </button>
 
                 {{-- SECURITY BADGES --}}
                 <div class="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-slate-50">
@@ -307,8 +266,20 @@ function cartPage() {
     return {
         selected: Array({{ count($cartItems) }}).fill(true),
         items: {!! json_encode(array_values($cartItems)) !!},
-        ongkir: {{ $ongkir }},
-        diskon: {{ $diskon }},
+        
+        init() {
+            this.$watch('selected', () => this.logDebug());
+            this.$watch('items', () => this.logDebug(), { deep: true });
+            
+            // Initial log
+            this.logDebug();
+        },
+        
+        logDebug() {
+            console.log('Subtotal:', this.subtotal);
+            console.log('Total:', this.total);
+        },
+        
         get allSelected() {
             return this.selected.length > 0 && this.selected.every(v => v);
         },
@@ -325,7 +296,7 @@ function cartPage() {
             return total;
         },
         get total() {
-            return this.subtotal > 0 ? (this.subtotal + this.ongkir - this.diskon) : 0;
+            return this.subtotal > 0 ? this.subtotal : 0;
         },
         toggleAll() {
             const val = this.allSelected;
@@ -347,16 +318,20 @@ function cartPage() {
                     }
                 }
             });
+        },
+        proceedToCheckout() {
+            let selectedIds = [];
+            this.items.forEach((item, index) => {
+                if (this.selected[index]) {
+                    selectedIds.push(item.id);
+                }
+            });
+            if (selectedIds.length === 0) {
+                alert('Pilih minimal satu produk untuk di-checkout.');
+                return;
+            }
+            window.location.href = '/checkout?selected=' + selectedIds.join(',');
         }
-    }
-}
-
-function applyVoucher() {
-    const input = document.getElementById('voucher-input');
-    const msg   = document.getElementById('voucher-msg');
-    if (input.value.trim().length > 0) {
-        msg.classList.remove('hidden');
-        input.classList.add('border-emerald-400', 'ring-2', 'ring-emerald-200');
     }
 }
 </script>

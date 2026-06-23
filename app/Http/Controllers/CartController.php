@@ -16,11 +16,14 @@ class CartController extends Controller
             $subtotal += $item['price'] * $item['qty'];
         }
         
-        $ongkir = $subtotal > 0 ? 15000 : 0;
-        $diskon = $subtotal > 150000 ? 20000 : 0; // Dynamic discount for orders > 150k
-        $total = max(0, $subtotal + $ongkir - $diskon);
+        $total = $subtotal;
 
-        return view('marketplace.cart', compact('cartItems', 'subtotal', 'ongkir', 'diskon', 'total'));
+        \Illuminate\Support\Facades\Log::info('Cart Index - Perhitungan Harga:', [
+            'subtotal' => $subtotal,
+            'total' => $total
+        ]);
+
+        return view('marketplace.cart', compact('cartItems', 'subtotal', 'total'));
     }
 
     public function add($id, Request $request)
@@ -98,9 +101,12 @@ class CartController extends Controller
             foreach ($cart as $item) {
                 $subtotal += $item['price'] * $item['qty'];
             }
-            $ongkir = $subtotal > 0 ? 15000 : 0;
-            $diskon = $subtotal > 150000 ? 20000 : 0;
-            $total = max(0, $subtotal + $ongkir - $diskon);
+            $total = $subtotal;
+
+            \Illuminate\Support\Facades\Log::info('Cart Update (AJAX) - Perhitungan Harga:', [
+                'subtotal' => $subtotal,
+                'total' => $total
+            ]);
 
             if ($request->wantsJson()) {
                 return response()->json([
@@ -108,8 +114,6 @@ class CartController extends Controller
                     'qty' => $qty,
                     'itemSubtotal' => 'Rp ' . number_format($cart[$id]['subtotal'] ?? 0, 0, ',', '.'),
                     'subtotal' => 'Rp ' . number_format($subtotal, 0, ',', '.'),
-                    'ongkir' => 'Rp ' . number_format($ongkir, 0, ',', '.'),
-                    'diskon' => 'Rp ' . number_format($diskon, 0, ',', '.'),
                     'total' => 'Rp ' . number_format($total, 0, ',', '.'),
                     'itemCount' => count($cart)
                 ]);
