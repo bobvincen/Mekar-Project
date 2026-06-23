@@ -86,4 +86,5 @@ class KategoriController extends Controller
             ->route('kategori.index')
             ->with('success', 'Kategori berhasil dihapus');
     }
+
 }
