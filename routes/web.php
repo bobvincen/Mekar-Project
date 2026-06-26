@@ -128,7 +128,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('user', UserController::class)->middleware('permission:Kelola User');
 
     // POS & Reports (Shared/Individual Staff)
-    Route::resource('transaksi', TransaksiController::class)->middleware('permission:Kelola Transaksi');
+    Route::middleware('permission:Kelola Transaksi')->group(function () {
+        Route::get('transaksi/export-pdf', [TransaksiController::class, 'exportPdf'])
+            ->name('transaksi.export-pdf');
+        Route::resource('transaksi', TransaksiController::class);
+    });
+
     Route::get('/laporan', function () {
         $totalTransaksi = \App\Models\Transaksi::count();
         $totalPendapatan = \App\Models\Transaksi::sum('total_harga');
