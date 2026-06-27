@@ -46,13 +46,13 @@ class User extends Authenticatable
      */
     public function getDashboardUrl(): string
     {
-        if ($this->can('Kelola User')) {
+        if ($this->can('Lihat User')) {
             return route('dashboard', absolute: false);
         }
         if ($this->can('Verifikasi Resep')) {
             return route('apoteker.dashboard', absolute: false);
         }
-        if ($this->can('Kelola Transaksi')) {
+        if ($this->can('Lihat Transaksi')) {
             return route('kasir.dashboard', absolute: false);
         }
         if ($this->can('Dashboard')) {

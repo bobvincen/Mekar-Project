@@ -78,12 +78,12 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'permission:Dashboard'])->group(function () {
     // Admin Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->middleware('permission:Kelola User')
+        ->middleware('permission:Lihat User')
         ->name('dashboard');
 
     // Kasir Dashboard
     Route::get('/kasir/dashboard', [DashboardController::class, 'index'])
-        ->middleware('permission:Kelola Transaksi')
+        ->middleware('permission:Lihat Transaksi')
         ->name('kasir.dashboard');
 
     // Apoteker Dashboard
@@ -96,20 +96,58 @@ Route::middleware(['auth', 'permission:Dashboard'])->group(function () {
 |--------------------------------------------------------------------------
 | Authorized Staff & Resource Management Routes
 |--------------------------------------------------------------------------
-*/
+|*/
 Route::middleware(['auth'])->group(function () {
-    Route::resource('kategori', KategoriController::class)->middleware('permission:Kelola Kategori');
-    Route::resource('supplier', SupplierController::class)->middleware('permission:Kelola Supplier');
+    // Kategori Management
+    Route::middleware('permission:Lihat Kategori')->group(function () {
+        Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori.index');
+        Route::get('/kategori/{kategori}/edit', [KategoriController::class, 'edit'])->name('kategori.edit');
+        Route::put('/kategori/{kategori}', [KategoriController::class, 'update'])->name('kategori.update');
+        Route::delete('/kategori/{kategori}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
+    });
+    Route::middleware('permission:Tambah Kategori')->group(function () {
+        Route::get('/kategori/create', [KategoriController::class, 'create'])->name('kategori.create');
+        Route::post('/kategori', [KategoriController::class, 'store'])->name('kategori.store');
+    });
+
+    // Supplier Management
+    Route::middleware('permission:Lihat Supplier')->group(function () {
+        Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier.index');
+        Route::get('/supplier/{supplier}/edit', [SupplierController::class, 'edit'])->name('supplier.edit');
+        Route::put('/supplier/{supplier}', [SupplierController::class, 'update'])->name('supplier.update');
+        Route::delete('/supplier/{supplier}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
+    });
+    Route::middleware('permission:Tambah Supplier')->group(function () {
+        Route::get('/supplier/create', [SupplierController::class, 'create'])->name('supplier.create');
+        Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
+    });
 
     // Obat Management
-    Route::middleware('permission:Kelola Obat')->group(function () {
+    Route::middleware('permission:Lihat Obat')->group(function () {
+        Route::get('/obat', [ObatController::class, 'index'])->name('obat.index');
+        Route::get('/obat/{obat}/edit', [ObatController::class, 'edit'])->name('obat.edit');
+        Route::put('/obat/{obat}', [ObatController::class, 'update'])->name('obat.update');
+        Route::delete('/obat/{obat}', [ObatController::class, 'destroy'])->name('obat.destroy');
+    });
+    Route::middleware('permission:Tambah Obat')->group(function () {
         Route::get('/obat/download-template', [ObatController::class, 'downloadTemplate'])->name('obat.download-template');
         Route::post('/obat/preview-import', [ObatController::class, 'previewImport'])->name('obat.preview-import');
         Route::post('/obat/import', [ObatController::class, 'import'])->name('obat.import');
-        Route::resource('obat', ObatController::class);
+        Route::get('/obat/create', [ObatController::class, 'create'])->name('obat.create');
+        Route::post('/obat', [ObatController::class, 'store'])->name('obat.store');
     });
 
-    Route::resource('pelanggan', PelangganController::class)->middleware('permission:Kelola Pelanggan');
+    // Pelanggan Management
+    Route::middleware('permission:Lihat Pelanggan')->group(function () {
+        Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
+        Route::get('/pelanggan/{pelanggan}/edit', [PelangganController::class, 'edit'])->name('pelanggan.edit');
+        Route::put('/pelanggan/{pelanggan}', [PelangganController::class, 'update'])->name('pelanggan.update');
+        Route::delete('/pelanggan/{pelanggan}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
+    });
+    Route::middleware('permission:Tambah Pelanggan')->group(function () {
+        Route::get('/pelanggan/create', [PelangganController::class, 'create'])->name('pelanggan.create');
+        Route::post('/pelanggan', [PelangganController::class, 'store'])->name('pelanggan.store');
+    });
 
     // Admin Online Orders & Resep Management (Admin-only, protected by Kelola Pesanan Online)
     Route::middleware('permission:Kelola Pesanan Online')->group(function () {
@@ -123,15 +161,52 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // RBAC & User Management (Admin-only)
-    Route::resource('role', RoleController::class)->middleware('permission:Kelola Role');
-    Route::resource('permission', PermissionController::class)->middleware('permission:Kelola Permission');
-    Route::resource('user', UserController::class)->middleware('permission:Kelola User');
+    Route::middleware('permission:Lihat Role')->group(function () {
+        Route::get('/role', [RoleController::class, 'index'])->name('role.index');
+        Route::get('/role/{role}/edit', [RoleController::class, 'edit'])->name('role.edit');
+        Route::put('/role/{role}', [RoleController::class, 'update'])->name('role.update');
+        Route::delete('/role/{role}', [RoleController::class, 'destroy'])->name('role.destroy');
+    });
+    Route::middleware('permission:Tambah Role')->group(function () {
+        Route::get('/role/create', [RoleController::class, 'create'])->name('role.create');
+        Route::post('/role', [RoleController::class, 'store'])->name('role.store');
+    });
+
+    Route::middleware('permission:Lihat Permission')->group(function () {
+        Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index');
+        Route::get('/permission/{permission}/edit', [PermissionController::class, 'edit'])->name('permission.edit');
+        Route::put('/permission/{permission}', [PermissionController::class, 'update'])->name('permission.update');
+        Route::delete('/permission/{permission}', [PermissionController::class, 'destroy'])->name('permission.destroy');
+    });
+    Route::middleware('permission:Tambah Permission')->group(function () {
+        Route::get('/permission/create', [PermissionController::class, 'create'])->name('permission.create');
+        Route::post('/permission', [PermissionController::class, 'store'])->name('permission.store');
+    });
+
+    Route::middleware('permission:Lihat User')->group(function () {
+        Route::get('/user', [UserController::class, 'index'])->name('user.index');
+        Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+        Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
+        Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+    });
+    Route::middleware('permission:Tambah User')->group(function () {
+        Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
+        Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    });
 
     // POS & Reports (Shared/Individual Staff)
-    Route::middleware('permission:Kelola Transaksi')->group(function () {
+    Route::middleware('permission:Lihat Transaksi')->group(function () {
         Route::get('transaksi/export-pdf', [TransaksiController::class, 'exportPdf'])
             ->name('transaksi.export-pdf');
-        Route::resource('transaksi', TransaksiController::class);
+        Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
+        Route::get('/transaksi/{transaksi}', [TransaksiController::class, 'show'])->name('transaksi.show');
+        Route::get('/transaksi/{transaksi}/edit', [TransaksiController::class, 'edit'])->name('transaksi.edit');
+        Route::put('/transaksi/{transaksi}', [TransaksiController::class, 'update'])->name('transaksi.update');
+        Route::delete('/transaksi/{transaksi}', [TransaksiController::class, 'destroy'])->name('transaksi.destroy');
+    });
+    Route::middleware('permission:Tambah Transaksi')->group(function () {
+        Route::get('/transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
+        Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
     });
 
     Route::get('/laporan', function () {

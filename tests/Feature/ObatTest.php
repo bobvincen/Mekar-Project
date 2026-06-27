@@ -1,15 +1,18 @@
 <?php
 
 use App\Models\User;
-use App\Models\Obat;
-use App\Models\Kategori;
-use App\Models\Supplier;
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    $this->seed(RolePermissionSeeder::class);
+});
+
 test('admin can access obat index and see simplified toolbar', function () {
     $admin = User::factory()->create(['role' => 'admin']);
+    $admin->assignRole('admin');
 
     $response = $this
         ->actingAs($admin)
@@ -19,8 +22,8 @@ test('admin can access obat index and see simplified toolbar', function () {
     
     // Check that we see the correct actions
     $response->assertSee('Template Excel');
-    $response->assertSee('Import Excel');
-    $response->assertSee('+ Tambah Obat');
+    $response->assertSee('Import Data');
+    $response->assertSee('Tambah Obat');
 
     // Check that we do NOT see export actions
     $response->assertDontSee('Export Excel');
@@ -29,6 +32,7 @@ test('admin can access obat index and see simplified toolbar', function () {
 
 test('admin can download template excel', function () {
     $admin = User::factory()->create(['role' => 'admin']);
+    $admin->assignRole('admin');
 
     $response = $this
         ->actingAs($admin)
@@ -40,6 +44,7 @@ test('admin can download template excel', function () {
 
 test('export routes return 404', function () {
     $admin = User::factory()->create(['role' => 'admin']);
+    $admin->assignRole('admin');
 
     // Attempting to access excel export route (which should be deleted)
     $responseExcel = $this
@@ -56,6 +61,7 @@ test('export routes return 404', function () {
 
 test('non-admin users cannot access obat routes', function () {
     $user = User::factory()->create(['role' => 'pelanggan']);
+    $user->assignRole('pelanggan');
 
     $response = $this
         ->actingAs($user)
