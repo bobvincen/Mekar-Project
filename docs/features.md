@@ -67,7 +67,9 @@ Mengatur hak akses pengguna secara dinamis dan aman untuk mencegah akses tidak s
    * Mengelompokkan jenis obat.
    * Form tambah menggunakan modal dinamis di halaman indeks yang otomatis tetap terbuka (`fixed`) jika terjadi kegagalan validasi.
 2. **Supplier**:
-   * Mengelola kontak penyuplai obat (Nama, Telepon, Email, Alamat).
+   * Mengelola kontak penyuplai obat (Nama, Telepon, Email, Alamat, Kontak PIC, Kota, Keterangan).
+   * Kolom kontak (alamat, telepon, email) bersifat `nullable` untuk mendukung alur registrasi cepat dari menu Obat.
+   * Sistem pelacakan status kelengkapan data (`Lengkap` jika alamat, telepon, dan email terisi; `Belum Lengkap` jika ada yang kosong) yang ditampilkan menggunakan badge visual (hijau untuk Lengkap, oranye berkedip untuk Perlu Dilengkapi).
 3. **Pelanggan**:
    * Mengelola data pelanggan reguler dan staff apotek.
 4. **Obat**:
@@ -136,15 +138,17 @@ Menyediakan portal e-commerce sederhana bagi pelanggan untuk memesan obat secara
 
 ---
 
-## 8. Laporan Penjualan (Read-Only Summary)
+## 8. Laporan Penjualan & Ekspor Laporan (Excel & PDF)
 
 ### Tujuan
-Menyajikan rangkuman performa omzet penjualan apotek secara keseluruhan.
+Menyajikan rangkuman performa omzet penjualan apotek secara keseluruhan dan memfasilitasi kebutuhan laporan fisik serta analisis data dinamis.
 
-### Fitur Saat Ini
-* Menampilkan widget ringkasan: **Total Transaksi**, **Total Pendapatan (Omzet)**, dan **Rata-rata Pendapatan per Transaksi**.
-* Menampilkan tabel statis berisi daftar 50 transaksi penjualan terakhir.
-* *Catatan Keterbatasan*: Filter rentang tanggal (periode) aktif di backend, ekspor file PDF (DomPDF), dan ekspor Excel tidak terintegrasi di kode program aktual saat ini.
+### Fitur Utama
+* **Filter Rentang Tanggal**: Menyaring data transaksi penjualan berdasarkan periode tanggal tertentu.
+* **Widget Ringkasan Dinamis**: Menghitung secara real-time **Total Transaksi**, **Total Pendapatan (Omzet)**, dan **Rata-rata Pendapatan per Transaksi** sesuai filter tanggal yang dipilih.
+* **Ekspor Excel (.xlsx)**: Mengunduh data laporan penjualan berformat Microsoft Excel yang diatur secara profesional (auto-width kolom, bold styling header/footer, format mata uang Rupiah).
+* **Ekspor PDF**: Mengunduh berkas laporan dalam format cetak PDF (A4 Landscape) lengkap dengan kop apotek, tabel transaksi terperinci, dan rekapitulasi total pendapatan.
+* **Keamanan Rute**: Modul laporan ini diproteksi ketat dan hanya dapat diakses oleh pengguna dengan role `admin` atau `kasir`.
 
 ---
 
@@ -177,11 +181,18 @@ Menyajikan rangkuman performa omzet penjualan apotek secara keseluruhan.
 * **Gambar Obat Opsional**: File gambar obat dapat diunggah melalui form tambah atau edit obat. Gambar bersifat opsional (`nullable`), disimpan di `storage/app/public/obat/` menggunakan nama file unik, dan direferensikan di kolom `image_path` pada tabel `obats`.
 * **Pratinjau Client-Side**: JavaScript secara real-time menampilkan pratinjau gambar yang dipilih oleh pengguna sebelum form dikirimkan.
 * **Manajemen Hapus/Ganti Gambar**: Pada form edit obat, pengguna dapat melihat gambar saat ini dan memilih untuk menggantinya dengan berkas baru atau menghapusnya secara permanen (menghapus berkas dari disk dan mereset nilai kolom database menjadi `NULL`).
-* **Import Batch dengan ZIP Gambar**:
-  * Pengguna dapat mengunggah file Excel bersamaan dengan file ZIP yang berisi kumpulan gambar obat.
-  * Sistem mengekstraksi file ZIP ke direktori temporer, kemudian mencocokkan nama file di kolom `gambar` pada Excel secara case-insensitive dengan berkas di dalam ZIP.
-  * Gambar yang cocok dipindahkan ke direktori penyimpanan utama (`public/obat/`) dengan nama unik baru, sedangkan gambar yang tidak cocok diabaikan secara aman.
-  * Seluruh direktori temporer dibersihkan secara otomatis setelah proses selesai.
+* **Import Batch dengan ZIP Gambar & Interactive Supplier Verification**:
+  * Pengguna dapat mengunggah file Excel bersamaan dengan file ZIP gambar obat.
+  * **Template Terperinci**: Template Excel mendukung kolom data kontak supplier opsional (`nama_kontak`, `telepon_supplier`, `email_supplier`, `kota`, `alamat_supplier`, `keterangan_supplier`).
+  * **Halaman Preview Import Interaktif**: Menampilkan data impor sebelum disimpan permanen ke database, dibagi menjadi dua panel:
+    * **Panel 1 (Preview Data Obat)**: Menampilkan detail obat valid yang akan diimpor.
+    * **Panel 2 (Data Supplier)**: Mengidentifikasi supplier unik secara case-insensitive dari data Excel, mencocokkan statusnya, dan menampilkan kartu formulir untuk diisi:
+      * `✅ Supplier Ditemukan`: Data kontak sudah lengkap (ditampilkan read-only).
+      * `⚠ Supplier Baru`: Data belum ada di database, memunculkan form input detail kontak secara opsional.
+      * `⚠ Data Supplier Belum Lengkap`: Data supplier terdaftar tetapi kontaknya belum lengkap, menampilkan form kontak dengan border warning pada kolom kosong.
+  * **Validasi Fleksibel**: Hanya nama supplier yang wajib diisi. Input email & telepon divalidasi formatnya jika diisi oleh pengguna.
+  * **Keamanan Transaksi & Anti-Duplikasi**: Proses impor dijalankan di dalam blok `DB::beginTransaction()` untuk mencegah kegagalan data parsial. Supplier yang dirujuk berulang dalam satu Excel hanya akan dibuat sekali.
+  * Seluruh berkas temporer ZIP diekstraksi dan dibersihkan secara otomatis setelah proses impor selesai.
 
 ---
 
