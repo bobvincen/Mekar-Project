@@ -79,7 +79,10 @@ class CheckoutController extends Controller
 
         // Generate Kode Transaksi
         $date = date('Ymd');
-        $lastTrx = \App\Models\Transaksi::where('kode_transaksi', 'like', "TRX-{$date}-%")->orderBy('id', 'desc')->first();
+        $lastTrx = \App\Models\Transaksi::where('kode_transaksi', 'like', "TRX-{$date}-%")
+            ->where('kode_transaksi', 'not like', '%-OFF')
+            ->orderBy('id', 'desc')
+            ->first();
 
         \Illuminate\Support\Facades\Log::info('Checkout Process (Submit) - Perhitungan Harga:', [
             'subtotal' => $validated['subtotal'],
@@ -99,21 +102,22 @@ class CheckoutController extends Controller
             // Save Transaksi
             $transaksi = \App\Models\Transaksi::create([
                 'kode_transaksi' => $kodeTransaksi,
+                'user_id' => auth()->id(),
                 'tanggal_transaksi' => now(),
                 'total_harga' => $validated['total'],
                 'bayar' => 0, // Placeholder
                 'kembalian' => 0, // Placeholder
                 'nama_pelanggan' => $validated['nama'],
                 'whatsapp' => $validated['whatsapp'],
-                'alamat' => $validated['alamat'],
+                'alamat' => $validated['alamat'] ?? null,
                 'metode_pengambilan' => $validated['metode'],
-                'latitude' => $validated['lat'],
-                'longitude' => $validated['lng'],
-                'jarak' => $validated['jarak'],
+                'latitude' => $validated['lat'] ?? null,
+                'longitude' => $validated['lng'] ?? null,
+                'jarak' => $validated['jarak'] ?? null,
                 'ongkir' => $validated['ongkir'],
                 'subtotal' => $validated['subtotal'],
-                'catatan' => $validated['catatan'],
-                'status' => 'Menunggu Konfirmasi',
+                'catatan' => $validated['catatan'] ?? null,
+                'status' => 'Menunggu Pembayaran',
             ]);
 
             // Save Detail Transaksi
@@ -137,53 +141,10 @@ class CheckoutController extends Controller
             }
             session()->put('cart', $mainCart);
 
-            // Generate WhatsApp URL
-            $adminPhone = '6282240432990';
-            
-            $message = "Halo Admin Mekar Pharmacy 👋\n\nSaya ingin melakukan pemesanan obat.\n\n";
-            $message .= "🧾 *Kode Transaksi:*\n{$kodeTransaksi}\n\n";
-            $message .= "📌 *Informasi Pemesan*\n\n";
-            $message .= "Nama:\n{$validated['nama']}\n\n";
-            $message .= "No WhatsApp:\n{$validated['whatsapp']}\n\n";
-            $message .= "🚚 *Metode Pengambilan:*\n{$validated['metode']}\n\n";
-            
-            if ($validated['metode'] !== 'Ambil di Apotek') {
-                $message .= "📍 *Lokasi Pengiriman*\n\n";
-                $message .= "Alamat:\n{$validated['alamat']}\n\n";
-                if ($validated['jarak']) {
-                    $message .= "Jarak:\n" . number_format($validated['jarak'], 2) . " KM\n\n";
-                }
-                $message .= "Perkiraan Ongkir:\nRp " . number_format($validated['ongkir'], 0, ',', '.') . "\n\n";
-                if ($validated['lat'] && $validated['lng']) {
-                    $message .= "Link Maps:\nhttps://maps.google.com/?q={$validated['lat']},{$validated['lng']}\n\n";
-                }
-            } else {
-                $message .= "📍 *Lokasi Pengambilan*\n\n";
-                $message .= "Alamat:\n(Ambil di Apotek)\n\n";
-            }
-            
-            $message .= "🛒 *Detail Pesanan*\n\n";
-            foreach ($cartItems as $item) {
-                $sub = $item['price'] * $item['qty'];
-                $message .= "- {$item['name']} x{$item['qty']} = Rp " . number_format($sub, 0, ',', '.') . "\n";
-            }
-            
-            $message .= "\n💰 *Ringkasan Pembayaran*\n\n";
-            $message .= "Subtotal:\nRp " . number_format($validated['subtotal'], 0, ',', '.') . "\n\n";
-            $message .= "Ongkir:\nRp " . number_format($validated['ongkir'], 0, ',', '.') . "\n\n";
-            $message .= "*Total:*\n*Rp " . number_format($validated['total'], 0, ',', '.') . "*\n\n";
-            
-            if (!empty($validated['catatan'])) {
-                $message .= "📝 *Catatan:*\n{$validated['catatan']}\n\n";
-            }
-            $message .= "Mohon konfirmasi pesanan saya.\n\nTerima kasih 🙏";
-
-            $waUrl = "https://wa.me/{$adminPhone}?text=" . urlencode($message);
-
             return response()->json([
                 'success' => true,
-                'wa_url' => $waUrl,
-                'kode_transaksi' => $kodeTransaksi
+                'kode_transaksi' => $kodeTransaksi,
+                'redirect_url' => route('marketplace.invoice', $kodeTransaksi)
             ]);
 
         } catch (\Exception $e) {
@@ -195,5 +156,60 @@ class CheckoutController extends Controller
                 'message' => 'Terjadi kesalahan saat memproses pesanan. Silakan coba lagi.'
             ], 500);
         }
+    }
+
+    /**
+     * Show the invoice details to the customer.
+     */
+    public function showInvoice($kode_transaksi)
+    {
+        $transaksi = \App\Models\Transaksi::with(['detailTransaksis.obat'])
+            ->where('kode_transaksi', $kode_transaksi)
+            ->firstOrFail();
+
+        return view('marketplace.invoice', compact('transaksi'));
+    }
+
+    /**
+     * Upload proof of transfer.
+     */
+    public function uploadBukti(Request $request, $kode_transaksi)
+    {
+        $request->validate([
+            'bukti_transfer' => 'required|image|mimes:jpeg,png,jpg|max:5120'
+        ], [
+            'bukti_transfer.required' => 'File bukti transfer wajib diunggah.',
+            'bukti_transfer.image' => 'File harus berupa gambar.',
+            'bukti_transfer.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
+            'bukti_transfer.max' => 'Ukuran gambar maksimal 5MB.',
+        ]);
+
+        $transaksi = \App\Models\Transaksi::where('kode_transaksi', $kode_transaksi)->firstOrFail();
+
+        // Save image to public storage
+        $file = $request->file('bukti_transfer');
+        $filename = $kode_transaksi . '_' . time() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('bukti-transfer', $filename, 'public');
+
+        // Update database status and path
+        $transaksi->update([
+            'bukti_transfer' => $path,
+            'status' => 'Menunggu Verifikasi',
+            'verifikasi_catatan' => null, // reset notes if re-uploaded
+        ]);
+
+        // Send WhatsApp notification to Admin via Fonnte API
+        $adminPhone = config('services.fonnte.admin_phone', '6282240432990');
+        $totalFormatted = 'Rp ' . number_format($transaksi->total_harga, 0, ',', '.');
+        
+        $message = "Pesanan Baru\n\n";
+        $message .= "Invoice :\n{$transaksi->kode_transaksi}\n\n";
+        $message .= "Nama :\n{$transaksi->nama_pelanggan}\n\n";
+        $message .= "Total :\n{$totalFormatted}\n\n";
+        $message .= "Silakan login ke Dashboard Admin untuk melakukan verifikasi pembayaran.";
+
+        \App\Services\FonnteService::send($adminPhone, $message);
+
+        return redirect()->back()->with('success', 'Bukti transfer berhasil diunggah! Menunggu verifikasi dari admin.');
     }
 }

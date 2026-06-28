@@ -61,7 +61,37 @@
         }
     </style>
 </head>
-<body class="bg-[#f8fbff] text-slate-700 antialiased selection:bg-blue-200 selection:text-blue-900 relative min-h-screen flex flex-col" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)">
+@php
+    $navIsHome    = request()->is('/') || request()->is('marketplace') || request()->routeIs('marketplace.home');
+    $navIsProduct = request()->is('products') || request()->is('products/*') || request()->routeIs('marketplace.products') || request()->routeIs('marketplace.showProduct') || request()->routeIs('marketplace.category');
+@endphp
+<body class="bg-[#f8fbff] text-slate-700 antialiased selection:bg-blue-200 selection:text-blue-900 relative min-h-screen flex flex-col" 
+    x-data="{ 
+        scrolled: false,
+        activeMenu: '{{ $navIsHome ? 'home' : ($navIsProduct ? 'products' : '') }}'
+    }" 
+    @scroll.window="scrolled = (window.pageYOffset > 20)"
+    x-init="
+        if ('{{ $navIsHome }}' == '1') {
+            setTimeout(() => {
+                const konsultasiEl = document.getElementById('konsultasi');
+                if (konsultasiEl) {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                activeMenu = 'konsultasi';
+                            } else {
+                                if (entry.boundingClientRect.top > 0) {
+                                    activeMenu = 'home';
+                                }
+                            }
+                        });
+                    }, { threshold: 0.2 });
+                    observer.observe(konsultasiEl);
+                }
+            }, 100);
+        }
+    ">
 
     <!-- Background Decoration -->
     <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#eef6ff_50%,#f8fbff_100%)]">
@@ -95,22 +125,25 @@
                 </a>
 
                 <!-- Navigation Links (Desktop) -->
-                @php
-                    $navIsHome    = request()->is('/') || request()->is('marketplace') || request()->routeIs('marketplace.home');
-                    $navIsProduct = request()->is('products') || request()->is('products/*') || request()->routeIs('marketplace.products') || request()->routeIs('marketplace.showProduct') || request()->routeIs('marketplace.category');
-                @endphp
                 <div class="hidden lg:flex items-center gap-5">
-                    <a href="/" class="text-[13px] font-semibold transition-colors duration-300 relative group {{ $navIsHome ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600' }}">
+                    <a href="/" class="text-[13px] font-semibold transition-colors duration-300 relative group"
+                       :class="activeMenu === 'home' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'">
                         Beranda
-                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left {{ $navIsHome ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100' }}"></span>
+                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left"
+                              :class="activeMenu === 'home' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
                     </a>
-                    <a href="/products" class="text-[13px] font-semibold transition-colors duration-300 relative group {{ $navIsProduct ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600' }}">
+                    <a href="/products" class="text-[13px] font-semibold transition-colors duration-300 relative group"
+                       :class="activeMenu === 'products' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'">
                         Semua Produk
-                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left {{ $navIsProduct ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100' }}"></span>
+                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left"
+                              :class="activeMenu === 'products' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
                     </a>
-                    <a href="/#konsultasi" class="text-[13px] font-semibold transition-colors duration-300 relative group text-slate-600 hover:text-blue-600">
+                    <a href="/#konsultasi" class="text-[13px] font-semibold transition-colors duration-300 relative group"
+                       :class="activeMenu === 'konsultasi' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'"
+                       @click="if('{{ $navIsHome }}' == '1') { activeMenu = 'konsultasi'; }">
                         Konsultasi Apoteker
-                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left scale-x-0 group-hover:scale-x-100"></span>
+                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left"
+                              :class="activeMenu === 'konsultasi' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
                     </a>
                 </div>
 
@@ -216,6 +249,13 @@
                                             Dashboard Sistem
                                         </a>
                                     @endif
+
+                                    <a href="{{ route('marketplace.pesanan-saya') }}" class="flex items-center gap-2.5 px-4 py-2 text-[13px] font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                        </svg>
+                                        Pesanan Saya
+                                    </a>
 
                                     <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-4 py-2 text-[13px] font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

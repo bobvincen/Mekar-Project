@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+#[Fillable(['name', 'email', 'password', 'role', 'whatsapp'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -37,6 +37,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -46,13 +47,13 @@ class User extends Authenticatable
      */
     public function getDashboardUrl(): string
     {
-        if ($this->can('Kelola User')) {
+        if ($this->can('Lihat User')) {
             return route('dashboard', absolute: false);
         }
         if ($this->can('Verifikasi Resep')) {
             return route('apoteker.dashboard', absolute: false);
         }
-        if ($this->can('Kelola Transaksi')) {
+        if ($this->can('Lihat Transaksi')) {
             return route('kasir.dashboard', absolute: false);
         }
         if ($this->can('Dashboard')) {

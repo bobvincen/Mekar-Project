@@ -41,22 +41,70 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_supplier' => 'required|string|max:255',
+            'nama_supplier' => 'required|string|max:255|unique:suppliers,nama_supplier',
             'alamat'        => 'required|string',
             'telepon'       => 'required|string|max:20',
             'email'         => 'required|email|max:255',
+            'kontak_pic'    => 'nullable|string|max:255',
+            'kota'          => 'nullable|string|max:255',
+            'keterangan'    => 'nullable|string',
         ], [
             'nama_supplier.required' => 'Nama supplier wajib diisi.',
+            'nama_supplier.unique'   => 'Nama supplier ini sudah terdaftar.',
             'alamat.required'        => 'Alamat wajib diisi.',
             'telepon.required'       => 'Telepon wajib diisi.',
             'email.required'         => 'Email wajib diisi.',
             'email.email'            => 'Format email tidak valid.',
         ]);
 
-        Supplier::create($request->all());
+        $data = $request->all();
+        $data['status'] = 'Lengkap';
+
+        Supplier::create($data);
 
         return redirect()->route('supplier.index')
             ->with('success', 'Supplier berhasil ditambahkan');
+    }
+
+    /**
+     * Store a newly created supplier via AJAX.
+     */
+    public function storeAjax(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'nama_supplier' => 'required|string|max:255|unique:suppliers,nama_supplier',
+            'alamat'        => 'nullable|string',
+            'telepon'       => 'nullable|string|max:20',
+            'email'         => 'nullable|email|max:255',
+            'kontak_pic'    => 'nullable|string|max:255',
+            'kota'          => 'nullable|string|max:255',
+            'keterangan'    => 'nullable|string',
+        ], [
+            'nama_supplier.required' => 'Nama supplier wajib diisi.',
+            'nama_supplier.unique'   => 'Nama supplier ini sudah terdaftar.',
+            'email.email'            => 'Format email tidak valid.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $data = $request->all();
+        if (!empty($data['alamat']) && !empty($data['telepon']) && !empty($data['email'])) {
+            $data['status'] = 'Lengkap';
+        } else {
+            $data['status'] = 'Belum Lengkap';
+        }
+
+        $supplier = Supplier::create($data);
+
+        return response()->json([
+            'success' => true,
+            'data' => $supplier
+        ], 200);
     }
 
     /**
@@ -73,19 +121,26 @@ class SupplierController extends Controller
     public function update(Request $request, Supplier $supplier)
     {
         $request->validate([
-            'nama_supplier' => 'required|string|max:255',
+            'nama_supplier' => 'required|string|max:255|unique:suppliers,nama_supplier,' . $supplier->id,
             'alamat'        => 'required|string',
             'telepon'       => 'required|string|max:20',
             'email'         => 'required|email|max:255',
+            'kontak_pic'    => 'nullable|string|max:255',
+            'kota'          => 'nullable|string|max:255',
+            'keterangan'    => 'nullable|string',
         ], [
             'nama_supplier.required' => 'Nama supplier wajib diisi.',
+            'nama_supplier.unique'   => 'Nama supplier ini sudah terdaftar.',
             'alamat.required'        => 'Alamat wajib diisi.',
             'telepon.required'       => 'Telepon wajib diisi.',
             'email.required'         => 'Email wajib diisi.',
             'email.email'            => 'Format email tidak valid.',
         ]);
 
-        $supplier->update($request->all());
+        $data = $request->all();
+        $data['status'] = 'Lengkap';
+
+        $supplier->update($data);
 
         return redirect()->route('supplier.index')
             ->with('success', 'Supplier berhasil diperbarui');

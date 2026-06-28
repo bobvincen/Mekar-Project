@@ -269,4 +269,44 @@ class TransaksiController extends Controller
             'stok'  => $obat->stok,
         ]);
     }
+    // ─────────────────────────────────────────
+    // EXPORT — laporan transaksi dalam PDF
+    // ─────────────────────────────────────────
+    public function exportPdf(Request $request)
+    {
+        $request->validate([
+            'tanggal_mulai'    => 'required|date',
+            'tanggal_selesai'  => 'required|date|after_or_equal:tanggal_mulai',
+        ]);
+
+        $tanggalMulai    = $request->tanggal_mulai;
+        $tanggalSelesai  = $request->tanggal_selesai;
+
+        $transaksis = Transaksi::with('pelanggan')
+            ->whereDate('tanggal_transaksi', '>=', $tanggalMulai)
+            ->whereDate('tanggal_transaksi', '<=', $tanggalSelesai)
+            ->orderBy('tanggal_transaksi')
+            ->get();
+
+        $totalTransaksi     = $transaksis->count();
+        $totalPendapatan    = $transaksis->sum('total_harga');
+        $totalHargaSum      = $transaksis->sum('total_harga');
+        $totalBayarSum      = $transaksis->sum('bayar');
+        $totalKembalianSum  = $transaksis->sum('kembalian');
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('transaksi.pdf', [
+            'transaksis'         => $transaksis,
+            'tanggal_mulai'      => $tanggalMulai,
+            'tanggal_selesai'    => $tanggalSelesai,
+            'totalTransaksi'     => $totalTransaksi,
+            'totalPendapatan'    => $totalPendapatan,
+            'totalHargaSum'      => $totalHargaSum,
+            'totalBayarSum'      => $totalBayarSum,
+            'totalKembalianSum'  => $totalKembalianSum,
+        ])->setPaper('a4', 'portrait');
+
+        $namaFile = 'laporan-transaksi-' . $tanggalMulai . '-sd-' . $tanggalSelesai . '.pdf';
+
+        return $pdf->download($namaFile);
+    }
 }

@@ -11,6 +11,10 @@ class Supplier extends Model
         'alamat',
         'telepon',
         'email',
+        'kontak_pic',
+        'kota',
+        'keterangan',
+        'status',
     ];
 
     public function obats()

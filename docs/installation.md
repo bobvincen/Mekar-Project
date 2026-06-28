@@ -109,3 +109,25 @@ Untuk menjalankan server lokal, Anda harus mengaktifkan dua server secara parale
    npm run dev
    ```
    Server ini digunakan untuk mengompilasi assets Tailwind CSS secara real-time selama proses pengembangan.
+
+---
+
+## 5. Konfigurasi WhatsApp Notifikasi (Fonnte API)
+
+Aplikasi Mekar Pharmacy memiliki fitur notifikasi otomatis ke WhatsApp Admin untuk pesanan masuk dan unggahan resep dokter. Fitur ini menggunakan layanan **Fonnte API**.
+
+### Langkah Konfigurasi:
+1. Daftar atau masuk ke dashboard Fonnte di [https://fonnte.com](https://fonnte.com).
+2. Tambahkan perangkat WhatsApp Anda pada menu **Devices** dan lakukan scan QR Code sampai statusnya **Connected**.
+3. Salin **API Token** dari dashboard Fonnte Anda.
+4. Buka file `.env` proyek Anda, lalu isi konfigurasi berikut:
+   ```env
+   FONNTE_TOKEN=isi_dengan_token_fonnte_anda
+   FONNTE_BASE_URL=https://api.fonnte.com
+   FONNTE_ADMIN_PHONE=6282240432990
+   ```
+5. Restart server local Laravel Anda agar konfigurasi baru pada `.env` dapat dimuat oleh aplikasi.
+6. Uji koneksi integrasi WhatsApp Anda dengan menjalankan perintah Artisan:
+   ```bash
+   php artisan whatsapp:test
+   ```

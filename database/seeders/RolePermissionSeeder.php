@@ -20,14 +20,22 @@ class RolePermissionSeeder extends Seeder
         // 1. Daftar Permission
         $permissions = [
             'Dashboard',
-            'Kelola User',
-            'Kelola Role',
-            'Kelola Permission',
-            'Kelola Kategori',
-            'Kelola Supplier',
-            'Kelola Obat',
-            'Kelola Pelanggan',
-            'Kelola Transaksi',
+            'Lihat User',
+            'Tambah User',
+            'Lihat Role',
+            'Tambah Role',
+            'Lihat Permission',
+            'Tambah Permission',
+            'Lihat Kategori',
+            'Tambah Kategori',
+            'Lihat Supplier',
+            'Tambah Supplier',
+            'Lihat Obat',
+            'Tambah Obat',
+            'Lihat Pelanggan',
+            'Tambah Pelanggan',
+            'Lihat Transaksi',
+            'Tambah Transaksi',
             'Kelola Laporan',
             'Kelola Pesanan Online',
             'Verifikasi Resep',
@@ -47,8 +55,10 @@ class RolePermissionSeeder extends Seeder
         $roleKasir = Role::firstOrCreate(['name' => 'kasir', 'guard_name' => 'web']);
         $roleKasir->syncPermissions([
             'Dashboard',
-            'Kelola Transaksi',
-            'Kelola Pelanggan',
+            'Lihat Transaksi',
+            'Tambah Transaksi',
+            'Lihat Pelanggan',
+            'Tambah Pelanggan',
             'Lihat Stok Obat',
         ]);
 

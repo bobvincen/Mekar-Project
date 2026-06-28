@@ -4,6 +4,40 @@ Semua perubahan penting pada project **Mekar Pharmacy** akan didokumentasikan di
 
 ---
 
+## [v1.2.0] - 2026-06-28
+
+### Added
+* **Fitur Konsultasi Apoteker**:
+  * Integrasi layanan konsultasi langsung via WhatsApp dengan apoteker.
+  * Penambahan section khusus di homepage dan floating WhatsApp button.
+  * Sistem pencatatan log (`konsultasi_log`) untuk merekam metrik interaksi (sumber, timestamp, IP).
+  * Widget statistik harian dan bulanan konsultasi pada dashboard admin.
+* **Notifikasi Obat Kadaluarsa**:
+  * Sistem pelacakan otomatis untuk obat yang masa kadaluarsanya tersisa kurang dari 30 hari.
+  * Menampilkan peringatan obat secara langsung di panel dashboard admin.
+* **Navbar Logo Branding & UI Improvements**:
+  * Menambahkan logo resmi Mekar Pharmacy pada navigation bar untuk memperkuat branding.
+  * Fitur ulasan (review) web untuk meningkatkan interaksi pengguna.
+  * Fungsionalitas scroll-spy pada navbar menggunakan Intersection Observer untuk perpindahan active state dinamis ("Beranda" & "Konsultasi Apoteker").
+
+### Changed
+* **Sistem Harga & Checkout Marketplace**:
+  * Menghapus logika diskon dan voucher lama (legacy) guna menyederhanakan dan menstabilkan perhitungan harga (Subtotal + Ongkir = Total).
+  * Memastikan state reaktivitas AlpineJS selalu tersinkronisasi secara real-time dengan OpenRouteService API saat checkout.
+* **Tampilan Halaman Admin & Web Utama**:
+  * Mengubah dan memodernisasi gaya UI menggunakan Tailwind CSS untuk mencapai hierarki visual premium.
+  * Menyempurnakan grafik ringkasan penjualan pada dashboard admin.
+
+### Fixed
+* **Spatie Permission Error**:
+  * Menyelesaikan isu `Trait "Spatie\Permission\Traits\HasRoles" not found` akibat konflik dependensi versi.
+* **Konflik Manajemen Role**:
+  * Memperbaiki sistem role management dan potensi konflik pada kode.
+* **Navbar Active State & Routing**:
+  * Memperbaiki kendala tampilan Navbar agar selalu reaktif mengikuti scroll pengguna tanpa sekadar bergantung pada URL routes.
+
+---
+
 ## [v1.1.0] - 2026-06-21
 
 ### Added
