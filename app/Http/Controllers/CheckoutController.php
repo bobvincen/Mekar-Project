@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+
 class CheckoutController extends Controller
 {
     public function index()
@@ -29,8 +30,6 @@ class CheckoutController extends Controller
     public function process(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'whatsapp' => 'required|string|max:20',
             'alamat' => 'nullable|string',
             'metode' => 'required|string',
             'lat' => 'nullable|numeric',
@@ -41,7 +40,23 @@ class CheckoutController extends Controller
             'diskon' => 'required|numeric',
             'total' => 'required|numeric',
             'catatan' => 'nullable|string',
+<<<<<<< HEAD
+=======
+        ], [
+            'metode.required' => 'Metode pengambilan wajib dipilih.',
+            'ongkir.required' => 'Ongkir wajib diisi.',
+            'subtotal.required' => 'Subtotal wajib diisi.',
+            'total.required' => 'Total wajib diisi.',
+>>>>>>> 7916183 (refactor:checkout)
         ]);
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda harus Login untuk melakukan checkout.'
+            ], 401);
+        }
 
         $cartItems = session()->get('cart', []);
 
@@ -72,9 +87,15 @@ class CheckoutController extends Controller
                 'total_harga' => $validated['total'],
                 'bayar' => 0, // Placeholder
                 'kembalian' => 0, // Placeholder
+<<<<<<< HEAD
                 'nama_pelanggan' => $validated['nama'],
                 'whatsapp' => $validated['whatsapp'],
                 'alamat' => $validated['alamat'],
+=======
+                'nama_pelanggan' => $user->name,
+                'whatsapp' => $validated['whatsapp'] ?? $user->whatsapp,
+                'alamat' => $validated['alamat'] ?? null,
+>>>>>>> 7916183 (refactor:checkout)
                 'metode_pengambilan' => $validated['metode'],
                 'latitude' => $validated['lat'],
                 'longitude' => $validated['lng'],
