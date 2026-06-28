@@ -45,5 +45,4 @@ return [
         'admin_phone' => env('FONNTE_ADMIN_PHONE', env('FONTE_ADMIN_PHONE', '6282240432990')),
         'ssl_verify' => env('FONNTE_SSL_VERIFY', false),
     ],
-
 ];

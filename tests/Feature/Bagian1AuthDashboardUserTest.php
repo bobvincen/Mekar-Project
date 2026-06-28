@@ -62,7 +62,10 @@ test('kasir is redirected to kasir dashboard after login', function () {
 });
 
 test('pelanggan is redirected to marketplace after login', function () {
-    $pelanggan = User::factory()->create(['role' => 'pelanggan']);
+    $pelanggan = User::factory()->create([
+        'role' => 'pelanggan',
+        'phone_verified_at' => now(),
+    ]);
     $pelanggan->assignRole('pelanggan');
 
     $response = $this->post('/login', [
@@ -108,7 +111,10 @@ test('guests are redirected to login from dashboards', function () {
 });
 
 test('users without permissions cannot access admin dashboard', function () {
-    $pelanggan = User::factory()->create(['role' => 'pelanggan']);
+    $pelanggan = User::factory()->create([
+        'role' => 'pelanggan',
+        'phone_verified_at' => now(),
+    ]);
     $pelanggan->assignRole('pelanggan');
 
     $response = $this->actingAs($pelanggan)->get('/dashboard');

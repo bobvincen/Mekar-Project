@@ -4,67 +4,84 @@ namespace App\Http\Controllers;
 
 use App\Models\Obat;
 use App\Models\Supplier;
-use App\Models\Pelanggan;
 use App\Models\Transaksi;
+use App\Models\ResepDokter;
+use App\Models\User;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    /**
+     * Display the Admin Dashboard.
+     */
     public function index()
     {
+        // Low Stock Medicines (stok <= 20)
         $stokRendah = Obat::where('stok', '<=', 20)
             ->orderBy('stok')
             ->get();
 
+        // Expiring Medicines (<= 30 days)
         $obatKadaluarsa = Obat::whereNotNull('tanggal_kadaluarsa')
             ->where('tanggal_kadaluarsa', '<=', now()->addDays(30))
             ->orderBy('tanggal_kadaluarsa')
             ->get();
 
-        $transaksiTerbaru = Transaksi::with('pelanggan')
+        // Recent Transactions (eager load user for online orders and pelanggan for offline)
+        $transaksiTerbaru = Transaksi::with(['user', 'pelanggan'])
             ->latest()
             ->limit(5)
             ->get();
 
-        // Default awal: Bulanan (Total Transaksi per Bulan dalam 12 bulan terakhir)
+        // Optimization: Fetch all monthly transactions in 1 query instead of 12 separate queries
+        $startOfPeriod = now()->subMonths(11)->startOfMonth()->toDateTimeString();
+        $sales = Transaksi::select(
+            DB::raw("DATE_FORMAT(tanggal_transaksi, '%Y-%m') as month_year"),
+            DB::raw("COUNT(id) as count")
+        )
+        ->where('tanggal_transaksi', '>=', $startOfPeriod)
+        ->groupBy('month_year')
+        ->get()
+        ->pluck('count', 'month_year');
+
         $chartLabels = [];
         $chartData = [];
         for ($i = 11; $i >= 0; $i--) {
             $month = now()->subMonths($i);
-            $startOfMonth = $month->copy()->startOfMonth();
-            $endOfMonth = $month->copy()->endOfMonth();
-            
-            $count = Transaksi::whereBetween('tanggal_transaksi', [
-                $startOfMonth->toDateTimeString(),
-                $endOfMonth->toDateTimeString()
-            ])->count();
+            $monthKey = $month->format('Y-m');
             
             $chartLabels[] = $month->format('M Y');
-            $chartData[] = $count;
+            $chartData[] = (int) ($sales->get($monthKey) ?? 0);
         }
 
-        $totalKonsultasiHariIni = \App\Models\KonsultasiLog::whereDate('waktu', today())->count();
-        $totalKonsultasiBulanIni = \App\Models\KonsultasiLog::whereMonth('waktu', now()->month)
-                                    ->whereYear('waktu', now()->year)
-                                    ->count();
+        // New Widget Data
+        $pendingPembayaranCount = Transaksi::where('status', 'Menunggu Verifikasi')->count();
+        $pendingResepCount = ResepDokter::where('status', 'pending')->count();
+        $totalPendapatan = Transaksi::sum('total_harga');
+        $totalPelanggan = User::role('pelanggan')->count();
 
         return view('dashboard.index', [
             'totalObat' => Obat::count(),
             'totalSupplier' => Supplier::count(),
-            'totalPelanggan' => Pelanggan::count(),
+            'totalPelanggan' => $totalPelanggan,
             'totalTransaksi' => Transaksi::count(),
+            'totalPendapatan' => $totalPendapatan,
+            'pendingPembayaranCount' => $pendingPembayaranCount,
+            'pendingResepCount' => $pendingResepCount,
             'stokRendah' => $stokRendah,
             'obatKadaluarsa' => $obatKadaluarsa,
             'transaksiTerbaru' => $transaksiTerbaru,
             'chartLabels' => $chartLabels,
             'chartData' => $chartData,
-            'totalKonsultasiHariIni' => $totalKonsultasiHariIni,
-            'totalKonsultasiBulanIni' => $totalKonsultasiBulanIni,
         ]);
     }
 
-    public function salesSummary(\Illuminate\Http\Request $request)
+    /**
+     * Get Sales Summary for AJAX Charts (Optimized Query Paths).
+     */
+    public function salesSummary(Request $request)
     {
         $filter = $request->get('filter', 'bulanan');
         $chartLabels = [];
@@ -75,12 +92,12 @@ class DashboardController extends Controller
 
         switch ($filter) {
             case 'harian':
-                // Harian: total transaksi (count) per hari selama 30 hari terakhir
+                // Harian: 1 query for last 30 days
                 $sales = Transaksi::select(
                     DB::raw('DATE(tanggal_transaksi) as tanggal'),
                     DB::raw('COUNT(id) as count')
                 )
-                ->where('tanggal_transaksi', '>=', now()->subDays(29)->startOfDay())
+                ->where('tanggal_transaksi', '>=', now()->subDays(29)->startOfDay()->toDateTimeString())
                 ->groupBy('tanggal')
                 ->get()
                 ->pluck('count', 'tanggal');
@@ -96,63 +113,74 @@ class DashboardController extends Controller
                 break;
 
             case 'mingguan':
-                // Mingguan: total transaksi (count) per minggu selama 12 minggu terakhir
+                // Mingguan: 1 optimized query using YEARWEEK grouping
+                $sales = Transaksi::select(
+                    DB::raw("YEARWEEK(tanggal_transaksi, 1) as year_week"),
+                    DB::raw("COUNT(id) as count")
+                )
+                ->where('tanggal_transaksi', '>=', now()->subWeeks(11)->startOfWeek()->toDateTimeString())
+                ->groupBy('year_week')
+                ->get()
+                ->pluck('count', 'year_week');
+
                 for ($i = 11; $i >= 0; $i--) {
                     $startOfWeek = now()->subWeeks($i)->startOfWeek();
                     $endOfWeek = now()->subWeeks($i)->endOfWeek();
-
-                    $count = Transaksi::whereBetween('tanggal_transaksi', [
-                        $startOfWeek->toDateTimeString(),
-                        $endOfWeek->toDateTimeString()
-                    ])->count();
+                    $yearWeekKey = $startOfWeek->format('oW'); // ISO-8601 week number
 
                     $chartLabels[] = $startOfWeek->format('d M') . ' - ' . $endOfWeek->format('d M');
-                    $chartData[] = $count;
+                    $chartData[] = (int) ($sales->get($yearWeekKey) ?? 0);
                 }
                 $chartType = 'line';
                 $datasetLabel = 'Total Transaksi (Mingguan)';
                 break;
 
             case 'bulanan':
-                // Bulanan: total transaksi (count) per bulan selama 12 bulan terakhir
+                // Bulanan: 1 optimized query
+                $sales = Transaksi::select(
+                    DB::raw("DATE_FORMAT(tanggal_transaksi, '%Y-%m') as month_year"),
+                    DB::raw("COUNT(id) as count")
+                )
+                ->where('tanggal_transaksi', '>=', now()->subMonths(11)->startOfMonth()->toDateTimeString())
+                ->groupBy('month_year')
+                ->get()
+                ->pluck('count', 'month_year');
+
                 for ($i = 11; $i >= 0; $i--) {
                     $month = now()->subMonths($i);
-                    $startOfMonth = $month->copy()->startOfMonth();
-                    $endOfMonth = $month->copy()->endOfMonth();
-
-                    $count = Transaksi::whereBetween('tanggal_transaksi', [
-                        $startOfMonth->toDateTimeString(),
-                        $endOfMonth->toDateTimeString()
-                    ])->count();
+                    $monthKey = $month->format('Y-m');
 
                     $chartLabels[] = $month->format('M Y');
-                    $chartData[] = $count;
+                    $chartData[] = (int) ($sales->get($monthKey) ?? 0);
                 }
                 $chartType = 'line';
                 $datasetLabel = 'Total Transaksi (Bulanan)';
                 break;
 
             case 'tahunan':
-                // Tahunan: total transaksi (count) per tahun selama 5 tahun terakhir
+                // Tahunan: 1 optimized query
+                $sales = Transaksi::select(
+                    DB::raw("YEAR(tanggal_transaksi) as year_num"),
+                    DB::raw("COUNT(id) as count")
+                )
+                ->where('tanggal_transaksi', '>=', now()->subYears(4)->startOfYear()->toDateTimeString())
+                ->groupBy('year_num')
+                ->get()
+                ->pluck('count', 'year_num');
+
                 for ($i = 4; $i >= 0; $i--) {
                     $year = now()->subYears($i);
-                    $startOfYear = $year->copy()->startOfYear();
-                    $endOfYear = $year->copy()->endOfYear();
+                    $yearKey = $year->format('Y');
 
-                    $count = Transaksi::whereBetween('tanggal_transaksi', [
-                        $startOfYear->toDateTimeString(),
-                        $endOfYear->toDateTimeString()
-                    ])->count();
-
-                    $chartLabels[] = $year->format('Y');
-                    $chartData[] = $count;
+                    $chartLabels[] = $yearKey;
+                    $chartData[] = (int) ($sales->get($yearKey) ?? 0);
                 }
                 $chartType = 'bar';
                 $datasetLabel = 'Total Transaksi (Tahunan)';
                 break;
 
             case 'obat_terlaris':
-                // Obat Terlaris: jumlah penjualan setiap obat (top 10)
+                // Obat Terlaris: Top 10 items
                 $topSelling = \App\Models\DetailTransaksi::select('obat_id', DB::raw('SUM(jumlah) as total_qty'))
                     ->with('obat')
                     ->groupBy('obat_id')
@@ -169,19 +197,22 @@ class DashboardController extends Controller
                 break;
 
             case 'pendapatan':
-                // Pendapatan: total pendapatan per bulan selama 12 bulan terakhir
+                // Pendapatan: 1 optimized query for monthly revenue sum
+                $sales = Transaksi::select(
+                    DB::raw("DATE_FORMAT(tanggal_transaksi, '%Y-%m') as month_year"),
+                    DB::raw("SUM(total_harga) as revenue")
+                )
+                ->where('tanggal_transaksi', '>=', now()->subMonths(11)->startOfMonth()->toDateTimeString())
+                ->groupBy('month_year')
+                ->get()
+                ->pluck('revenue', 'month_year');
+
                 for ($i = 11; $i >= 0; $i--) {
                     $month = now()->subMonths($i);
-                    $startOfMonth = $month->copy()->startOfMonth();
-                    $endOfMonth = $month->copy()->endOfMonth();
-
-                    $revenue = Transaksi::whereBetween('tanggal_transaksi', [
-                        $startOfMonth->toDateTimeString(),
-                        $endOfMonth->toDateTimeString()
-                    ])->sum('total_harga');
+                    $monthKey = $month->format('Y-m');
 
                     $chartLabels[] = $month->format('M Y');
-                    $chartData[] = (float) $revenue;
+                    $chartData[] = (float) ($sales->get($monthKey) ?? 0);
                 }
                 $chartType = 'line';
                 $datasetLabel = 'Total Pendapatan (Rupiah)';

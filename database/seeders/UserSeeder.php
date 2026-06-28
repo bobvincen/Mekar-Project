@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
                 'name' => 'Admin Mekar',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
+                'phone_verified_at' => now(),
             ]
         );
 
@@ -26,6 +27,7 @@ class UserSeeder extends Seeder
                 'name' => 'Apotek Admin',
                 'password' => Hash::make('password123'),
                 'role' => 'admin',
+                'phone_verified_at' => now(),
             ]
         );
 
@@ -36,6 +38,7 @@ class UserSeeder extends Seeder
                 'name' => 'Kasir Mekar',
                 'password' => Hash::make('password'),
                 'role' => 'kasir',
+                'phone_verified_at' => now(),
             ]
         );
 
@@ -45,6 +48,7 @@ class UserSeeder extends Seeder
                 'name' => 'Siti Kasir',
                 'password' => Hash::make('password123'),
                 'role' => 'kasir',
+                'phone_verified_at' => now(),
             ]
         );
 
@@ -55,6 +59,7 @@ class UserSeeder extends Seeder
                 'name' => 'Pelanggan Mekar',
                 'password' => Hash::make('password'),
                 'role' => 'pelanggan',
+                'phone_verified_at' => now(),
             ]
         );
 
@@ -64,6 +69,7 @@ class UserSeeder extends Seeder
                 'name' => 'Budi Pelanggan',
                 'password' => Hash::make('password123'),
                 'role' => 'pelanggan',
+                'phone_verified_at' => now(),
             ]
         );
     }

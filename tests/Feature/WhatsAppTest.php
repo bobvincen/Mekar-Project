@@ -90,7 +90,7 @@ class WhatsAppTest extends TestCase
 
     public function test_checkout_triggers_invoice_creation()
     {
-        $user = User::factory()->create(['role' => 'pelanggan']);
+        $user = User::factory()->create(['role' => 'pelanggan', 'phone_verified_at' => now()]);
         $this->actingAs($user);
 
         $cart = [
@@ -124,7 +124,7 @@ class WhatsAppTest extends TestCase
             'api.fonnte.com/send' => Http::response(['status' => true], 200)
         ]);
 
-        $user = User::factory()->create(['role' => 'pelanggan']);
+        $user = User::factory()->create(['role' => 'pelanggan', 'phone_verified_at' => now()]);
         $this->actingAs($user);
 
         // Create transaction
@@ -167,7 +167,7 @@ class WhatsAppTest extends TestCase
             ], 400)
         ]);
 
-        $user = User::factory()->create(['role' => 'pelanggan']);
+        $user = User::factory()->create(['role' => 'pelanggan', 'phone_verified_at' => now()]);
         $this->actingAs($user);
 
         // Create transaction

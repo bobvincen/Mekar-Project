@@ -9,7 +9,7 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['phone_verified_at' => now()]);
 
     $response = $this->post('/login', [
         'email' => $user->email,
@@ -21,7 +21,7 @@ test('users can authenticate using the login screen', function () {
 });
 
 test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['phone_verified_at' => now()]);
 
     $this->post('/login', [
         'email' => $user->email,
@@ -32,7 +32,7 @@ test('users can not authenticate with invalid password', function () {
 });
 
 test('users can logout', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['phone_verified_at' => now()]);
 
     $response = $this->actingAs($user)->post('/logout');
 

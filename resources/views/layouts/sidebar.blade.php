@@ -279,9 +279,9 @@
 
             <!-- Pelanggan Accordion -->
             @if(auth()->user()->can('Lihat Pelanggan') || auth()->user()->can('Tambah Pelanggan'))
-                <div x-data="{ open: {{ request()->routeIs('pelanggan.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'pelanggan'" @mouseleave="activeTooltip = null">
+                <div x-data="{ open: {{ request()->routeIs('customer.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'pelanggan'" @mouseleave="activeTooltip = null">
                     <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
-                            class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('pelanggan.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
+                            class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('customer.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
                             :class="sidebarCollapsed ? 'justify-center px-0' : 'justify-between px-4'">
                         <div class="flex items-center gap-3 min-w-0" :class="sidebarCollapsed ? 'mx-auto justify-center' : ''">
                             <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0">
@@ -296,7 +296,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </span>
-                        @if(request()->routeIs('pelanggan.*'))
+                        @if(request()->routeIs('customer.*'))
                             <div class="absolute left-0 top-2 bottom-2 w-1 bg-cyan-400 rounded-r-md"></div>
                         @endif
                     </button>
@@ -319,12 +319,12 @@
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                          class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
                          @can('Lihat Pelanggan')
-                             <a href="{{ route('pelanggan.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('pelanggan.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                             <a href="{{ route('customer.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('customer.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
                                  Daftar Pelanggan
                              </a>
                          @endcan
                          @can('Tambah Pelanggan')
-                             <a href="{{ route('pelanggan.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('pelanggan.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                             <a href="{{ route('customer.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('customer.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
                                  Tambah Pelanggan
                              </a>
                          @endcan

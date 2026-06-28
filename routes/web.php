@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\TransaksiController;
@@ -65,7 +65,9 @@ Route::middleware('auth')->group(function () {
     // API Route for dynamic sales summary chart data
     Route::get('/api/sales-summary', [DashboardController::class, 'salesSummary'])
         ->name('api.sales-summary');
+});
 
+Route::middleware(['auth', 'phone_verified'])->group(function () {
     // Checkout & Invoice Routes
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
@@ -145,16 +147,16 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/obat', [ObatController::class, 'store'])->name('obat.store');
     });
 
-    // Pelanggan Management
+    // Customer Management
     Route::middleware('permission:Lihat Pelanggan')->group(function () {
-        Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
-        Route::get('/pelanggan/{pelanggan}/edit', [PelangganController::class, 'edit'])->name('pelanggan.edit');
-        Route::put('/pelanggan/{pelanggan}', [PelangganController::class, 'update'])->name('pelanggan.update');
-        Route::delete('/pelanggan/{pelanggan}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
+        Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
+        Route::get('/customer/{customer}/edit', [CustomerController::class, 'edit'])->name('customer.edit');
+        Route::put('/customer/{customer}', [CustomerController::class, 'update'])->name('customer.update');
+        Route::delete('/customer/{customer}', [CustomerController::class, 'destroy'])->name('customer.destroy');
     });
     Route::middleware('permission:Tambah Pelanggan')->group(function () {
-        Route::get('/pelanggan/create', [PelangganController::class, 'create'])->name('pelanggan.create');
-        Route::post('/pelanggan', [PelangganController::class, 'store'])->name('pelanggan.store');
+        Route::get('/customer/create', [CustomerController::class, 'create'])->name('customer.create');
+        Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
     });
 
     // Admin Online Orders & Resep Management (Admin-only, protected by Kelola Pesanan Online)
