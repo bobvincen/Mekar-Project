@@ -191,7 +191,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        let seconds = {{ $secondsRemaining ?? 0 }};
+        let seconds = Math.ceil({{ $secondsRemaining ?? 0 }});
         const resendBtn = document.getElementById('resend-btn');
         const countdownText = document.getElementById('countdown-text');
         
