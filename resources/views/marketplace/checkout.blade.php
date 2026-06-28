@@ -5,6 +5,14 @@
 @section('content')
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    .leaflet-container img {
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+</style>
 
 @php
     $cartItems = $cartItems ?? [];
@@ -111,7 +119,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Pilih Lokasi Pengiriman <span class="text-red-500">*</span></label>
                         <p class="text-xs text-slate-500 mb-3 font-light">Geser pin atau klik pada peta untuk menentukan lokasi akurat pengiriman.</p>
-                        <div id="map" class="h-64 sm:h-80 w-full rounded-2xl z-0 border border-slate-200 shadow-sm relative z-[1]"></div>
+                        <div id="map" x-ignore class="h-64 sm:h-80 w-full rounded-2xl border border-slate-200 shadow-sm relative z-[1]"></div>
                         <p x-show="errors.location" class="text-red-500 text-xs mt-1.5 font-medium">Lokasi pada peta wajib dipilih</p>
                         
                         <div class="mt-2.5 text-xs font-medium text-slate-500 flex flex-wrap gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100" x-show="form.lat && form.lng">
@@ -308,6 +316,9 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 function checkoutPage() {
+    let leafletMap = null;
+    let leafletMarker = null;
+
     return {
         form: {
             nama: '',
@@ -336,8 +347,6 @@ function checkoutPage() {
             rating: false,
             komentar: false
         },
-        map: null,
-        marker: null,
         apotekLat: -0.9507097707252123, // Koordinat Mekar Pharmacy akurat
         apotekLng: 100.36891688154128, // Koordinat Mekar Pharmacy akurat
         jarak: 0,
@@ -367,10 +376,13 @@ function checkoutPage() {
                 } else if (val === 'Antar ke Alamat') {
                     setTimeout(() => {
                         this.initMap();
+                        if (leafletMap) {
+                            leafletMap.invalidateSize(true);
+                            if (this.form.lat && this.form.lng) {
+                                leafletMarker.setLatLng([this.form.lat, this.form.lng]);
+                            }
+                        }
                     }, 300);
-                    if (this.form.lat && this.form.lng) {
-                        this.updateLocation(this.form.lat, this.form.lng);
-                    }
                 } else if (val === 'Gunakan Lokasi Saya Saat Ini') {
                     if (navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition(
@@ -391,8 +403,8 @@ function checkoutPage() {
         },
 
         initMap() {
-            if (this.map) {
-                this.map.invalidateSize();
+            if (leafletMap) {
+                leafletMap.invalidateSize(true);
                 return;
             }
             
@@ -400,31 +412,38 @@ function checkoutPage() {
             let defaultLat = this.apotekLat;
             let defaultLng = this.apotekLng;
 
-            this.map = L.map('map').setView([defaultLat, defaultLng], 14);
+            // Set default image path to unpkg CDN
+            L.Icon.Default.imagePath = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
+
+            leafletMap = L.map('map').setView([defaultLat, defaultLng], 14);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(this.map);
+            }).addTo(leafletMap);
 
             // Marker Apotek
             L.marker([this.apotekLat, this.apotekLng], {
                 title: "Mekar Pharmacy"
-            }).addTo(this.map).bindPopup("<div class='text-center'><b class='text-blue-600 font-bold'>Mekar Pharmacy</b><br/><span class='text-xs text-slate-500'>Lokasi Apotek</span></div>").openPopup();
+            }).addTo(leafletMap).bindPopup("<div class='text-center'><b class='text-blue-600 font-bold'>Mekar Pharmacy</b><br/><span class='text-xs text-slate-500'>Lokasi Apotek</span></div>").openPopup();
 
             // Marker Pembeli
-            // Tempatkan sedikit bergeser agar tidak menumpuk dengan marker apotek
-            this.marker = L.marker([defaultLat - 0.005, defaultLng + 0.005], {draggable: true}).addTo(this.map);
+            let initialLat = this.form.lat || (defaultLat - 0.005);
+            let initialLng = this.form.lng || (defaultLng + 0.005);
+            
+            leafletMarker = L.marker([initialLat, initialLng], {
+                draggable: true
+            }).addTo(leafletMap);
 
-            this.marker.on('dragend', (e) => {
-                let position = this.marker.getLatLng();
+            leafletMarker.on('dragend', (e) => {
+                let position = leafletMarker.getLatLng();
                 this.updateLocation(position.lat, position.lng);
             });
 
-            this.map.on('click', (e) => {
-                this.marker.setLatLng(e.latlng);
+            leafletMap.on('click', (e) => {
+                leafletMarker.setLatLng(e.latlng);
                 this.updateLocation(e.latlng.lat, e.latlng.lng);
             });
             
-            setTimeout(() => { this.map.invalidateSize(); }, 100);
+            setTimeout(() => { leafletMap.invalidateSize(true); }, 100);
         },
 
         updateLocation(lat, lng) {
