@@ -318,6 +318,7 @@
 function checkoutPage() {
     let leafletMap = null;
     let leafletMarker = null;
+    let leafletRouteLayer = null;
 
     return {
         form: {
@@ -460,20 +461,61 @@ function checkoutPage() {
                     }
                 }).catch(err => console.error(err));
 
-            // Haversine Distance Calculation
-            let distanceKm = this.calculateDistance(this.apotekLat, this.apotekLng, lat, lng);
-            this.distanceKm = distanceKm;
-            this.jarak = distanceKm;
+            // Routing OSRM & Distance Calculation
+            fetch(`https://router.project-osrm.org/route/v1/driving/${this.apotekLng},${this.apotekLat};${lng},${lat}?overview=full&geometries=geojson`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.routes && data.routes.length > 0) {
+                        let route = data.routes[0];
+                        let distanceKm = route.distance / 1000; // OSRM returns distance in meters
+                        
+                        this.distanceKm = distanceKm;
+                        this.jarak = distanceKm;
 
-            // Rumus ongkir dinamis
-            let hitungOngkir = 10000 + (distanceKm * 2500);
-            let calculatedOngkir = Math.round(hitungOngkir / 500) * 500;
-            if (calculatedOngkir < 10000) {
-                calculatedOngkir = 10000;
-            }
-            
-            this.ongkir = calculatedOngkir;
-            this.total = this.calculateTotal();
+                        // Rumus ongkir dinamis
+                        let hitungOngkir = 10000 + (distanceKm * 2500);
+                        let calculatedOngkir = Math.round(hitungOngkir / 500) * 500;
+                        if (calculatedOngkir < 10000) {
+                            calculatedOngkir = 10000;
+                        }
+                        
+                        this.ongkir = calculatedOngkir;
+                        this.total = this.calculateTotal();
+
+                        // Gambar Rute di Peta
+                        if (leafletRouteLayer) {
+                            leafletMap.removeLayer(leafletRouteLayer);
+                        }
+                        
+                        leafletRouteLayer = L.geoJSON(route.geometry, {
+                            style: {
+                                color: '#3b82f6', // Tailwind blue-500
+                                weight: 5,
+                                opacity: 0.8,
+                                lineJoin: 'round'
+                            }
+                        }).addTo(leafletMap);
+                    } else {
+                        throw new Error("No route found");
+                    }
+                })
+                .catch(err => {
+                    console.error("Gagal mendapatkan rute jalan, menggunakan jarak lurus (Haversine).", err);
+                    
+                    // Fallback to Haversine Distance Calculation
+                    let distanceKm = this.calculateDistance(this.apotekLat, this.apotekLng, lat, lng);
+                    this.distanceKm = distanceKm;
+                    this.jarak = distanceKm;
+
+                    let hitungOngkir = 10000 + (distanceKm * 2500);
+                    let calculatedOngkir = Math.round(hitungOngkir / 500) * 500;
+                    if (calculatedOngkir < 10000) {
+                        calculatedOngkir = 10000;
+                    }
+                    
+                    this.ongkir = calculatedOngkir;
+                    this.total = this.calculateTotal();
+                });
         },
 
         calculateDistance(lat1, lon1, lat2, lon2) {
