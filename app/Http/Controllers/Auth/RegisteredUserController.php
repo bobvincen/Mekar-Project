@@ -31,6 +31,20 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Bersihkan data user yang gagal verifikasi OTP sebelumnya
+        // agar email bisa digunakan untuk daftar ulang
+        if ($request->has('email')) {
+            $unverifiedUser = User::where('email', $request->email)
+                                  ->whereNull('phone_verified_at')
+                                  ->first();
+            
+            if ($unverifiedUser) {
+                // Hapus OTP yang tersisa dan hapus user sementara
+                \App\Models\OtpVerification::where('user_id', $unverifiedUser->id)->delete();
+                $unverifiedUser->delete();
+            }
+        }
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
