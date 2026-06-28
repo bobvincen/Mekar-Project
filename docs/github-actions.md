@@ -123,5 +123,5 @@ Berikut adalah struktur folder terkait GitHub Actions pada project:
 *   **Solusi:** Periksa konfigurasi `coverage: pcov` pada `.github/workflows/coverage.yml`. Pastikan file `phpunit.xml` menyertakan tag `<source><include><directory>app</directory></include></source>` agar Pest tahu bagian mana yang harus dihitung persentase coverage-nya.
 
 ### Workflow Gagal Dijalankan
-*   **Penyebab:** Kesalahan indentasi (*indentation*) atau typo parameter pada file YAML workflow.
-*   **Solusi:** Validasi file YAML menggunakan YAML Validator online atau periksa pesan kesalahan parsial yang ditampilkan langsung oleh GitHub pada tab **Actions**.
+*   **Penyebab:** Kesalahan indentasi (*indentation*) atau typo parameter pada file YAML workflow. Masalah umum lainnya adalah penggunaan karakter titik dua pada nilai database SQLite in-memory (`DB_DATABASE: :memory:`), yang menyebabkan parser YAML salah mengartikannya sebagai key-value mapping tambahan.
+*   **Solusi:** Validasi file YAML menggunakan YAML Validator online atau periksa pesan kesalahan parsial yang ditampilkan langsung oleh GitHub pada tab **Actions**. Jika Anda menggunakan `:memory:`, pastikan untuk membungkusnya dengan tanda kutip ganda (`":memory:"`) atau kutip tunggal (`':memory:'`).

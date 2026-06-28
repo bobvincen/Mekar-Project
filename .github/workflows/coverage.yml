@@ -72,7 +72,7 @@ jobs:
       - name: Run Tests with Coverage
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: :memory:
+          DB_DATABASE: ":memory:"
         run: |
           ./vendor/bin/pest --coverage --coverage-clover=clover.xml --coverage-html=html-coverage
           cp clover.xml coverage.xml
