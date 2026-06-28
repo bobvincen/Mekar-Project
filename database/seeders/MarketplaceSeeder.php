@@ -26,14 +26,16 @@ class MarketplaceSeeder extends Seeder
             $kategoriMap[$name] = Kategori::firstOrCreate(['nama_kategori' => $name])->id;
         }
 
-        // 2. Buat Supplier
         $suppliers = [];
         for ($i = 1; $i <= 5; $i++) {
+            $companyName = 'PT Pharma ' . $faker->companySuffix . ' ' . $i;
             $suppliers[] = Supplier::firstOrCreate([
-                'nama_supplier' => 'PT Pharma ' . $faker->companySuffix,
+                'nama_supplier' => $companyName,
+            ], [
                 'alamat' => $faker->address,
                 'telepon' => $faker->phoneNumber,
                 'email' => $faker->unique()->companyEmail,
+                'status' => 'Lengkap',
             ])->id;
         }
 

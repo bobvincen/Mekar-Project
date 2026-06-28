@@ -27,11 +27,20 @@ class Transaksi extends Model
         'subtotal',
         'catatan',
         'status',
+        'bukti_transfer',
+        'verifikasi_catatan',
+        'verifikator_id',
+        'tanggal_verifikasi',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function verifikator()
+    {
+        return $this->belongsTo(User::class, 'verifikator_id');
     }
 
     public function pelanggan()

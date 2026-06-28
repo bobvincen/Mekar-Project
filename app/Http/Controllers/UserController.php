@@ -12,13 +12,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()->get();
+        $users = User::role(['admin', 'apoteker', 'kasir'])->latest()->get();
         return view('user.index', compact('users'));
     }
 
     public function create()
     {
-        $roles = Role::all();
+        $roles = Role::whereIn('name', ['admin', 'apoteker', 'kasir'])->get();
         return view('user.create', compact('roles'));
     }
 
@@ -28,7 +28,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Password::defaults()],
-            'role' => ['required', 'exists:roles,name'],
+            'role' => ['required', 'in:admin,apoteker,kasir'],
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Alamat email wajib diisi.',
@@ -37,7 +37,7 @@ class UserController extends Controller
             'password.required' => 'Password wajib diisi.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'role.required' => 'Role akses wajib dipilih.',
-            'role.exists' => 'Role akses tidak valid.',
+            'role.in' => 'Role akses tidak valid.',
         ]);
 
         $user = User::create([
@@ -45,6 +45,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'phone_verified_at' => now(),
         ]);
 
         // Sync with Spatie Permission roles
@@ -57,21 +58,21 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user = User::findOrFail($id);
-        $roles = Role::all();
+        $user = User::role(['admin', 'apoteker', 'kasir'])->findOrFail($id);
+        $roles = Role::whereIn('name', ['admin', 'apoteker', 'kasir'])->get();
         
         return view('user.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::role(['admin', 'apoteker', 'kasir'])->findOrFail($id);
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $id],
             'password' => ['nullable', 'confirmed', Password::defaults()],
-            'role' => ['required', 'exists:roles,name'],
+            'role' => ['required', 'in:admin,apoteker,kasir'],
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Alamat email wajib diisi.',
@@ -79,7 +80,7 @@ class UserController extends Controller
             'email.unique' => 'Email sudah digunakan.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'role.required' => 'Role akses wajib dipilih.',
-            'role.exists' => 'Role akses tidak valid.',
+            'role.in' => 'Role akses tidak valid.',
         ]);
 
         $userData = [
@@ -104,7 +105,7 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::role(['admin', 'apoteker', 'kasir'])->findOrFail($id);
 
         // Prevent self-deletion for safety
         if (auth()->id() === $user->id) {

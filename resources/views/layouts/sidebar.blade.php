@@ -85,14 +85,14 @@
         </div>
 
         <!-- MASTER DATA SECTION -->
-        @if(auth()->user()->can('Kelola Kategori') || auth()->user()->can('Kelola Supplier') || auth()->user()->can('Kelola Obat') || auth()->user()->can('Lihat Stok Obat'))
+        @if(auth()->user()->can('Lihat Kategori') || auth()->user()->can('Tambah Kategori') || auth()->user()->can('Lihat Supplier') || auth()->user()->can('Tambah Supplier') || auth()->user()->can('Lihat Obat') || auth()->user()->can('Tambah Obat') || auth()->user()->can('Lihat Stok Obat'))
             <div class="px-4 mt-10 mb-4 text-[10px] font-bold text-cyan-200/40 uppercase tracking-widest select-none" x-show="!sidebarCollapsed" x-transition>
                 Master Data
             </div>
             <div class="w-full border-t border-white/5 my-6" x-show="sidebarCollapsed" x-transition></div>
 
             <!-- Kategori Accordion -->
-            @can('Kelola Kategori')
+            @if(auth()->user()->can('Lihat Kategori') || auth()->user()->can('Tambah Kategori'))
                 <div x-data="{ open: {{ request()->routeIs('kategori.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'kategori'" @mouseleave="activeTooltip = null">
                     <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
                             class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('kategori.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
@@ -122,7 +122,7 @@
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 translate-x-0"
                          x-transition:leave-end="opacity-0 translate-x-2"
-                         class="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3.5 py-2 bg-slate-950/90 backdrop-blur-md text-white text-xs font-semibold rounded-xl shadow-2xl pointer-events-none whitespace-nowrap z-50 border border-white/15"
+                         class="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3.5 py-2 bg-slate-955/90 backdrop-blur-md text-white text-xs font-semibold rounded-xl shadow-2xl pointer-events-none whitespace-nowrap z-50 border border-white/15"
                          style="display: none;">
                         Kategori
                     </div>
@@ -132,18 +132,22 @@
                          x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                          class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
-                         <a href="{{ route('kategori.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('kategori.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Daftar Kategori
-                         </a>
-                         <a href="{{ route('kategori.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('kategori.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Tambah Kategori
-                         </a>
+                         @can('Lihat Kategori')
+                             <a href="{{ route('kategori.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('kategori.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Daftar Kategori
+                             </a>
+                         @endcan
+                         @can('Tambah Kategori')
+                             <a href="{{ route('kategori.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('kategori.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Tambah Kategori
+                             </a>
+                         @endcan
                     </div>
                 </div>
-            @endcan
+            @endif
 
             <!-- Supplier Accordion -->
-            @can('Kelola Supplier')
+            @if(auth()->user()->can('Lihat Supplier') || auth()->user()->can('Tambah Supplier'))
                 <div x-data="{ open: {{ request()->routeIs('supplier.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'supplier'" @mouseleave="activeTooltip = null">
                     <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
                             class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('supplier.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
@@ -183,18 +187,22 @@
                          x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                          class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
-                         <a href="{{ route('supplier.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('supplier.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Daftar Supplier
-                         </a>
-                         <a href="{{ route('supplier.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('supplier.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Tambah Supplier
-                         </a>
+                         @can('Lihat Supplier')
+                             <a href="{{ route('supplier.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('supplier.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Daftar Supplier
+                             </a>
+                         @endcan
+                         @can('Tambah Supplier')
+                             <a href="{{ route('supplier.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('supplier.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Tambah Supplier
+                             </a>
+                         @endcan
                     </div>
                 </div>
-            @endcan
+            @endif
 
             <!-- Obat Accordion -->
-            @if(auth()->user()->can('Kelola Obat') || auth()->user()->can('Lihat Stok Obat'))
+            @if(auth()->user()->can('Lihat Obat') || auth()->user()->can('Tambah Obat') || auth()->user()->can('Lihat Stok Obat'))
                 @php
                     $isObatActive = request()->routeIs('obat.*') || request()->routeIs('apoteker.obat.*');
                 @endphp
@@ -227,7 +235,7 @@
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 translate-x-0"
                          x-transition:leave-end="opacity-0 translate-x-2"
-                         class="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3.5 py-2 bg-slate-950/90 backdrop-blur-md text-white text-xs font-semibold rounded-xl shadow-2xl pointer-events-none whitespace-nowrap z-50 border border-white/15"
+                         class="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3.5 py-2 bg-slate-955/90 backdrop-blur-md text-white text-xs font-semibold rounded-xl shadow-2xl pointer-events-none whitespace-nowrap z-50 border border-white/15"
                          style="display: none;">
                         Obat
                     </div>
@@ -237,20 +245,25 @@
                          x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                          class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
-                         @can('Kelola Obat')
+                         @can('Lihat Obat')
                               <a href="{{ route('obat.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('obat.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
                                   Daftar Obat
                               </a>
+                         @endcan
+                         @can('Tambah Obat')
                               <a href="{{ route('obat.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('obat.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
                                   Tambah Obat
                               </a>
                               <a href="{{ route('obat.download-template') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('obat.download-template') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
                                   Download Template
                               </a>
-                         @else
-                              <a href="{{ route('apoteker.obat.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('apoteker.obat.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                                  Stok Obat
-                              </a>
+                         @endcan
+                         @can('Lihat Stok Obat')
+                              @if(!auth()->user()->can('Lihat Obat'))
+                                  <a href="{{ route('apoteker.obat.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('apoteker.obat.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                      Stok Obat
+                                  </a>
+                              @endif
                          @endcan
                     </div>
                 </div>
@@ -258,17 +271,17 @@
         @endif
 
         <!-- PENGGUNA SECTION -->
-        @if(auth()->user()->can('Kelola Pelanggan') || auth()->user()->can('Kelola User') || auth()->user()->can('Kelola Role') || auth()->user()->can('Kelola Permission'))
+        @if(auth()->user()->can('Lihat Pelanggan') || auth()->user()->can('Tambah Pelanggan') || auth()->user()->can('Lihat User') || auth()->user()->can('Tambah User') || auth()->user()->can('Lihat Role') || auth()->user()->can('Tambah Role') || auth()->user()->can('Lihat Permission') || auth()->user()->can('Tambah Permission'))
             <div class="px-4 mt-10 mb-4 text-[10px] font-bold text-cyan-200/40 uppercase tracking-widest select-none" x-show="!sidebarCollapsed" x-transition>
                 Pengguna
             </div>
             <div class="w-full border-t border-white/5 my-6" x-show="sidebarCollapsed" x-transition></div>
 
             <!-- Pelanggan Accordion -->
-            @can('Kelola Pelanggan')
-                <div x-data="{ open: {{ request()->routeIs('pelanggan.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'pelanggan'" @mouseleave="activeTooltip = null">
+            @if(auth()->user()->can('Lihat Pelanggan') || auth()->user()->can('Tambah Pelanggan'))
+                <div x-data="{ open: {{ request()->routeIs('customer.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'pelanggan'" @mouseleave="activeTooltip = null">
                     <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
-                            class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('pelanggan.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
+                            class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('customer.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
                             :class="sidebarCollapsed ? 'justify-center px-0' : 'justify-between px-4'">
                         <div class="flex items-center gap-3 min-w-0" :class="sidebarCollapsed ? 'mx-auto justify-center' : ''">
                             <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0">
@@ -283,7 +296,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </span>
-                        @if(request()->routeIs('pelanggan.*'))
+                        @if(request()->routeIs('customer.*'))
                             <div class="absolute left-0 top-2 bottom-2 w-1 bg-cyan-400 rounded-r-md"></div>
                         @endif
                     </button>
@@ -305,18 +318,22 @@
                          x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                          class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
-                         <a href="{{ route('pelanggan.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('pelanggan.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Daftar Pelanggan
-                         </a>
-                         <a href="{{ route('pelanggan.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('pelanggan.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Tambah Pelanggan
-                         </a>
+                         @can('Lihat Pelanggan')
+                             <a href="{{ route('customer.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('customer.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Daftar Pelanggan
+                             </a>
+                         @endcan
+                         @can('Tambah Pelanggan')
+                             <a href="{{ route('customer.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('customer.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Tambah Pelanggan
+                             </a>
+                         @endcan
                     </div>
                 </div>
-            @endcan
+            @endif
 
             <!-- User Management Accordion -->
-            @can('Kelola User')
+            @if(auth()->user()->can('Lihat User') || auth()->user()->can('Tambah User'))
                 <div x-data="{ open: {{ request()->routeIs('user.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'user'" @mouseleave="activeTooltip = null">
                     <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
                             class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('user.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
@@ -356,18 +373,22 @@
                          x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                          class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
-                         <a href="{{ route('user.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('user.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Daftar User
-                         </a>
-                         <a href="{{ route('user.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('user.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Tambah User
-                         </a>
+                         @can('Lihat User')
+                             <a href="{{ route('user.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('user.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Daftar User
+                             </a>
+                         @endcan
+                         @can('Tambah User')
+                             <a href="{{ route('user.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('user.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Tambah User
+                             </a>
+                         @endcan
                     </div>
                 </div>
-            @endcan
+            @endif
 
             <!-- Role Management Accordion -->
-            @can('Kelola Role')
+            @if(auth()->user()->can('Lihat Role') || auth()->user()->can('Tambah Role'))
                 <div x-data="{ open: {{ request()->routeIs('role.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'role'" @mouseleave="activeTooltip = null">
                     <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
                             class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('role.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
@@ -407,18 +428,22 @@
                          x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                          class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
-                         <a href="{{ route('role.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('role.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Daftar Role
-                         </a>
-                         <a href="{{ route('role.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('role.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Tambah Role
-                         </a>
+                         @can('Lihat Role')
+                             <a href="{{ route('role.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('role.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Daftar Role
+                             </a>
+                         @endcan
+                         @can('Tambah Role')
+                             <a href="{{ route('role.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('role.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Tambah Role
+                             </a>
+                         @endcan
                     </div>
                 </div>
-            @endcan
+            @endif
 
             <!-- Permission Management Accordion -->
-            @can('Kelola Permission')
+            @if(auth()->user()->can('Lihat Permission') || auth()->user()->can('Tambah Permission'))
                 <div x-data="{ open: {{ request()->routeIs('permission.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'permission'" @mouseleave="activeTooltip = null">
                     <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
                             class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('permission.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
@@ -458,26 +483,30 @@
                          x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                          class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
-                         <a href="{{ route('permission.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('permission.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Daftar Permission
-                         </a>
-                         <a href="{{ route('permission.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('permission.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Tambah Permission
-                         </a>
+                         @can('Lihat Permission')
+                             <a href="{{ route('permission.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('permission.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Daftar Permission
+                             </a>
+                         @endcan
+                         @can('Tambah Permission')
+                             <a href="{{ route('permission.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('permission.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Tambah Permission
+                             </a>
+                         @endcan
                     </div>
                 </div>
-            @endcan
+            @endif
         @endif
 
         <!-- TRANSAKSI SECTION -->
-        @if(auth()->user()->can('Kelola Transaksi') || auth()->user()->can('Verifikasi Resep') || auth()->user()->can('Kelola Pesanan Online') || auth()->user()->can('Kelola Laporan'))
+        @if(auth()->user()->can('Lihat Transaksi') || auth()->user()->can('Tambah Transaksi') || auth()->user()->can('Verifikasi Resep') || auth()->user()->can('Kelola Pesanan Online') || auth()->user()->can('Kelola Laporan'))
             <div class="px-4 mt-10 mb-4 text-[10px] font-bold text-cyan-200/40 uppercase tracking-widest select-none" x-show="!sidebarCollapsed" x-transition>
                 Transaksi
             </div>
             <div class="w-full border-t border-white/5 my-6" x-show="sidebarCollapsed" x-transition></div>
 
             <!-- Transaksi Accordion -->
-            @can('Kelola Transaksi')
+            @if(auth()->user()->can('Lihat Transaksi') || auth()->user()->can('Tambah Transaksi'))
                 <div x-data="{ open: {{ request()->routeIs('transaksi.*') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'transaksi'" @mouseleave="activeTooltip = null">
                     <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
                             class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('transaksi.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
@@ -517,15 +546,20 @@
                          x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                          class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
-                         <a href="{{ route('transaksi.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('transaksi.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             POS Baru
-                         </a>
-                         <a href="{{ route('transaksi.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('transaksi.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
-                             Riwayat Transaksi
-                         </a>
+                         @can('Tambah Transaksi')
+                             <a href="{{ route('transaksi.create') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('transaksi.create') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 POS Baru
+                             </a>
+                         @endcan
+                         @can('Lihat Transaksi')
+                             <a href="{{ route('transaksi.index') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('transaksi.index') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                                 Riwayat Transaksi
+                             </a>
+                         @endcan
                     </div>
                 </div>
-            @endcan
+            @endif
+
 
             <!-- Laporan Link -->
             @can('Kelola Laporan')
@@ -601,17 +635,33 @@
 
             <!-- Pesanan Online Link -->
             @can('Kelola Pesanan Online')
+                @php
+                    $pendingVerificationCount = \App\Models\Transaksi::where('status', 'Menunggu Verifikasi')->count();
+                @endphp
                 <div class="relative group" @mouseenter="activeTooltip = 'pesanan'" @mouseleave="activeTooltip = null">
                     <a href="{{ route('admin.transaksi-online.index') }}"
                        class="h-12 flex items-center rounded-xl transition-all duration-200 relative border group {{ request()->routeIs('admin.transaksi-online.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
                        :class="sidebarCollapsed ? 'justify-center px-0' : 'justify-between px-4'">
                         <div class="flex items-center gap-3 min-w-0" :class="sidebarCollapsed ? 'mx-auto justify-center' : ''">
-                            <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0">
+                            <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0 relative">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
                                 </svg>
+                                @if($pendingVerificationCount > 0)
+                                    <span class="absolute -top-1 -right-1 flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                @endif
                             </span>
-                            <span x-show="!sidebarCollapsed" x-transition class="text-sm font-medium tracking-wide transition-transform duration-200 group-hover:translate-x-1 truncate">Pesanan Online</span>
+                            <span x-show="!sidebarCollapsed" x-transition class="text-sm font-medium tracking-wide transition-transform duration-200 group-hover:translate-x-1 truncate flex items-center gap-1.5">
+                                Pesanan Online
+                                @if($pendingVerificationCount > 0)
+                                    <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold leading-none text-white bg-red-500 rounded-full">
+                                        {{ $pendingVerificationCount }}
+                                    </span>
+                                @endif
+                            </span>
                         </div>
                         
                         @if(request()->routeIs('admin.transaksi-online.*'))
@@ -666,6 +716,61 @@
                     </div>
                 </div>
             @endcan
+        @endif
+
+        <!-- SYSTEM SECTION -->
+        @if(auth()->user()->can('Lihat User'))
+            <div class="px-4 mt-10 mb-4 text-[10px] font-bold text-cyan-200/40 uppercase tracking-widest select-none" x-show="!sidebarCollapsed" x-transition>
+                System
+            </div>
+            <div class="w-full border-t border-white/5 my-6" x-show="sidebarCollapsed" x-transition></div>
+
+            <!-- System Accordion -->
+            <div x-data="{ open: {{ request()->routeIs('admin.whatsapp-diagnostic') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'system'" @mouseleave="activeTooltip = null">
+                <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
+                        class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('admin.whatsapp-diagnostic') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
+                        :class="sidebarCollapsed ? 'justify-center px-0' : 'justify-between px-4'">
+                    <div class="flex items-center gap-3 min-w-0" :class="sidebarCollapsed ? 'mx-auto justify-center' : ''">
+                        <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </span>
+                        <span x-show="!sidebarCollapsed" x-transition class="text-sm font-medium tracking-wide transition-transform duration-200 group-hover:translate-x-1 truncate">System</span>
+                    </div>
+                    <span x-show="!sidebarCollapsed" x-transition class="text-cyan-300/70 group-hover:text-white transition-transform duration-200 shrink-0" :class="open ? 'rotate-180' : ''">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </span>
+                    @if(request()->routeIs('admin.whatsapp-diagnostic'))
+                        <div class="absolute left-0 top-2 bottom-2 w-1 bg-cyan-400 rounded-r-md"></div>
+                    @endif
+                </button>
+                <!-- Collapsed Tooltip -->
+                <div x-show="sidebarCollapsed && activeTooltip === 'system'" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 translate-x-2"
+                     x-transition:enter-end="opacity-100 translate-x-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-x-0"
+                     x-transition:leave-end="opacity-0 translate-x-2"
+                     class="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3.5 py-2 bg-slate-950/90 backdrop-blur-md text-white text-xs font-semibold rounded-xl shadow-2xl pointer-events-none whitespace-nowrap z-50 border border-white/15"
+                     style="display: none;">
+                    System
+                </div>
+                
+                <div x-show="open && !sidebarCollapsed" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
+                     <a href="{{ route('admin.whatsapp-diagnostic') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('admin.whatsapp-diagnostic') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                         WhatsApp Diagnostic
+                     </a>
+                </div>
+            </div>
         @endif
 
     </nav>

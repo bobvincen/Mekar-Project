@@ -3,152 +3,160 @@
 @section('title', 'Dashboard Kasir')
 
 @section('content')
+<div class="space-y-8 animate-fade-in">
+    <!-- Welcome Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Selamat Datang, {{ Auth::user()->name }}! 👋</h1>
+            <p class="text-sm text-slate-500 mt-1">Pantau aktivitas penjualan langsung dan persediaan obat apotek hari ini.</p>
+        </div>
+        <div class="px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl shadow-sm text-xs font-bold inline-flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z" />
+            </svg>
+            {{ now()->translatedFormat('l, d F Y') }}
+        </div>
+    </div>
 
-{{-- Welcome Section --}}
-<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <!-- Quick Statistics KPI Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Status Shift -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Status Kerja</span>
+                <h3 class="text-lg font-extrabold text-slate-800">Shift Aktif</h3>
+                <span class="inline-block px-2 py-0.5 text-[10px] font-bold bg-green-50 text-green-600 border border-green-100 rounded-lg">
+                    Petugas Kasir
+                </span>
+            </div>
+            <div class="p-3 bg-green-50 text-green-500 rounded-xl">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Laci Kasir -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Laci Kasir</span>
+                <h3 class="text-lg font-extrabold text-slate-800">Rp 1.500.000</h3>
+                <span class="inline-block px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded-lg">
+                    Modal Awal
+                </span>
+            </div>
+            <div class="p-3 bg-blue-50 text-blue-500 rounded-xl">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Sistem Server -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Koneksi Sistem</span>
+                <h3 class="text-lg font-extrabold text-slate-800">Online</h3>
+                <span class="inline-block px-2 py-0.5 text-[10px] font-bold bg-cyan-50 text-cyan-600 border border-cyan-100 rounded-lg">
+                    Sinkronisasi Realtime
+                </span>
+            </div>
+            <div class="p-3 bg-cyan-50 text-cyan-500 rounded-xl">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section Grid -->
     <div>
-        <h1 class="text-3xl font-bold text-slate-800 tracking-tight">
-            Selamat Datang, {{ Auth::user()->name }}! 👋
-        </h1>
-        <p class="text-slate-500 mt-1">
-            Pantau aktivitas penjualan dan sediaan obat apotek hari ini.
-        </p>
-    </div>
-    <div class="bg-blue-600 text-white px-4 py-2 rounded-2xl shadow-sm text-sm font-medium flex items-center gap-2">
-        <span>📅</span> {{ now()->translatedFormat('l, d F Y') }}
+        <div class="mb-4">
+            <h2 class="text-lg font-extrabold text-slate-800">Fitur & Pintasan Layanan POS</h2>
+            <p class="text-xs text-slate-450 mt-0.5">Akses cepat ke modul penjualan kasir untuk menunjang transaksi harian Anda</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- POS Card -->
+            <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between group hover:border-blue-200 transition duration-300">
+                <div class="space-y-3">
+                    <div class="w-11 h-11 bg-blue-50 border border-blue-100 text-blue-500 rounded-xl flex items-center justify-center transition-colors group-hover:bg-blue-600 group-hover:text-white">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-extrabold text-slate-800">Transaksi Kasir POS</h3>
+                    <p class="text-xs text-slate-400 font-semibold leading-relaxed">
+                        Input transaksi pembelian obat secara langsung (POS offline) untuk pelanggan umum atau terdaftar, hitung kembalian instan, dan cetak invoice struk.
+                    </p>
+                </div>
+                <div class="mt-6">
+                    <a href="{{ route('transaksi.create') }}" class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-1.5">
+                        Buka POS Penjualan
+                    </a>
+                </div>
+            </div>
+
+            <!-- Cek Stok Obat -->
+            <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between group hover:border-indigo-200 transition duration-300">
+                <div class="space-y-3">
+                    <div class="w-11 h-11 bg-indigo-50 border border-indigo-100 text-indigo-500 rounded-xl flex items-center justify-center transition-colors group-hover:bg-indigo-600 group-hover:text-white">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-extrabold text-slate-800">Cek Persediaan Obat</h3>
+                    <p class="text-xs text-slate-400 font-semibold leading-relaxed">
+                        Cek data ketersediaan obat apotek secara cepat. Menampilkan detail sisa persediaan laci stok, harga jual satuan obat, serta info tanggal kadaluarsa.
+                    </p>
+                </div>
+                <div class="mt-6">
+                    <a href="{{ route('obat.index') }}" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-1.5">
+                        Lihat Data Obat
+                    </a>
+                </div>
+            </div>
+
+            <!-- Customer Management -->
+            <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between group hover:border-cyan-200 transition duration-300">
+                <div class="space-y-3">
+                    <div class="w-11 h-11 bg-cyan-50 border border-cyan-100 text-cyan-500 rounded-xl flex items-center justify-center transition-colors group-hover:bg-cyan-600 group-hover:text-white">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-extrabold text-slate-800">Manajemen Pelanggan</h3>
+                    <p class="text-xs text-slate-400 font-semibold leading-relaxed">
+                        Daftarkan pelanggan baru ke program marketplace apotek, periksa nomor kontak WhatsApp terdaftar, dan lihat riwayat registrasi.
+                    </p>
+                </div>
+                <div class="mt-6">
+                    <a href="{{ route('customer.index') }}" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-1.5">
+                        Kelola Pelanggan
+                    </a>
+                </div>
+            </div>
+
+            <!-- Reports Check -->
+            <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between group hover:border-slate-350 transition duration-300">
+                <div class="space-y-3">
+                    <div class="w-11 h-11 bg-slate-50 border border-slate-150 text-slate-500 rounded-xl flex items-center justify-center transition-colors group-hover:bg-slate-700 group-hover:text-white">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-6h13v6M3 7h18M5 17h2m10 0h2" />
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-extrabold text-slate-800">Laporan Penjualan POS</h3>
+                    <p class="text-xs text-slate-400 font-semibold leading-relaxed">
+                        Lihat rekapitulasi nominal pendapatan omset kotor kasir apotek dan riwayat order harian yang telah berhasil diselesaikan.
+                    </p>
+                </div>
+                <div class="mt-6">
+                    <a href="{{ route('laporan.index') }}" class="w-full py-2.5 bg-slate-750 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-1.5">
+                        Lihat Laporan Penjualan
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-{{-- Quick Statistics --}}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-            <p class="text-slate-400 text-sm font-medium">Status Shift</p>
-            <h3 class="text-lg font-bold text-slate-700 mt-1">Shift Aktif</h3>
-            <span class="inline-block mt-2 px-2.5 py-0.5 text-xs font-semibold bg-green-50 text-green-600 rounded-full">
-                Petugas Kasir
-            </span>
-        </div>
-        <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-xl">
-            🕒
-        </div>
-    </div>
-
-    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-            <p class="text-slate-400 text-sm font-medium">Laci Kasir</p>
-            <h3 class="text-lg font-bold text-slate-700 mt-1">Rp 1.500.000</h3>
-            <span class="inline-block mt-2 px-2.5 py-0.5 text-xs font-semibold bg-blue-50 text-blue-600 rounded-full">
-                Modal Awal Aman
-            </span>
-        </div>
-        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-xl">
-            💼
-        </div>
-    </div>
-
-    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-            <p class="text-slate-400 text-sm font-medium">Sistem Server</p>
-            <h3 class="text-lg font-bold text-slate-700 mt-1">Online</h3>
-            <span class="inline-block mt-2 px-2.5 py-0.5 text-xs font-semibold bg-cyan-50 text-cyan-600 rounded-full">
-                Sinkronisasi Aktif
-            </span>
-        </div>
-        <div class="w-12 h-12 bg-cyan-50 rounded-2xl flex items-center justify-center text-xl">
-            ⚡
-        </div>
-    </div>
-</div>
-
-{{-- Features Section --}}
-<div class="mb-6">
-    <h2 class="text-xl font-bold text-slate-800 tracking-tight">Fitur & Hak Akses Kasir</h2>
-    <p class="text-slate-400 text-sm mt-0.5">Daftar modul aplikasi yang didelegasikan untuk menunjang pekerjaan Anda:</p>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    {{-- Card 1: POS --}}
-    <div class="bg-white border border-slate-100 rounded-3xl p-6 hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col justify-between group">
-        <div>
-            <div class="w-12 h-12 bg-blue-50 border border-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.7 2.766-7.254m-14.71 7.254L4.765 4.5H2.25m3.75 0h14.25M7.5 14.25v2.25M16.5 14.25v2.25m-9-2.25h9M7.5 21a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm9 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                </svg>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Input Transaksi Baru (POS)</h3>
-            <p class="text-sm text-slate-400 font-light leading-relaxed mb-6">
-                Modul kasir utama untuk memproses pembayaran belanja obat pelanggan, kalkulasi kembalian uang, dan mencetak struk belanja fisik maupun digital.
-            </p>
-        </div>
-        <div>
-            <a href="#" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-3 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-1.5">
-                <span>🛒</span> Buka Menu Transaksi (Hubungi Admin)
-            </a>
-        </div>
-    </div>
-
-    {{-- Card 2: Stock Check --}}
-    <div class="bg-white border border-slate-100 rounded-3xl p-6 hover:shadow-xl hover:border-indigo-200 transition-all duration-300 flex flex-col justify-between group">
-        <div>
-            <div class="w-12 h-12 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Cek Stok Obat</h3>
-            <p class="text-sm text-slate-400 font-light leading-relaxed mb-6">
-                Cari sediaan obat apotek secara instan. Menampilkan detail nama obat, klasifikasi kategori (terbatas/bebas), sisa kuantitas stok di laci/rak apotek, serta masa kedaluwarsa produk.
-            </p>
-        </div>
-        <div>
-            <a href="#" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-3 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-1.5">
-                <span>💊</span> Periksa Persediaan Obat (Hubungi Admin)
-            </a>
-        </div>
-    </div>
-
-    {{-- Card 3: Customers --}}
-    <div class="bg-white border border-slate-100 rounded-3xl p-6 hover:shadow-xl hover:border-cyan-200 transition-all duration-300 flex flex-col justify-between group">
-        <div>
-            <div class="w-12 h-12 bg-cyan-50 border border-cyan-100 text-cyan-600 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                </svg>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Manajemen Pelanggan</h3>
-            <p class="text-sm text-slate-400 font-light leading-relaxed mb-6">
-                Daftarkan pelanggan baru ke program loyalitas apotek secara langsung saat checkout. Cari nomor kontak pelanggan, periksa riwayat obat mereka, serta kelola poin reward.
-            </p>
-        </div>
-        <div>
-            <a href="#" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold py-3 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-1.5">
-                <span>👥</span> Kelola Anggota Pelanggan (Hubungi Admin)
-            </a>
-        </div>
-    </div>
-
-    {{-- Card 4: Reports --}}
-    <div class="bg-white border border-slate-100 rounded-3xl p-6 hover:shadow-xl hover:border-slate-300 transition-all duration-300 flex flex-col justify-between group">
-        <div>
-            <div class="w-12 h-12 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-slate-700 group-hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                </svg>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Laporan & Rekap Penjualan Shift</h3>
-            <p class="text-sm text-slate-400 font-light leading-relaxed mb-6">
-                Lihat dan ekspor total omzet penjualan bersih yang berhasil Anda bukukan selama shift aktif berlangsung untuk memudahkan perhitungan serah terima modal laci kasir.
-            </p>
-        </div>
-        <div>
-            <a href="#" class="w-full bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold py-3 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-1.5">
-                <span>📊</span> Unduh Rekap Harian (Hubungi Admin)
-            </a>
-        </div>
-    </div>
-
-</div>
-
 @endsection

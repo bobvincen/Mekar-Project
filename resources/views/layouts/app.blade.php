@@ -30,7 +30,7 @@
 
             {{-- Navbar --}}
             @if (Auth::user()->can('Dashboard'))
-                @include('layouts.navbar')
+                {{-- Top navbar removed as requested --}}
             @else
                 {{-- Clean navbar for customer profile page --}}
                 <nav class="bg-white shadow-sm px-8 py-5 flex justify-between items-center">
