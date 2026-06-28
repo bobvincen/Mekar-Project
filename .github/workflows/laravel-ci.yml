@@ -15,13 +15,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Setup PHP 8.5
+      # 2. Setup PHP 8.5 dengan coverage driver pcov
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.5'
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath
-          coverage: none
+          coverage: pcov
 
       # 3. Cache Composer dependencies
       - name: Get Composer Cache Directory
@@ -80,10 +80,25 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: php artisan migrate --force
 
-      # 9. Jalankan seluruh automated testing menggunakan Pest
-      # 10. Workflow harus gagal apabila terdapat test yang gagal (Pest akan mengembalikan exit code non-zero jika ada test yang gagal)
-      - name: Run Tests
+      # 9. Jalankan seluruh automated testing menggunakan Pest dengan code coverage
+      - name: Run Tests with Coverage
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: ":memory:"
-        run: ./vendor/bin/pest
+        run: |
+          ./vendor/bin/pest \
+            --coverage \
+            --coverage-clover=clover.xml \
+            --coverage-html=html-coverage
+
+          cp clover.xml coverage.xml
+
+      # 10. Simpan hasil coverage sebagai artifact GitHub Actions sehingga dapat diunduh
+      - name: Upload Coverage Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage.xml
+            clover.xml
+            html-coverage/
