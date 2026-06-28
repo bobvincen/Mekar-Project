@@ -148,10 +148,17 @@ Menyajikan rangkuman performa omzet penjualan apotek secara keseluruhan.
 
 ---
 
-## 9. Sistem Notifikasi & Validasi Form
+## 9. Sistem Notifikasi (Fonnte API) & Validasi Form
 
 ### Detail Implementasi
-* **Notifikasi WhatsApp**: Menggunakan skema redirect URL `https://wa.me/` dengan prefilled template text dinamis berisi invoice belanja atau detail unggah resep. Tidak ada script engine Fonnte API aktif di backend.
+* **Notifikasi WhatsApp Backend (Fonnte API)**: Notifikasi dikirimkan secara otomatis dari backend (server-side) saat pesanan baru dibuat (checkout) atau resep dokter diunggah.
+  * Menggunakan `FonnteService` dengan Laravel HTTP Client (form multipart POST request).
+  * Toleransi Kegagalan (Fault Tolerance): Jika Fonnte API offline atau terjadi timeout, transaksi tetap tersimpan dengan sukses dan pesan kegagalan dicatat secara aman tanpa memutus alur pengguna (graceful fallback).
+  * Keamanan Konfigurasi: Token dan parameter API dibaca secara aman dari file environment `.env` (`FONNTE_TOKEN`, `FONNTE_BASE_URL`, `FONNTE_ADMIN_PHONE`).
+  * Fallback Client-side: Tautan manual ke `https://wa.me/` tetap disediakan bagi pelanggan untuk mengirim pesan secara manual jika diinginkan.
+* **Fitur Uji & Diagnostik WhatsApp**:
+  * Command Artisan `php artisan whatsapp:test` untuk menguji pengiriman pesan uji dari baris perintah.
+  * Halaman Diagnostik Khusus Admin di `/admin/whatsapp-diagnostic` untuk melihat detail pembacaan konfigurasi token, status koneksi API, log respons terakhir, dan tombol uji kirim pesan instan.
 * **Flash Alert**: Menggunakan session flash data Laravel untuk menampilkan alert sukses/gagal di bagian atas layout view setelah operasi CRUD.
 * **Validasi Form**:
   * Seluruh form di dalam aplikasi telah diaudit dari white page atau DB exception.

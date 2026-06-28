@@ -39,4 +39,11 @@ return [
         'key' => env('ORS_API_KEY'),
     ],
 
+    'fonnte' => [
+        'token' => env('FONNTE_TOKEN', env('FONTE_TOKEN')),
+        'base_url' => env('FONNTE_BASE_URL', env('FONTE_BASE_URL', 'https://api.fonnte.com')),
+        'admin_phone' => env('FONNTE_ADMIN_PHONE', env('FONTE_ADMIN_PHONE', '6282240432990')),
+        'ssl_verify' => env('FONNTE_SSL_VERIFY', false),
+    ],
+
 ];

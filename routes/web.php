@@ -38,8 +38,6 @@ Route::post('/upload-resep', [ResepDokterController::class, 'store'])->name('res
 Route::post('/konsultasi-log', [MarketplaceController::class, 'logKonsultasi'])->name('konsultasi.log');
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart/add/{id}', [CartController::class, 'add']); // Fallback GET method for simple links
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
@@ -51,7 +49,7 @@ Route::post('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananControlle
 
 /*
 |--------------------------------------------------------------------------
-| Profile Routes (Auth Required)
+| Profile & Customer Order Routes (Auth Required)
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
@@ -67,6 +65,16 @@ Route::middleware('auth')->group(function () {
     // API Route for dynamic sales summary chart data
     Route::get('/api/sales-summary', [DashboardController::class, 'salesSummary'])
         ->name('api.sales-summary');
+
+    // Checkout & Invoice Routes
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/invoice/{kode_transaksi}', [CheckoutController::class, 'showInvoice'])->name('marketplace.invoice');
+    Route::post('/invoice/{kode_transaksi}/upload-bukti', [CheckoutController::class, 'uploadBukti'])->name('marketplace.invoice.upload-bukti');
+
+    // Customer Orders Route (Pesanan Saya)
+    Route::get('/pesanan-saya', [\App\Http\Controllers\CustomerOrderController::class, 'index'])->name('marketplace.pesanan-saya');
+    Route::get('/invoice/{kode_transaksi}/download', [\App\Http\Controllers\CustomerOrderController::class, 'downloadInvoicePdf'])->name('marketplace.invoice.download');
 });
 
 
@@ -156,6 +164,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/transaksi-online', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'index'])->name('admin.transaksi-online.index');
         Route::get('/transaksi-online/{id}', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'show'])->name('admin.transaksi-online.show');
         Route::patch('/transaksi-online/{id}/status', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'updateStatus'])->name('admin.transaksi-online.update-status');
+        Route::post('/transaksi-online/{id}/verifikasi', [\App\Http\Controllers\AdminTransaksiOnlineController::class, 'verifyPayment'])->name('admin.transaksi-online.verify');
         Route::get('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'index'])->name('admin.feedback-layanan.index');
         Route::delete('/feedback-layanan/{id}', [\App\Http\Controllers\FeedbackLayananController::class, 'destroy'])->name('admin.feedback-layanan.destroy');
     });
@@ -188,6 +197,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
         Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
         Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+
+        // WhatsApp Diagnostic Routes
+        Route::get('/admin/whatsapp-diagnostic', [\App\Http\Controllers\WhatsAppDiagnosticController::class, 'index'])->name('admin.whatsapp-diagnostic');
+        Route::post('/admin/whatsapp-diagnostic/test', [\App\Http\Controllers\WhatsAppDiagnosticController::class, 'testSend'])->name('admin.whatsapp-diagnostic.test');
     });
     Route::middleware('permission:Tambah User')->group(function () {
         Route::get('/user/create', [UserController::class, 'create'])->name('user.create');

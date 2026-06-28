@@ -635,17 +635,33 @@
 
             <!-- Pesanan Online Link -->
             @can('Kelola Pesanan Online')
+                @php
+                    $pendingVerificationCount = \App\Models\Transaksi::where('status', 'Menunggu Verifikasi')->count();
+                @endphp
                 <div class="relative group" @mouseenter="activeTooltip = 'pesanan'" @mouseleave="activeTooltip = null">
                     <a href="{{ route('admin.transaksi-online.index') }}"
                        class="h-12 flex items-center rounded-xl transition-all duration-200 relative border group {{ request()->routeIs('admin.transaksi-online.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
                        :class="sidebarCollapsed ? 'justify-center px-0' : 'justify-between px-4'">
                         <div class="flex items-center gap-3 min-w-0" :class="sidebarCollapsed ? 'mx-auto justify-center' : ''">
-                            <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0">
+                            <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0 relative">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
                                 </svg>
+                                @if($pendingVerificationCount > 0)
+                                    <span class="absolute -top-1 -right-1 flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                @endif
                             </span>
-                            <span x-show="!sidebarCollapsed" x-transition class="text-sm font-medium tracking-wide transition-transform duration-200 group-hover:translate-x-1 truncate">Pesanan Online</span>
+                            <span x-show="!sidebarCollapsed" x-transition class="text-sm font-medium tracking-wide transition-transform duration-200 group-hover:translate-x-1 truncate flex items-center gap-1.5">
+                                Pesanan Online
+                                @if($pendingVerificationCount > 0)
+                                    <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold leading-none text-white bg-red-500 rounded-full">
+                                        {{ $pendingVerificationCount }}
+                                    </span>
+                                @endif
+                            </span>
                         </div>
                         
                         @if(request()->routeIs('admin.transaksi-online.*'))
@@ -700,6 +716,61 @@
                     </div>
                 </div>
             @endcan
+        @endif
+
+        <!-- SYSTEM SECTION -->
+        @if(auth()->user()->can('Lihat User'))
+            <div class="px-4 mt-10 mb-4 text-[10px] font-bold text-cyan-200/40 uppercase tracking-widest select-none" x-show="!sidebarCollapsed" x-transition>
+                System
+            </div>
+            <div class="w-full border-t border-white/5 my-6" x-show="sidebarCollapsed" x-transition></div>
+
+            <!-- System Accordion -->
+            <div x-data="{ open: {{ request()->routeIs('admin.whatsapp-diagnostic') ? 'true' : 'false' }} }" class="mb-1 relative group" @mouseenter="activeTooltip = 'system'" @mouseleave="activeTooltip = null">
+                <button @click="sidebarCollapsed ? (sidebarCollapsed = false, open = true) : (open = !open)"
+                        class="h-12 w-full flex items-center rounded-xl transition-all duration-200 group relative border {{ request()->routeIs('admin.whatsapp-diagnostic') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
+                        :class="sidebarCollapsed ? 'justify-center px-0' : 'justify-between px-4'">
+                    <div class="flex items-center gap-3 min-w-0" :class="sidebarCollapsed ? 'mx-auto justify-center' : ''">
+                        <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </span>
+                        <span x-show="!sidebarCollapsed" x-transition class="text-sm font-medium tracking-wide transition-transform duration-200 group-hover:translate-x-1 truncate">System</span>
+                    </div>
+                    <span x-show="!sidebarCollapsed" x-transition class="text-cyan-300/70 group-hover:text-white transition-transform duration-200 shrink-0" :class="open ? 'rotate-180' : ''">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </span>
+                    @if(request()->routeIs('admin.whatsapp-diagnostic'))
+                        <div class="absolute left-0 top-2 bottom-2 w-1 bg-cyan-400 rounded-r-md"></div>
+                    @endif
+                </button>
+                <!-- Collapsed Tooltip -->
+                <div x-show="sidebarCollapsed && activeTooltip === 'system'" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 translate-x-2"
+                     x-transition:enter-end="opacity-100 translate-x-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-x-0"
+                     x-transition:leave-end="opacity-0 translate-x-2"
+                     class="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3.5 py-2 bg-slate-950/90 backdrop-blur-md text-white text-xs font-semibold rounded-xl shadow-2xl pointer-events-none whitespace-nowrap z-50 border border-white/15"
+                     style="display: none;">
+                    System
+                </div>
+                
+                <div x-show="open && !sidebarCollapsed" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     class="pl-11 pr-3 py-1.5 flex flex-col gap-1 select-none">
+                     <a href="{{ route('admin.whatsapp-diagnostic') }}" class="h-9 flex items-center px-3.5 rounded-lg text-xs transition-colors duration-150 {{ request()->routeIs('admin.whatsapp-diagnostic') ? 'text-cyan-300 font-bold bg-white/10 shadow-inner border border-white/5' : 'text-cyan-100/70 hover:text-white hover:bg-white/5' }}">
+                         WhatsApp Diagnostic
+                     </a>
+                </div>
+            </div>
         @endif
 
     </nav>

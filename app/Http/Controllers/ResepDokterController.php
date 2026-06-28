@@ -37,7 +37,7 @@ class ResepDokterController extends Controller
         $resep = ResepDokter::create($validated);
 
         // Siapkan link WhatsApp
-        $adminWa = '6282240432990';
+        $adminWa = config('services.fonnte.admin_phone', '6282240432990');
         $fotoUrl = asset('storage/' . $resep->foto_resep);
         $pesan = "Halo Admin Mekar Pharmacy 👋\n\nSaya telah mengirim resep dokter.\n\nNama:\n" . $resep->nama . "\n\nWhatsApp:\n" . $resep->whatsapp . "\n\nCatatan:\n" . ($resep->catatan ?? '-') . "\n\nLink Foto Resep:\n" . $fotoUrl . "\n\nMohon dilakukan pengecekan resep terlebih dahulu.\n\nTerima kasih 🙏";
         
@@ -49,8 +49,16 @@ class ResepDokterController extends Controller
             'wa_url' => $waUrl
         ]);
 
+        // Kirim via Fonnte API di backend
+        $sendResult = \App\Services\FonnteService::send($adminWa, $pesan);
+
+        $successMsg = 'Resep berhasil dikirim. Admin akan memeriksa resep Anda terlebih dahulu.';
+        if (!$sendResult['success']) {
+            $successMsg .= ' (Catatan: Notifikasi WhatsApp otomatis gagal: ' . $sendResult['message'] . '. Harap klik tombol di bawah untuk melanjutkan secara manual)';
+        }
+
         return redirect()->back()->with([
-            'success' => 'Resep berhasil dikirim. Admin akan memeriksa resep Anda terlebih dahulu.',
+            'success' => $successMsg,
             'waUrl' => $waUrl
         ]);
     }

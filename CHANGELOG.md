@@ -4,6 +4,25 @@ Semua perubahan penting pada project **Mekar Pharmacy** akan didokumentasikan di
 
 ---
 
+## [v1.2.0] - 2026-06-27
+
+### Added
+* **WhatsApp Fonnte API Backend Integration**:
+  * Mengintegrasikan Fonnte API di backend untuk notifikasi otomatis pengiriman rincian pesanan saat checkout pelanggan.
+  * Mengintegrasikan Fonnte API di backend untuk notifikasi unggahan resep dokter ke nomor WhatsApp admin.
+  * Membuat class `FonnteService` yang dibungkus dengan Laravel HTTP client untuk melakukan request POST secara dinamis.
+  * Penanganan Error Lengkap: Menambahkan log rinci untuk nomor tujuan, isi pesan, payload request, HTTP status code, respons JSON Fonnte API, dan logging exception kegagalan koneksi atau timeout.
+* **Artisan Diagnostic Command**:
+  * Membuat command baru `php artisan whatsapp:test` untuk menguji integrasi WhatsApp dan koneksi Fonnte API secara langsung dari terminal.
+* **WhatsApp Diagnostic Page (Admin-only)**:
+  * Membuat halaman khusus admin `/admin/whatsapp-diagnostic` (System -> WhatsApp Diagnostic) untuk melihat status keaktifan token, URL API, nomor default penerima, status koneksi perangkat (online/offline), log rincian API terakhir, dan tombol uji kirim pesan manual.
+
+### Fixed
+* **Pencegahan Undefined Array Key pada Checkout**:
+  * Memperbaiki error `Undefined array key "alamat"` pada `CheckoutController` dengan menangani parameter input opsional secara defensif menggunakan operator null coalescing (`??`).
+
+---
+
 ## [v1.1.0] - 2026-06-21
 
 ### Added

@@ -22,11 +22,13 @@
             <div class="flex items-center gap-3">
                 @php
                     $statusColor = match ($transaksi->status) {
-                        'Menunggu Konfirmasi' => 'bg-slate-100 text-slate-600 border-slate-200',
-                        'Diproses' => 'bg-blue-50 text-blue-600 border-blue-200',
-                        'Dikirim' => 'bg-indigo-50 text-indigo-600 border-indigo-200',
+                        'Menunggu Pembayaran' => 'bg-amber-50 text-amber-600 border-amber-200',
+                        'Menunggu Verifikasi' => 'bg-blue-50 text-blue-600 border-blue-200',
+                        'Ditolak' => 'bg-rose-50 text-rose-600 border-rose-200',
+                        'Diproses' => 'bg-sky-50 text-sky-600 border-sky-200',
+                        'Siap Diambil', 'Sedang Diantar' => 'bg-indigo-50 text-indigo-600 border-indigo-200',
                         'Selesai' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
-                        'Dibatalkan' => 'bg-red-50 text-red-600 border-red-200',
+                        'Dibatalkan' => 'bg-slate-50 text-slate-500 border-slate-200',
                         default => 'bg-slate-100 text-slate-600 border-slate-200',
                     };
                 @endphp
@@ -36,6 +38,24 @@
                 </span>
             </div>
         </div>
+
+        @if(session('success'))
+            <div class="mb-6 bg-emerald-50 text-emerald-700 p-4 rounded-xl border border-emerald-200 flex items-center gap-3">
+                <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="text-sm font-semibold">{{ session('success') }}</p>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 flex items-center gap-3">
+                <svg class="w-5 h-5 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="text-sm font-semibold">{{ session('error') }}</p>
+            </div>
+        @endif
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
@@ -94,25 +114,132 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Notes Card -->
-                @if ($transaksi->catatan)
-                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 shadow-sm">
-                        <div class="flex items-start gap-3">
-                            <svg class="w-6 h-6 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <div>
-                                <h3 class="text-sm font-semibold text-amber-800 mb-1">Catatan Pelanggan</h3>
-                                <p class="text-sm text-amber-700 leading-relaxed">{{ $transaksi->catatan }}</p>
+            <!-- Notes Card -->
+            @if ($transaksi->catatan)
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div>
+                            <h3 class="text-sm font-semibold text-amber-800 mb-1">Catatan Pelanggan</h3>
+                            <p class="text-sm text-amber-700 leading-relaxed">{{ $transaksi->catatan }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Verification Card -->
+            @if($transaksi->bukti_transfer)
+            <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-200 font-semibold text-slate-800 flex justify-between items-center bg-slate-50/50">
+                    <span>Bukti Transfer & Verifikasi Pembayaran</span>
+                    <span class="text-xs text-slate-400 font-mono">Status: {{ $transaksi->status }}</span>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left: Image Preview -->
+                    <div class="space-y-2">
+                        <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Gambar Bukti Transfer</span>
+                        <div class="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center max-h-96 cursor-zoom-in"
+                             x-data="{ showModal: false }">
+                            <img src="{{ asset('storage/' . $transaksi->bukti_transfer) }}" alt="Bukti Transfer" 
+                                 @click="showModal = true" class="object-contain max-h-96 w-full hover:scale-105 transition-transform duration-300">
+                            
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-sm font-semibold pointer-events-none">
+                                🔍 Klik untuk Memperbesar
+                            </div>
+
+                            <!-- Zoom Modal -->
+                            <div x-show="showModal" @click.away="showModal = false" 
+                                 class="fixed inset-0 z-[999] bg-black/80 flex items-center justify-center p-4"
+                                 x-transition style="display: none;">
+                                <div class="relative max-w-4xl max-h-[90vh] bg-white rounded-2xl overflow-hidden p-2 flex flex-col">
+                                    <button @click="showModal = false" class="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white rounded-full p-2.5 transition-colors z-50">
+                                        ✕
+                                    </button>
+                                    <img src="{{ asset('storage/' . $transaksi->bukti_transfer) }}" alt="Bukti Transfer Zoom" class="object-contain max-h-[80vh] rounded-lg">
+                                </div>
                             </div>
                         </div>
                     </div>
-                @endif
 
+                    <!-- Right: Verification Form or Details -->
+                    <div class="flex flex-col justify-between">
+                        @if($transaksi->status === 'Menunggu Verifikasi')
+                        <form action="{{ route('admin.transaksi-online.verify', $transaksi->id) }}" method="POST" class="space-y-4 flex-1 flex flex-col justify-between">
+                            @csrf
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Verifikasi Aksi</label>
+                                <div class="grid grid-cols-2 gap-3" x-data="{ mode: 'terima' }">
+                                    <label class="flex items-center justify-center gap-2 border-2 rounded-xl p-3 cursor-pointer transition-all"
+                                           :class="mode === 'terima' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'">
+                                        <input type="radio" name="action" value="terima" x-model="mode" @change="mode = 'terima'" class="sr-only">
+                                        <span>✓ Terima</span>
+                                    </label>
+                                    <label class="flex items-center justify-center gap-2 border-2 rounded-xl p-3 cursor-pointer transition-all"
+                                           :class="mode === 'tolak' ? 'border-rose-500 bg-rose-50 text-rose-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'">
+                                        <input type="radio" name="action" value="tolak" x-model="mode" @change="mode = 'tolak'" class="sr-only">
+                                        <span>✕ Tolak</span>
+                                    </label>
+                                </div>
+
+                                <div x-show="mode === 'tolak'" x-transition style="display: none;" class="mt-3">
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Alasan Penolakan <span class="text-red-500">*</span></label>
+                                    <textarea name="alasan" rows="3" placeholder="Masukkan alasan penolakan (misal: Bukti transfer tidak jelas/buram)" 
+                                              class="w-full text-sm border-slate-200 border rounded-lg focus:ring-rose-500 focus:border-rose-500 p-2"></textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-3 px-4 rounded-xl shadow-md transition-all mt-4">
+                                Proses Verifikasi Pembayaran
+                            </button>
+                        </form>
+                        @else
+                        <div class="space-y-4">
+                            <div>
+                                <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Status Verifikasi</span>
+                                @if($transaksi->status === 'Ditolak')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                        ❌ Pembayaran Ditolak
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        ✓ Terverifikasi ({{ $transaksi->status }})
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if($transaksi->verifikator)
+                            <div>
+                                <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Diverifikasi Oleh</span>
+                                <span class="text-sm font-semibold text-slate-800">{{ $transaksi->verifikator->name }}</span>
+                            </div>
+                            @endif
+
+                            @if($transaksi->tanggal_verifikasi)
+                            <div>
+                                <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Waktu Verifikasi</span>
+                                <span class="text-sm font-semibold text-slate-800">{{ \Carbon\Carbon::parse($transaksi->tanggal_verifikasi)->format('d M Y, H:i') }}</span>
+                            </div>
+                            @endif
+
+                            @if($transaksi->verifikasi_catatan)
+                            <div class="bg-rose-50/50 border border-rose-100 p-4 rounded-xl">
+                                <span class="block text-xs font-bold text-rose-800 uppercase tracking-wider mb-1">Alasan Penolakan</span>
+                                <p class="text-sm text-rose-700 leading-relaxed">&ldquo;{{ $transaksi->verifikasi_catatan }}&rdquo;</p>
+                            </div>
+                            @endif
+                        </div>
+                        @endif
+                    </div>
+                </div>
             </div>
+            @endif
+        </div>
 
             <!-- Right Column: Customer info & Actions -->
             <div class="space-y-6">
@@ -128,20 +255,22 @@
                         <div>
                             <select name="status"
                                 class="w-full text-sm border-slate-200 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                                <option value="Menunggu Konfirmasi"
-                                    {{ $transaksi->status == 'Menunggu Konfirmasi' ? 'selected' : '' }}>Menunggu Konfirmasi
+                                <option value="Menunggu Pembayaran"
+                                    {{ $transaksi->status == 'Menunggu Pembayaran' ? 'selected' : '' }}>Menunggu Pembayaran
                                 </option>
-                                <option value="Diproses" {{ $transaksi->status == 'Diproses' ? 'selected' : '' }}>Diproses
-                                    (Persiapan)</option>
-                                <option value="Dikirim" {{ $transaksi->status == 'Dikirim' ? 'selected' : '' }}>Dikirim /
-                                    Siap Diambil</option>
-                                <option value="Selesai" {{ $transaksi->status == 'Selesai' ? 'selected' : '' }}>Selesai
-                                    (Stok akan dikurangi)</option>
-                                <option value="Dibatalkan" {{ $transaksi->status == 'Dibatalkan' ? 'selected' : '' }}>
-                                    Dibatalkan</option>
+                                <option value="Menunggu Verifikasi"
+                                    {{ $transaksi->status == 'Menunggu Verifikasi' ? 'selected' : '' }}>Menunggu Verifikasi
+                                </option>
+                                <option value="Ditolak"
+                                    {{ $transaksi->status == 'Ditolak' ? 'selected' : '' }}>Ditolak
+                                </option>
+                                <option value="Diproses" {{ $transaksi->status == 'Diproses' ? 'selected' : '' }}>Diproses</option>
+                                <option value="Siap Diambil" {{ $transaksi->status == 'Siap Diambil' ? 'selected' : '' }}>Siap Diambil</option>
+                                <option value="Sedang Diantar" {{ $transaksi->status == 'Sedang Diantar' ? 'selected' : '' }}>Sedang Diantar</option>
+                                <option value="Selesai" {{ $transaksi->status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
+                                <option value="Dibatalkan" {{ $transaksi->status == 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
                             </select>
-                            <p class="text-xs text-slate-500 mt-2">Pilih <b>Selesai</b> untuk mengonfirmasi bahwa pesanan
-                                telah diterima pelanggan dan stok obat akan dikurangi dari sistem.</p>
+                            <p class="text-xs text-slate-500 mt-2">Mengubah status ke <b>Diproses</b>, <b>Siap Diambil</b>, <b>Sedang Diantar</b>, atau <b>Selesai</b> akan memicu pengurangan stok obat secara otomatis.</p>
                         </div>
 
                         <button type="submit"
