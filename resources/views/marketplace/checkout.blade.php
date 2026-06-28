@@ -338,8 +338,8 @@ function checkoutPage() {
         },
         map: null,
         marker: null,
-        apotekLat: -0.9493, // Koordinat Mekar Pharmacy akurat
-        apotekLng: 100.3745, // Koordinat Mekar Pharmacy akurat
+        apotekLat: -0.9507097707252123, // Koordinat Mekar Pharmacy akurat
+        apotekLng: 100.36891688154128, // Koordinat Mekar Pharmacy akurat
         jarak: 0,
         distanceKm: 0,
         total: {{ $total }},

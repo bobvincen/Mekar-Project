@@ -79,7 +79,10 @@ class CheckoutController extends Controller
 
         // Generate Kode Transaksi
         $date = date('Ymd');
-        $lastTrx = \App\Models\Transaksi::where('kode_transaksi', 'like', "TRX-{$date}-%")->orderBy('id', 'desc')->first();
+        $lastTrx = \App\Models\Transaksi::where('kode_transaksi', 'like', "TRX-{$date}-%")
+            ->where('kode_transaksi', 'not like', '%-OFF')
+            ->orderBy('id', 'desc')
+            ->first();
 
         \Illuminate\Support\Facades\Log::info('Checkout Process (Submit) - Perhitungan Harga:', [
             'subtotal' => $validated['subtotal'],
