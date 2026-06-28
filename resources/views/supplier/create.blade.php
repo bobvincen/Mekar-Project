@@ -3,140 +3,126 @@
 @section('title', 'Tambah Supplier')
 
 @section('content')
-<div class="max-w-3xl mx-auto bg-white rounded-3xl shadow-lg p-6 md:p-8">
-
-    <!-- Header Section -->
-    <div class="flex items-center gap-4 mb-8">
-        <a href="{{ route('supplier.index') }}" class="p-2.5 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-xl transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+<div class="max-w-2xl mx-auto space-y-6 animate-fade-in">
+    <!-- Header -->
+    <div class="flex items-center gap-4">
+        <a href="{{ route('supplier.index') }}" class="p-2 bg-white hover:bg-slate-50 text-slate-600 rounded-xl border border-slate-200 shadow-sm transition">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
         </a>
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">
-                Tambah Supplier Baru
-            </h1>
-            <p class="text-gray-500 text-sm mt-1">
-                Masukkan detail informasi supplier baru
-            </p>
+            <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Tambah Supplier</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Tambahkan rekanan distributor/pemasok obat baru ke dalam sistem</p>
         </div>
     </div>
 
-    <!-- Error Alert Block -->
-    @if ($errors->any())
-        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl">
-            <div class="flex items-center mb-2">
-                <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                </svg>
-                <span class="font-bold text-red-800">Terdapat kesalahan input:</span>
+    <!-- Form Card Container -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-6">
+        <form action="{{ route('supplier.store') }}" method="POST" class="m-0 space-y-6">
+            @csrf
+
+            <div class="space-y-5">
+                <!-- Nama Supplier -->
+                <div>
+                    <label for="nama_supplier" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Nama Supplier <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" id="nama_supplier" name="nama_supplier" value="{{ old('nama_supplier') }}"
+                         placeholder="Contoh: PT. Kimia Farma" required
+                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400 @error('nama_supplier') border-rose-300 bg-rose-50/20 @enderror">
+                    @error('nama_supplier')
+                        <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Kontak PIC -->
+                <div>
+                    <label for="kontak_pic" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Nama Kontak / PIC
+                    </label>
+                    <input type="text" id="kontak_pic" name="kontak_pic" value="{{ old('kontak_pic') }}"
+                         placeholder="Contoh: Budi Santoso"
+                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400 @error('kontak_pic') border-rose-300 bg-rose-50/20 @enderror">
+                    @error('kontak_pic')
+                        <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Telepon / WhatsApp -->
+                <div>
+                    <label for="telepon" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Nomor WhatsApp / Telepon <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" id="telepon" name="telepon" value="{{ old('telepon') }}"
+                        placeholder="Contoh: 081234567890" required
+                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400 @error('telepon') border-rose-300 bg-rose-50/20 @enderror">
+                    @error('telepon')
+                        <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Alamat Email <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}"
+                        placeholder="Contoh: supplier@domain.com" required
+                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400 @error('email') border-rose-300 bg-rose-50/20 @enderror">
+                    @error('email')
+                        <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Kota -->
+                <div>
+                    <label for="kota" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Kota
+                    </label>
+                    <input type="text" id="kota" name="kota" value="{{ old('kota') }}"
+                        placeholder="Contoh: Jakarta"
+                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400 @error('kota') border-rose-300 bg-rose-50/20 @enderror">
+                    @error('kota')
+                        <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Alamat -->
+                <div>
+                    <label for="alamat" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Alamat Lengkap <span class="text-rose-500">*</span>
+                    </label>
+                    <textarea id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap distributor..." required
+                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400 @error('alamat') border-rose-300 bg-rose-50/20 @enderror">{{ old('alamat') }}</textarea>
+                    @error('alamat')
+                        <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Keterangan -->
+                <div>
+                    <label for="keterangan" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Keterangan
+                    </label>
+                    <textarea id="keterangan" name="keterangan" rows="2" placeholder="Keterangan tambahan jika ada..."
+                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400 @error('keterangan') border-rose-300 bg-rose-50/20 @enderror">{{ old('keterangan') }}</textarea>
+                    @error('keterangan')
+                        <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
-            <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 
-    <!-- Form -->
-    <form action="{{ route('supplier.store') }}" method="POST" class="space-y-6">
-        @csrf
-
-        <!-- Nama Supplier -->
-        <div>
-            <label for="nama_supplier" class="block text-sm font-semibold text-gray-700 mb-2">
-                Nama Supplier <span class="text-red-500">*</span>
-            </label>
-            <input 
-                type="text" 
-                name="nama_supplier" 
-                id="nama_supplier" 
-                value="{{ old('nama_supplier') }}" 
-                placeholder="Masukkan nama supplier / perusahaan" 
-                class="w-full border @error('nama_supplier') border-red-400 focus:ring-red-300 @else border-gray-300 focus:ring-blue-300 @enderror rounded-xl px-4 py-3 focus:outline-none focus:ring-4 transition duration-150"
-                required
-            >
-            @error('nama_supplier')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <!-- Telepon -->
-        <div>
-            <label for="telepon" class="block text-sm font-semibold text-gray-700 mb-2">
-                Nomor Telepon <span class="text-red-500">*</span>
-            </label>
-            <input 
-                type="text" 
-                name="telepon" 
-                id="telepon" 
-                value="{{ old('telepon') }}" 
-                placeholder="Masukkan nomor telepon aktif (contoh: 08123456789)" 
-                class="w-full border @error('telepon') border-red-400 focus:ring-red-300 @else border-gray-300 focus:ring-blue-300 @enderror rounded-xl px-4 py-3 focus:outline-none focus:ring-4 transition duration-150"
-                required
-            >
-            @error('telepon')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <!-- Email -->
-        <div>
-            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                Alamat Email <span class="text-red-500">*</span>
-            </label>
-            <input 
-                type="email" 
-                name="email" 
-                id="email" 
-                value="{{ old('email') }}" 
-                placeholder="Masukkan alamat email (contoh: supplier@email.com)" 
-                class="w-full border @error('email') border-red-400 focus:ring-red-300 @else border-gray-300 focus:ring-blue-300 @enderror rounded-xl px-4 py-3 focus:outline-none focus:ring-4 transition duration-150"
-                required
-            >
-            @error('email')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <!-- Alamat -->
-        <div>
-            <label for="alamat" class="block text-sm font-semibold text-gray-700 mb-2">
-                Alamat Lengkap <span class="text-red-500">*</span>
-            </label>
-            <textarea 
-                name="alamat" 
-                id="alamat" 
-                rows="4" 
-                placeholder="Masukkan alamat lengkap kantor / gudang supplier" 
-                class="w-full border @error('alamat') border-red-400 focus:ring-red-300 @else border-gray-300 focus:ring-blue-300 @enderror rounded-xl px-4 py-3 focus:outline-none focus:ring-4 transition duration-150"
-                required
-            >{{ old('alamat') }}</textarea>
-            @error('alamat')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <!-- Actions -->
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-            <!-- Back Button -->
-            <a 
-                href="{{ route('supplier.index') }}" 
-                class="px-5 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-center transition-colors duration-150"
-            >
-                Kembali
-            </a>
-
-            <!-- Submit Button (blue / primary) -->
-            <button 
-                type="submit" 
-                class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-150"
-            >
-                Simpan Supplier
-            </button>
-        </div>
-
-    </form>
+            <!-- Actions -->
+            <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                <a href="{{ route('supplier.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold transition text-sm">
+                    Batal
+                </a>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold shadow transition text-sm">
+                    Simpan Supplier
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

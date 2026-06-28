@@ -3,51 +3,60 @@
 @section('title', 'Tambah Role')
 
 @section('content')
-<div class="mb-6">
-    <a href="{{ route('role.index') }}" class="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-        </svg>
-        Kembali ke Daftar Role
-    </a>
-    <h2 class="text-2xl font-bold text-gray-800 mt-2">Tambah Role Baru</h2>
-    <p class="text-sm text-gray-500">Definisikan role baru beserta hak aksesnya</p>
-</div>
-
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 max-w-3xl">
-    <form action="{{ route('role.store') }}" method="POST">
-        @csrf
-        
-        <div class="mb-6">
-            <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Nama Role</label>
-            <input type="text" name="name" id="name" required value="{{ old('name') }}" placeholder="Contoh: kasir, apoteker"
-                class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror">
-            @error('name')
-                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-            @enderror
+<div class="max-w-3xl mx-auto space-y-6 animate-fade-in">
+    <!-- Header -->
+    <div class="flex items-center gap-4">
+        <a href="{{ route('role.index') }}" class="p-2 bg-white hover:bg-slate-50 text-slate-600 rounded-xl border border-slate-200 shadow-sm transition">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+        <div>
+            <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Tambah Role</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Buat role baru dan hubungkan dengan hak akses sistem</p>
         </div>
+    </div>
 
-        <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">Pilih Hak Akses (Permissions)</label>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 rounded-2xl p-4 border border-gray-100">
-                @foreach($permissions as $perm)
-                <label class="flex items-center gap-3 p-2 hover:bg-white rounded-lg transition cursor-pointer">
-                    <input type="checkbox" name="permissions[]" value="{{ $perm->name }}"
-                        class="w-4.5 h-4.5 rounded text-blue-600 border-gray-300 focus:ring-blue-500">
-                    <span class="text-sm font-medium text-gray-700">{{ $perm->name }}</span>
-                </label>
-                @endforeach
+    <!-- Form Card Container -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-6">
+        <form action="{{ route('role.store') }}" method="POST" class="m-0 space-y-6">
+            @csrf
+
+            <!-- Nama Role -->
+            <div>
+                <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Nama Role</label>
+                <input type="text" name="name" id="name" required value="{{ old('name') }}"
+                    placeholder="Contoh: Manager"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400 @error('name') border-rose-300 bg-rose-50/20 @enderror">
+                @error('name')
+                    <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
-        </div>
 
-        <div class="flex justify-end gap-3 mt-8">
-            <a href="{{ route('role.index') }}" class="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition">
-                Batal
-            </a>
-            <button type="submit" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white px-6 py-2.5 rounded-xl font-medium shadow-md hover:shadow-lg transition">
-                Simpan Role
-            </button>
-        </div>
-    </form>
+            <!-- Hak Akses (Permissions) -->
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-3">Hak Akses (Permissions)</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
+                    @foreach($permissions as $perm)
+                        <label class="flex items-center gap-3 p-3 bg-white border border-slate-100/50 hover:border-slate-200 rounded-xl transition cursor-pointer shadow-sm">
+                            <input type="checkbox" name="permissions[]" value="{{ $perm->name }}"
+                                class="w-5 h-5 rounded text-blue-600 border-slate-200 focus:ring-blue-500 cursor-pointer">
+                            <span class="text-xs font-bold text-slate-700">{{ $perm->name }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                <a href="{{ route('role.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold transition text-sm">
+                    Batal
+                </a>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold shadow transition text-sm">
+                    Simpan Role
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

@@ -10,9 +10,16 @@ class KategoriController extends Controller
     /**
      * Tampilkan daftar kategori
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kategoris = Kategori::latest()->get();
+        $search = $request->input('search');
+
+        $kategoris = Kategori::when($search, function ($query, $search) {
+            return $query->where('nama_kategori', 'like', "%{$search}%");
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
         return view('kategori.index', compact('kategoris'));
     }

@@ -40,7 +40,8 @@ class ObatController extends Controller
         $request->validate([
             'kode_obat' => 'required|unique:obats,kode_obat',
             'nama_obat' => 'required',
-            'kategori_id' => 'required',
+            'kategori_id' => 'required_without:kategori_baru|nullable',
+            'kategori_baru' => 'nullable|string|max:255',
             'supplier_id' => 'required',
             'stok' => 'required|integer|min:1',
             'harga_jual' => 'required|numeric|min:1',
@@ -51,7 +52,7 @@ class ObatController extends Controller
             'kode_obat.required' => 'Kode obat wajib diisi.',
             'kode_obat.unique' => 'Kode obat sudah digunakan.',
             'nama_obat.required' => 'Nama obat wajib diisi.',
-            'kategori_id.required' => 'Kategori wajib dipilih.',
+            'kategori_id.required_without' => 'Kategori wajib dipilih atau diisi.',
             'supplier_id.required' => 'Supplier wajib dipilih.',
             'stok.required' => 'Stok wajib diisi.',
             'stok.integer' => 'Stok harus berupa angka.',
@@ -66,7 +67,19 @@ class ObatController extends Controller
             'gambar.max' => 'Ukuran gambar maksimal adalah 2 MB.'
         ]);
 
-        $data = $request->except('gambar');
+        $kategoriId = $request->input('kategori_id');
+        if ($request->filled('kategori_baru')) {
+            $kategoriName = trim($request->input('kategori_baru'));
+            $kategori = Kategori::whereRaw('LOWER(TRIM(nama_kategori)) = ?', [strtolower($kategoriName)])->first();
+            if (!$kategori) {
+                $kategori = Kategori::create(['nama_kategori' => $kategoriName]);
+            }
+            $kategoriId = $kategori->id;
+        }
+
+        $data = $request->except(['gambar', 'kategori_baru']);
+        $data['kategori_id'] = $kategoriId;
+
         if ($request->hasFile('gambar')) {
             $data['image_path'] = $request->file('gambar')->store('obat', 'public');
         } else {
@@ -97,7 +110,8 @@ class ObatController extends Controller
         $request->validate([
             'kode_obat' => 'required',
             'nama_obat' => 'required',
-            'kategori_id' => 'required',
+            'kategori_id' => 'required_without:kategori_baru|nullable',
+            'kategori_baru' => 'nullable|string|max:255',
             'supplier_id' => 'required',
             'stok' => 'required|integer|min:1',
             'harga_jual' => 'required|numeric|min:1',
@@ -107,7 +121,7 @@ class ObatController extends Controller
         ], [
             'kode_obat.required' => 'Kode obat wajib diisi.',
             'nama_obat.required' => 'Nama obat wajib diisi.',
-            'kategori_id.required' => 'Kategori wajib dipilih.',
+            'kategori_id.required_without' => 'Kategori wajib dipilih atau diisi.',
             'supplier_id.required' => 'Supplier wajib dipilih.',
             'stok.required' => 'Stok wajib diisi.',
             'stok.integer' => 'Stok harus berupa angka.',
@@ -122,7 +136,18 @@ class ObatController extends Controller
             'gambar.max' => 'Ukuran gambar maksimal adalah 2 MB.'
         ]);
 
-        $data = $request->except(['gambar', 'delete_image']);
+        $kategoriId = $request->input('kategori_id');
+        if ($request->filled('kategori_baru')) {
+            $kategoriName = trim($request->input('kategori_baru'));
+            $kategori = Kategori::whereRaw('LOWER(TRIM(nama_kategori)) = ?', [strtolower($kategoriName)])->first();
+            if (!$kategori) {
+                $kategori = Kategori::create(['nama_kategori' => $kategoriName]);
+            }
+            $kategoriId = $kategori->id;
+        }
+
+        $data = $request->except(['gambar', 'delete_image', 'kategori_baru']);
+        $data['kategori_id'] = $kategoriId;
         if ($request->hasFile('gambar')) {
             if ($obat->image_path && Storage::disk('public')->exists($obat->image_path)) {
                 Storage::disk('public')->delete($obat->image_path);

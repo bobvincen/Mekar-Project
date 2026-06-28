@@ -3,138 +3,148 @@
 @section('title', 'Dashboard Apoteker')
 
 @section('content')
-<div class="mb-8">
-    <h1 class="text-3xl font-bold text-slate-800">Dashboard Apoteker</h1>
-    <p class="text-slate-500">Selamat datang kembali. Silakan periksa verifikasi resep dokter dan stok obat hari ini.</p>
-</div>
-
-<!-- Statistik Ringkas -->
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-    <!-- Resep Menunggu Verifikasi -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex justify-between items-center">
+<div class="space-y-8 animate-fade-in">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <p class="text-gray-500 text-sm font-medium">Menunggu Verifikasi</p>
-            <h2 class="text-3xl font-bold text-slate-800 mt-2">{{ $pendingResepCount }}</h2>
-        </div>
-        <div class="bg-amber-50 p-4 rounded-2xl text-2xl">
-            ⏳
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Dashboard Apoteker</h1>
+            <p class="text-sm text-slate-500 mt-1">Selamat datang kembali. Silakan periksa verifikasi resep dokter dan persediaan stok obat hari ini.</p>
         </div>
     </div>
 
-    <!-- Total Resep Dokter -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex justify-between items-center">
-        <div>
-            <p class="text-gray-500 text-sm font-medium">Total Resep</p>
-            <h2 class="text-3xl font-bold text-slate-800 mt-2">{{ $totalResep }}</h2>
+    <!-- Summary KPI Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Pending Resep -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Menunggu Verifikasi</span>
+                <h3 class="text-2xl font-extrabold text-amber-600">{{ $pendingResepCount }}</h3>
+            </div>
+            <div class="p-3 bg-amber-50 text-amber-500 rounded-xl">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
         </div>
-        <div class="bg-blue-50 p-4 rounded-2xl text-2xl">
-            📄
+
+        <!-- Total Resep -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Resep</span>
+                <h3 class="text-2xl font-extrabold text-blue-650">{{ $totalResep }}</h3>
+            </div>
+            <div class="p-3 bg-blue-50 text-blue-500 rounded-xl">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Low Stock -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Obat Stok Rendah</span>
+                <h3 class="text-2xl font-extrabold text-rose-650">{{ $lowStockObatCount }}</h3>
+            </div>
+            <div class="p-3 bg-rose-50 text-rose-500 rounded-xl">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Total Jenis Obat -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Jenis Obat</span>
+                <h3 class="text-2xl font-extrabold text-emerald-600">{{ $totalObat }}</h3>
+            </div>
+            <div class="p-3 bg-emerald-50 text-emerald-500 rounded-xl">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z" />
+                </svg>
+            </div>
         </div>
     </div>
 
-    <!-- Stok Rendah -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex justify-between items-center">
-        <div>
-            <p class="text-gray-500 text-sm font-medium">Obat Stok Rendah</p>
-            <h2 class="text-3xl font-bold text-slate-800 mt-2">{{ $lowStockObatCount }}</h2>
-        </div>
-        <div class="bg-red-50 p-4 rounded-2xl text-2xl">
-            ⚠️
-        </div>
-    </div>
+    <!-- Details Grid Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Resep Menunggu Verifikasi -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+            <div class="p-5 border-b border-slate-50 bg-slate-50/25 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 text-sm">Resep Menunggu Verifikasi</h3>
+                <a href="{{ route('apoteker.resep.index', ['status' => 'pending']) }}" class="text-xs font-bold text-blue-600 hover:underline">Lihat Semua</a>
+            </div>
 
-    <!-- Total Jenis Obat -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex justify-between items-center">
-        <div>
-            <p class="text-gray-500 text-sm font-medium">Total Jenis Obat</p>
-            <h2 class="text-3xl font-bold text-slate-800 mt-2">{{ $totalObat }}</h2>
-        </div>
-        <div class="bg-emerald-50 p-4 rounded-2xl text-2xl">
-            💊
-        </div>
-    </div>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- Pesanan Menunggu Verifikasi -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <span>📋</span> Resep Menunggu Verifikasi
-            </h3>
-            <a href="{{ route('apoteker.resep.index', ['status' => 'pending']) }}" class="text-sm font-semibold text-blue-600 hover:underline">
-                Lihat Semua
-            </a>
-        </div>
-
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="border-b border-gray-100 text-sm text-gray-500 pb-3">
-                        <th class="pb-3 font-semibold">Pelanggan</th>
-                        <th class="pb-3 font-semibold">WhatsApp</th>
-                        <th class="pb-3 font-semibold text-right">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50 text-sm text-gray-700">
-                    @forelse($pendingReseps as $resep)
-                    <tr class="hover:bg-gray-50/50 transition">
-                        <td class="py-3.5 font-medium text-gray-900">{{ $resep->nama }}</td>
-                        <td class="py-3.5 text-gray-500">{{ $resep->whatsapp }}</td>
-                        <td class="py-3.5 text-right">
-                            <a href="{{ route('apoteker.resep.show', $resep->id) }}" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-                                Verifikasi
-                            </a>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="3" class="py-8 text-center text-gray-400 italic">
-                            Tidak ada resep baru yang menunggu verifikasi.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Obat Stok Rendah -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-red-600 flex items-center gap-2">
-                <span>⚠️</span> Peringatan Stok Rendah (≤ 20)
-            </h3>
-            <a href="{{ route('apoteker.obat.index', ['stok_rendah' => 1]) }}" class="text-sm font-semibold text-blue-600 hover:underline">
-                Lihat Semua
-            </a>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left border-collapse table-auto">
+                    <thead class="bg-slate-50 text-slate-400 font-bold text-xs uppercase border-b border-slate-100 tracking-wider">
+                        <tr>
+                            <th class="py-3 px-5">Nama Pelanggan</th>
+                            <th class="py-3 px-5">No. WhatsApp</th>
+                            <th class="py-3 px-5 text-center w-28">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-600 font-medium">
+                        @forelse($pendingReseps as $resep)
+                            <tr class="hover:bg-slate-50/50 transition">
+                                <td class="py-3 px-5 font-bold text-slate-800">{{ $resep->nama }}</td>
+                                <td class="py-3 px-5 font-mono text-xs">{{ $resep->whatsapp }}</td>
+                                <td class="py-3 px-5 text-center">
+                                    <a href="{{ route('apoteker.resep.show', $resep->id) }}" class="inline-flex items-center px-3 py-1 bg-blue-50 hover:bg-blue-100 border border-blue-100 text-blue-650 rounded-lg text-xs font-bold transition">
+                                        Verifikasi
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="py-8 text-center text-slate-400 font-normal italic">
+                                    Tidak ada resep baru yang menunggu verifikasi.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="border-b border-gray-100 text-sm text-gray-500 pb-3">
-                        <th class="pb-3 font-semibold">Kode</th>
-                        <th class="pb-3 font-semibold">Nama Obat</th>
-                        <th class="pb-3 font-semibold text-right">Sisa Stok</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50 text-sm text-gray-700">
-                    @forelse($lowStockObats as $obat)
-                    <tr class="hover:bg-gray-50/50 transition">
-                        <td class="py-3.5 text-gray-500">{{ $obat->kode_obat }}</td>
-                        <td class="py-3.5 font-medium text-gray-900">{{ $obat->nama_obat }}</td>
-                        <td class="py-3.5 text-right font-bold text-red-600">{{ $obat->stok }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="3" class="py-8 text-center text-gray-400 italic">
-                            Semua stok obat aman.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <!-- Peringatan Stok Rendah -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+            <div class="p-5 border-b border-slate-50 bg-slate-50/25 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                    <span class="text-rose-500 font-bold">⚠️</span> Peringatan Stok Rendah (≤ 20)
+                </h3>
+                <a href="{{ route('apoteker.obat.index', ['stok_rendah' => 1]) }}" class="text-xs font-bold text-blue-600 hover:underline">Lihat Semua</a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left border-collapse table-auto">
+                    <thead class="bg-slate-50 text-slate-400 font-bold text-xs uppercase border-b border-slate-100 tracking-wider">
+                        <tr>
+                            <th class="py-3 px-5 w-24">Kode</th>
+                            <th class="py-3 px-5">Nama Obat</th>
+                            <th class="py-3 px-5 text-right w-24">Sisa Stok</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-600 font-medium">
+                        @forelse($lowStockObats as $obat)
+                            <tr class="hover:bg-slate-50/50 transition">
+                                <td class="py-3 px-5 font-bold text-slate-400">{{ $obat->kode_obat }}</td>
+                                <td class="py-3 px-5 font-bold text-slate-800">{{ $obat->nama_obat }}</td>
+                                <td class="py-3 px-5 text-right font-extrabold text-rose-600">
+                                    <span class="px-2 py-0.5 bg-rose-50 border border-rose-100 rounded-lg text-xs">{{ $obat->stok }}</span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="py-8 text-center text-slate-400 font-normal italic">
+                                    Semua persediaan obat dalam kondisi aman.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

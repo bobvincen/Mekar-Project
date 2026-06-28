@@ -130,6 +130,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('permission:Tambah Supplier')->group(function () {
         Route::get('/supplier/create', [SupplierController::class, 'create'])->name('supplier.create');
         Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
+        Route::post('/supplier/store-ajax', [SupplierController::class, 'storeAjax'])->name('supplier.store-ajax');
     });
 
     // Obat Management
