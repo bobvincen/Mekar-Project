@@ -68,13 +68,16 @@ jobs:
       - name: Build Frontend Assets
         run: npm run build
 
-      # Jalankan seluruh test menggunakan Pest dengan code coverage
       - name: Run Tests with Coverage
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: ":memory:"
         run: |
-          ./vendor/bin/pest --coverage --coverage-clover=clover.xml --coverage-html=html-coverage
+          ./vendor/bin/pest \
+            --coverage \
+            --coverage-clover=clover.xml \
+            --coverage-html=html-coverage
+
           cp clover.xml coverage.xml
 
       # Simpan hasil coverage sebagai artifact GitHub Actions sehingga dapat diunduh
