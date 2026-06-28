@@ -554,29 +554,7 @@ function checkoutPage() {
                 let result = await response.json();
 
                 if (response.ok && result.success) {
-                    // Open WhatsApp in new tab
-                    window.open(result.wa_url, '_blank');
-                    
-                    // Show modal when returning
-                    let focusHandler = () => {
-                        this.showFeedbackModal = true;
-                        window.removeEventListener('focus', focusHandler);
-                    };
-                    
-                    // Prevent spam: check localStorage just in case
-                    if (!localStorage.getItem('feedback_' + result.kode_transaksi)) {
-                        setTimeout(() => {
-                            window.addEventListener('focus', focusHandler);
-                        }, 500);
-                        
-                        // Fallback
-                        setTimeout(() => {
-                            window.removeEventListener('focus', focusHandler);
-                            this.showFeedbackModal = true;
-                        }, 5000);
-                        
-                        localStorage.setItem('feedback_' + result.kode_transaksi, 'pending');
-                    }
+                    window.location.href = result.redirect_url;
                 } else {
                     alert(result.message || 'Terjadi kesalahan saat memproses pesanan.');
                 }
