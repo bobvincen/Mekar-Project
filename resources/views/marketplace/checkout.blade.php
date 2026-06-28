@@ -115,26 +115,20 @@
                     </label>
                 </div>
 
-                <div x-show="form.metode === 'Antar ke Alamat'" x-collapse class="mb-6 space-y-6">
+                <div x-show="form.metode === 'Antar ke Alamat' || form.metode === 'Gunakan Lokasi Saya Saat Ini'" x-collapse class="mb-6 space-y-6">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Pilih Lokasi Pengiriman <span class="text-red-500">*</span></label>
-                        <p class="text-xs text-slate-500 mb-3 font-light">Geser pin atau klik pada peta untuk menentukan lokasi akurat pengiriman.</p>
+                        <div x-show="form.metode === 'Antar ke Alamat'" class="mb-3">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Pilih Lokasi Pengiriman <span class="text-red-500">*</span></label>
+                            <p class="text-xs text-slate-500 font-light">Geser pin atau klik pada peta untuk menentukan lokasi akurat pengiriman.</p>
+                        </div>
+                        <div x-show="form.metode === 'Gunakan Lokasi Saya Saat Ini'" class="mb-3">
+                            <h3 class="text-sm font-semibold text-slate-700 mb-1.5" x-text="form.lat ? '📍 Lokasi Saat Ini Berhasil Ditemukan' : 'Mencari lokasi...' "></h3>
+                            <p x-show="!form.lat" class="text-xs text-slate-500 animate-pulse">Mohon izinkan akses lokasi pada browser Anda.</p>
+                        </div>
+
                         <div id="map" x-ignore class="h-64 sm:h-80 w-full rounded-2xl border border-slate-200 shadow-sm relative z-[1]"></div>
                         <p x-show="errors.location" class="text-red-500 text-xs mt-1.5 font-medium">Lokasi pada peta wajib dipilih</p>
                         
-                        <div class="mt-2.5 text-xs font-medium text-slate-500 flex flex-wrap gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100" x-show="form.lat && form.lng">
-                            <span>Lat: <span x-text="form.lat" class="text-slate-800"></span></span>
-                            <span>Lng: <span x-text="form.lng" class="text-slate-800"></span></span>
-                            <span x-show="jarak > 0">Jarak: <span x-text="jarak.toFixed(2) + ' KM'" class="text-blue-600 font-bold"></span></span>
-                            <span x-show="jarak > 0">Perkiraan Ongkir: <span x-text="formatRp(ongkir)" class="text-blue-600 font-bold"></span></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div x-show="form.metode === 'Gunakan Lokasi Saya Saat Ini'" x-collapse class="mb-6 space-y-6">
-                    <div>
-                        <h3 class="text-sm font-semibold text-slate-700 mb-1.5" x-text="form.lat ? '📍 Lokasi Saat Ini Berhasil Ditemukan' : 'Mencari lokasi...' "></h3>
-                        <p x-show="!form.lat" class="text-xs text-slate-500 animate-pulse">Mohon izinkan akses lokasi pada browser Anda.</p>
                         <div class="mt-2.5 text-xs font-medium text-slate-500 flex flex-wrap gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100" x-show="form.lat && form.lng">
                             <span>Lat: <span x-text="form.lat" class="text-slate-800"></span></span>
                             <span>Lng: <span x-text="form.lng" class="text-slate-800"></span></span>
@@ -386,9 +380,22 @@ function checkoutPage() {
                     }, 300);
                 } else if (val === 'Gunakan Lokasi Saya Saat Ini') {
                     if (navigator.geolocation) {
+                        setTimeout(() => {
+                            this.initMap();
+                            if (leafletMap) leafletMap.invalidateSize(true);
+                        }, 300);
+
                         navigator.geolocation.getCurrentPosition(
                             (position) => {
-                                this.updateLocation(position.coords.latitude, position.coords.longitude);
+                                let lat = position.coords.latitude;
+                                let lng = position.coords.longitude;
+                                if (leafletMap) {
+                                    leafletMap.setView([lat, lng], 15);
+                                }
+                                if (leafletMarker) {
+                                    leafletMarker.setLatLng([lat, lng]);
+                                }
+                                this.updateLocation(lat, lng);
                             },
                             (error) => {
                                 alert("Lokasi tidak dapat diakses. Silakan pilih lokasi secara manual pada peta.");
