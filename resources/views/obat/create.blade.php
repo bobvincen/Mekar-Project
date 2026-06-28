@@ -107,6 +107,7 @@
                                 class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400">
                             
                             <input type="hidden" id="supplier_id" name="supplier_id" :value="selectedId">
+                            <input type="hidden" id="supplier_baru" name="supplier_baru" :value="!selectedId && search.trim() ? search.trim() : ''">
 
                             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -261,15 +262,15 @@
                         </div>
 
                         <div>
-                            <label for="modal_telepon" class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor WhatsApp / Telepon <span class="text-rose-500">*</span></label>
-                            <input type="text" id="modal_telepon" name="telepon" required
+                            <label for="modal_telepon" class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor WhatsApp / Telepon</label>
+                            <input type="text" id="modal_telepon" name="telepon"
                                 class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_telepon"></span>
                         </div>
 
                         <div>
-                            <label for="modal_email" class="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Email <span class="text-rose-500">*</span></label>
-                            <input type="email" id="modal_email" name="email" required
+                            <label for="modal_email" class="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Email</label>
+                            <input type="email" id="modal_email" name="email"
                                 class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_email"></span>
                         </div>
@@ -282,8 +283,8 @@
                         </div>
 
                         <div>
-                            <label for="modal_alamat" class="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Lengkap <span class="text-rose-500">*</span></label>
-                            <textarea id="modal_alamat" name="alamat" rows="2" required
+                            <label for="modal_alamat" class="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Lengkap</label>
+                            <textarea id="modal_alamat" name="alamat" rows="2"
                                 class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
                             <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_alamat"></span>
                         </div>
@@ -475,6 +476,7 @@
         let kategori_id = document.getElementById('kategori_id').value;
         let kategori_baru = document.getElementById('kategori_baru') ? document.getElementById('kategori_baru').value.trim() : '';
         let supplier_id = document.getElementById('supplier_id').value;
+        let supplier_baru = document.getElementById('supplier_baru') ? document.getElementById('supplier_baru').value.trim() : '';
         let stok = document.getElementById('stok').value.trim();
         let harga_jual = document.getElementById('harga_jual').value.trim();
 
@@ -497,8 +499,8 @@
             document.getElementById('errorKategori').classList.remove('hidden');
             valid = false;
         }
-        if (supplier_id === '') {
-            document.getElementById('errorSupplier').innerText = 'Supplier wajib dipilih';
+        if (supplier_id === '' && supplier_baru === '') {
+            document.getElementById('errorSupplier').innerText = 'Supplier wajib dipilih atau diisi';
             document.getElementById('errorSupplier').classList.remove('hidden');
             valid = false;
         }

@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\LaporanController;
 
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
@@ -225,13 +226,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
     });
 
-    Route::get('/laporan', function () {
-        $totalTransaksi = \App\Models\Transaksi::count();
-        $totalPendapatan = \App\Models\Transaksi::sum('total_harga');
-        $transaksis = \App\Models\Transaksi::with('pelanggan')->latest()->limit(50)->get();
-
-        return view('laporan.index', compact('totalTransaksi', 'totalPendapatan', 'transaksis'));
-    })->middleware('permission:Kelola Laporan')->name('laporan.index');
+    Route::get('/laporan', [LaporanController::class, 'index'])->middleware('role:admin|kasir')->name('laporan.index');
+    Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->middleware('role:admin|kasir')->name('laporan.export-pdf');
+    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->middleware('role:admin|kasir')->name('laporan.export-excel');
 
     // Apoteker Actions
     Route::middleware('permission:Verifikasi Resep')->group(function () {

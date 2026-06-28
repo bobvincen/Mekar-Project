@@ -57,7 +57,10 @@ class SupplierController extends Controller
             'email.email'            => 'Format email tidak valid.',
         ]);
 
-        Supplier::create($request->all());
+        $data = $request->all();
+        $data['status'] = 'Lengkap';
+
+        Supplier::create($data);
 
         return redirect()->route('supplier.index')
             ->with('success', 'Supplier berhasil ditambahkan');
@@ -70,18 +73,15 @@ class SupplierController extends Controller
     {
         $validator = \Validator::make($request->all(), [
             'nama_supplier' => 'required|string|max:255|unique:suppliers,nama_supplier',
-            'alamat'        => 'required|string',
-            'telepon'       => 'required|string|max:20',
-            'email'         => 'required|email|max:255',
+            'alamat'        => 'nullable|string',
+            'telepon'       => 'nullable|string|max:20',
+            'email'         => 'nullable|email|max:255',
             'kontak_pic'    => 'nullable|string|max:255',
             'kota'          => 'nullable|string|max:255',
             'keterangan'    => 'nullable|string',
         ], [
             'nama_supplier.required' => 'Nama supplier wajib diisi.',
             'nama_supplier.unique'   => 'Nama supplier ini sudah terdaftar.',
-            'alamat.required'        => 'Alamat wajib diisi.',
-            'telepon.required'       => 'Nomor WhatsApp wajib diisi.',
-            'email.required'         => 'Email wajib diisi.',
             'email.email'            => 'Format email tidak valid.',
         ]);
 
@@ -92,7 +92,14 @@ class SupplierController extends Controller
             ], 422);
         }
 
-        $supplier = Supplier::create($request->all());
+        $data = $request->all();
+        if (!empty($data['alamat']) && !empty($data['telepon']) && !empty($data['email'])) {
+            $data['status'] = 'Lengkap';
+        } else {
+            $data['status'] = 'Belum Lengkap';
+        }
+
+        $supplier = Supplier::create($data);
 
         return response()->json([
             'success' => true,
@@ -130,7 +137,10 @@ class SupplierController extends Controller
             'email.email'            => 'Format email tidak valid.',
         ]);
 
-        $supplier->update($request->all());
+        $data = $request->all();
+        $data['status'] = 'Lengkap';
+
+        $supplier->update($data);
 
         return redirect()->route('supplier.index')
             ->with('success', 'Supplier berhasil diperbarui');

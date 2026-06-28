@@ -14,6 +14,7 @@ class Supplier extends Model
         'kontak_pic',
         'kota',
         'keterangan',
+        'status',
     ];
 
     public function obats()

@@ -68,6 +68,7 @@
                         <th class="py-4 px-6">Alamat</th>
                         <th class="py-4 px-6">Telepon</th>
                         <th class="py-4 px-6">Email</th>
+                        <th class="py-4 px-6 text-center w-36">Status</th>
                         <th class="py-4 px-6 text-center w-40">Aksi</th>
                     </tr>
                 </thead>
@@ -81,17 +82,28 @@
                                 {{ $supplier->nama_supplier }}
                             </td>
                             <td class="py-4 px-6 text-slate-500 max-w-xs truncate" title="{{ $supplier->alamat }}">
-                                {{ $supplier->alamat }}
+                                {{ $supplier->alamat ?? '-' }}
                             </td>
                             <td class="py-4 px-6 text-slate-500 font-semibold">
-                                {{ $supplier->telepon }}
+                                {{ $supplier->telepon ?? '-' }}
                             </td>
                             <td class="py-4 px-6 text-slate-500">
-                                {{ $supplier->email }}
+                                {{ $supplier->email ?? '-' }}
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                @if($supplier->status === 'Lengkap')
+                                    <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg">
+                                        Lengkap
+                                    </span>
+                                @else
+                                    <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-100 rounded-lg animate-pulse" title="Lengkapi data supplier ini">
+                                        Perlu Dilengkapi
+                                    </span>
+                                @endif
                             </td>
                             <td class="py-4 px-6">
                                 <div class="flex justify-center gap-2">
-                                    <a href="{{ route('supplier.edit', $supplier->id) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition" title="Edit">
+                                    <a href="{{ route('supplier.edit', $supplier->id) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition" title="Edit / Lengkapi">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
@@ -111,7 +123,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-12 text-slate-400 font-medium bg-slate-50/10">
+                            <td colspan="7" class="text-center py-12 text-slate-400 font-medium bg-slate-50/10">
                                 <div class="flex flex-col items-center justify-center">
                                     <svg class="w-10 h-10 stroke-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5V4H2v16h5m10 0v-2a4 4 0 00-8 0v2m8 0H9m4-10a4 4 0 11-8 0 4 4 0 018 0z" />

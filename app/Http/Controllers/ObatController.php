@@ -42,7 +42,8 @@ class ObatController extends Controller
             'nama_obat' => 'required',
             'kategori_id' => 'required_without:kategori_baru|nullable',
             'kategori_baru' => 'nullable|string|max:255',
-            'supplier_id' => 'required',
+            'supplier_id' => 'required_without:supplier_baru|nullable',
+            'supplier_baru' => 'nullable|string|max:255',
             'stok' => 'required|integer|min:1',
             'harga_jual' => 'required|numeric|min:1',
             'tanggal_kadaluarsa' => 'required|date',
@@ -53,7 +54,7 @@ class ObatController extends Controller
             'kode_obat.unique' => 'Kode obat sudah digunakan.',
             'nama_obat.required' => 'Nama obat wajib diisi.',
             'kategori_id.required_without' => 'Kategori wajib dipilih atau diisi.',
-            'supplier_id.required' => 'Supplier wajib dipilih.',
+            'supplier_id.required_without' => 'Supplier wajib dipilih atau diisi.',
             'stok.required' => 'Stok wajib diisi.',
             'stok.integer' => 'Stok harus berupa angka.',
             'stok.min' => 'Stok minimal 1.',
@@ -77,8 +78,22 @@ class ObatController extends Controller
             $kategoriId = $kategori->id;
         }
 
-        $data = $request->except(['gambar', 'kategori_baru']);
+        $supplierId = $request->input('supplier_id');
+        if ($request->filled('supplier_baru')) {
+            $supplierName = trim($request->input('supplier_baru'));
+            $supplier = Supplier::whereRaw('LOWER(TRIM(nama_supplier)) = ?', [strtolower($supplierName)])->first();
+            if (!$supplier) {
+                $supplier = Supplier::create([
+                    'nama_supplier' => $supplierName,
+                    'status' => 'Belum Lengkap'
+                ]);
+            }
+            $supplierId = $supplier->id;
+        }
+
+        $data = $request->except(['gambar', 'kategori_baru', 'supplier_baru']);
         $data['kategori_id'] = $kategoriId;
+        $data['supplier_id'] = $supplierId;
 
         if ($request->hasFile('gambar')) {
             $data['image_path'] = $request->file('gambar')->store('obat', 'public');
@@ -112,7 +127,8 @@ class ObatController extends Controller
             'nama_obat' => 'required',
             'kategori_id' => 'required_without:kategori_baru|nullable',
             'kategori_baru' => 'nullable|string|max:255',
-            'supplier_id' => 'required',
+            'supplier_id' => 'required_without:supplier_baru|nullable',
+            'supplier_baru' => 'nullable|string|max:255',
             'stok' => 'required|integer|min:1',
             'harga_jual' => 'required|numeric|min:1',
             'tanggal_kadaluarsa' => 'required|date',
@@ -122,7 +138,7 @@ class ObatController extends Controller
             'kode_obat.required' => 'Kode obat wajib diisi.',
             'nama_obat.required' => 'Nama obat wajib diisi.',
             'kategori_id.required_without' => 'Kategori wajib dipilih atau diisi.',
-            'supplier_id.required' => 'Supplier wajib dipilih.',
+            'supplier_id.required_without' => 'Supplier wajib dipilih atau diisi.',
             'stok.required' => 'Stok wajib diisi.',
             'stok.integer' => 'Stok harus berupa angka.',
             'stok.min' => 'Stok minimal 1.',
@@ -146,8 +162,22 @@ class ObatController extends Controller
             $kategoriId = $kategori->id;
         }
 
-        $data = $request->except(['gambar', 'delete_image', 'kategori_baru']);
+        $supplierId = $request->input('supplier_id');
+        if ($request->filled('supplier_baru')) {
+            $supplierName = trim($request->input('supplier_baru'));
+            $supplier = Supplier::whereRaw('LOWER(TRIM(nama_supplier)) = ?', [strtolower($supplierName)])->first();
+            if (!$supplier) {
+                $supplier = Supplier::create([
+                    'nama_supplier' => $supplierName,
+                    'status' => 'Belum Lengkap'
+                ]);
+            }
+            $supplierId = $supplier->id;
+        }
+
+        $data = $request->except(['gambar', 'delete_image', 'kategori_baru', 'supplier_baru']);
         $data['kategori_id'] = $kategoriId;
+        $data['supplier_id'] = $supplierId;
         if ($request->hasFile('gambar')) {
             if ($obat->image_path && Storage::disk('public')->exists($obat->image_path)) {
                 Storage::disk('public')->delete($obat->image_path);
@@ -256,15 +286,23 @@ class ObatController extends Controller
                 $map[$col] = array_search($col, $headings);
             }
 
-            $hasGambar = in_array('gambar', $headings);
-            if ($hasGambar) {
-                $map['gambar'] = array_search('gambar', $headings);
+            $optionalCols = [
+                'nama_kontak',
+                'telepon_supplier',
+                'email_supplier',
+                'kota',
+                'alamat_supplier',
+                'keterangan_supplier',
+                'gambar'
+            ];
+
+            foreach ($optionalCols as $col) {
+                $map[$col] = in_array($col, $headings) ? array_search($col, $headings) : false;
             }
 
             $validRows = [];
             $errors = [];
             $newCategories = [];
-            $newSuppliers = [];
 
             for ($i = 1; $i < count($rows); $i++) {
                 $row = $rows[$i];
@@ -283,7 +321,7 @@ class ObatController extends Controller
                     }
                 }
 
-                $rawGambar = $hasGambar ? ($row[$map['gambar']] ?? null) : null;
+                $rawGambar = ($map['gambar'] !== false) ? ($row[$map['gambar']] ?? null) : null;
                 
                 // Match image in zip recursively
                 $matchedPath = null;
@@ -295,6 +333,15 @@ class ObatController extends Controller
                     'nama_obat' => $row[$map['nama_obat']] ?? null,
                     'kategori' => $row[$map['kategori']] ?? null,
                     'supplier' => $row[$map['supplier']] ?? null,
+                    
+                    // Optional supplier fields from Excel
+                    'nama_kontak' => ($map['nama_kontak'] !== false) ? ($row[$map['nama_kontak']] ?? null) : null,
+                    'telepon_supplier' => ($map['telepon_supplier'] !== false) ? ($row[$map['telepon_supplier']] ?? null) : null,
+                    'email_supplier' => ($map['email_supplier'] !== false) ? ($row[$map['email_supplier']] ?? null) : null,
+                    'kota' => ($map['kota'] !== false) ? ($row[$map['kota']] ?? null) : null,
+                    'alamat_supplier' => ($map['alamat_supplier'] !== false) ? ($row[$map['alamat_supplier']] ?? null) : null,
+                    'keterangan_supplier' => ($map['keterangan_supplier'] !== false) ? ($row[$map['keterangan_supplier']] ?? null) : null,
+
                     'stok' => $row[$map['stok']] ?? null,
                     'harga_jual' => $row[$map['harga_jual']] ?? null,
                     'tanggal_kadaluarsa' => $parsedDate,
@@ -333,11 +380,75 @@ class ObatController extends Controller
                     if (!Kategori::where('nama_kategori', $catName)->exists() && !in_array($catName, $newCategories)) {
                         $newCategories[] = $catName;
                     }
+                }
+            }
 
-                    $supName = trim($rowData['supplier']);
-                    if (!Supplier::where('nama_supplier', $supName)->exists() && !in_array($supName, $newSuppliers)) {
-                        $newSuppliers[] = $supName;
+            // Extract unique suppliers from valid rows and compile details
+            $excelSuppliers = [];
+            foreach ($validRows as $valRow) {
+                $supName = trim($valRow['supplier']);
+                if (empty($supName)) continue;
+
+                $normalizedName = strtolower($supName);
+                if (!isset($excelSuppliers[$normalizedName])) {
+                    $excelSuppliers[$normalizedName] = [
+                        'nama_supplier' => $supName,
+                        'kontak_pic' => !empty($valRow['nama_kontak']) ? trim($valRow['nama_kontak']) : '',
+                        'telepon' => !empty($valRow['telepon_supplier']) ? trim($valRow['telepon_supplier']) : '',
+                        'email' => !empty($valRow['email_supplier']) ? trim($valRow['email_supplier']) : '',
+                        'kota' => !empty($valRow['kota']) ? trim($valRow['kota']) : '',
+                        'alamat' => !empty($valRow['alamat_supplier']) ? trim($valRow['alamat_supplier']) : '',
+                        'keterangan' => !empty($valRow['keterangan_supplier']) ? trim($valRow['keterangan_supplier']) : '',
+                    ];
+                } else {
+                    // Merge fields if empty
+                    foreach (['kontak_pic', 'telepon', 'email', 'kota', 'alamat', 'keterangan'] as $field) {
+                        $valRowKey = $field === 'kontak_pic' ? 'nama_kontak' : ($field === 'telepon' ? 'telepon_supplier' : ($field === 'email' ? 'email_supplier' : ($field === 'alamat' ? 'alamat_supplier' : ($field === 'keterangan' ? 'keterangan_supplier' : $field))));
+                        if (empty($excelSuppliers[$normalizedName][$field]) && !empty($valRow[$valRowKey])) {
+                            $excelSuppliers[$normalizedName][$field] = trim($valRow[$valRowKey]);
+                        }
                     }
+                }
+            }
+
+            $suppliersData = [];
+            foreach ($excelSuppliers as $normalizedName => $excelData) {
+                $dbSupplier = Supplier::whereRaw('LOWER(TRIM(nama_supplier)) = ?', [$normalizedName])->first();
+                if ($dbSupplier) {
+                    $mergedData = [
+                        'id' => $dbSupplier->id,
+                        'nama_supplier' => $dbSupplier->nama_supplier,
+                        'kontak_pic' => $dbSupplier->kontak_pic ?: $excelData['kontak_pic'],
+                        'telepon' => $dbSupplier->telepon ?: $excelData['telepon'],
+                        'email' => $dbSupplier->email ?: $excelData['email'],
+                        'kota' => $dbSupplier->kota ?: $excelData['kota'],
+                        'alamat' => $dbSupplier->alamat ?: $excelData['alamat'],
+                        'keterangan' => $dbSupplier->keterangan ?: $excelData['keterangan'],
+                        'status' => $dbSupplier->status,
+                    ];
+                    $suppliersData[] = [
+                        'name' => $excelData['nama_supplier'],
+                        'exists' => true,
+                        'status' => $dbSupplier->status,
+                        'supplier' => $mergedData
+                    ];
+                } else {
+                    $suppliersData[] = [
+                        'name' => $excelData['nama_supplier'],
+                        'exists' => false,
+                        'status' => 'Baru',
+                        'supplier' => [
+                            'id' => null,
+                            'nama_supplier' => $excelData['nama_supplier'],
+                            'kontak_pic' => $excelData['kontak_pic'],
+                            'telepon' => $excelData['telepon'],
+                            'email' => $excelData['email'],
+                            'kota' => $excelData['kota'],
+                            'alamat' => $excelData['alamat'],
+                            'keterangan' => $excelData['keterangan'],
+                            'status' => 'Belum Lengkap'
+                        ]
+                    ];
                 }
             }
 
@@ -354,10 +465,10 @@ class ObatController extends Controller
                 'validRows',
                 'errors',
                 'newCategories',
-                'newSuppliers',
                 'totalRows',
                 'validCount',
-                'errorCount'
+                'errorCount',
+                'suppliersData'
             ));
 
         } catch (\Exception $e) {
@@ -375,22 +486,82 @@ class ObatController extends Controller
             return redirect()->route('obat.index')->with('error', 'Tidak ada data valid yang siap diimport.');
         }
 
+        $suppliersInput = $request->input('suppliers', []);
+
+        // Validation for the supplier inputs submitted on the preview page
+        if (!empty($suppliersInput)) {
+            $validator = Validator::make($suppliersInput, [
+                '*.nama_supplier' => 'required|string|max:255',
+                '*.email' => 'nullable|email|max:255',
+                '*.telepon' => 'nullable|string|max:20',
+            ], [
+                '*.nama_supplier.required' => 'Nama supplier wajib diisi.',
+                '*.email.email' => 'Format email supplier tidak valid.',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+        }
+
         DB::beginTransaction();
         try {
+            // 1. Process all submitted suppliers first
+            foreach ($suppliersInput as $sup) {
+                $name = trim($sup['nama_supplier']);
+                $alamat = !empty($sup['alamat']) ? trim($sup['alamat']) : null;
+                $telepon = !empty($sup['telepon']) ? trim($sup['telepon']) : null;
+                $email = !empty($sup['email']) ? trim($sup['email']) : null;
+                $kontakPic = !empty($sup['kontak_pic']) ? trim($sup['kontak_pic']) : null;
+                $kota = !empty($sup['kota']) ? trim($sup['kota']) : null;
+                $keterangan = !empty($sup['keterangan']) ? trim($sup['keterangan']) : null;
+
+                // Determine completion status
+                $status = (!empty($alamat) && !empty($telepon) && !empty($email)) ? 'Lengkap' : 'Belum Lengkap';
+
+                // Look up in database
+                $supplier = Supplier::whereRaw('LOWER(TRIM(nama_supplier)) = ?', [strtolower($name)])->first();
+                if ($supplier) {
+                    $supplier->update([
+                        'alamat' => $alamat ?: $supplier->alamat,
+                        'telepon' => $telepon ?: $supplier->telepon,
+                        'email' => $email ?: $supplier->email,
+                        'kontak_pic' => $kontakPic ?: $supplier->kontak_pic,
+                        'kota' => $kota ?: $supplier->kota,
+                        'keterangan' => $keterangan ?: $supplier->keterangan,
+                        'status' => $status
+                    ]);
+                } else {
+                    Supplier::create([
+                        'nama_supplier' => $name,
+                        'alamat' => $alamat,
+                        'telepon' => $telepon,
+                        'email' => $email,
+                        'kontak_pic' => $kontakPic,
+                        'kota' => $kota,
+                        'keterangan' => $keterangan,
+                        'status' => $status
+                    ]);
+                }
+            }
+
+            // 2. Process all medications
             $maxId = Obat::max('id') ?? 0;
             foreach ($data as $index => $row) {
                 $kategori = Kategori::firstOrCreate([
                     'nama_kategori' => trim($row['kategori'])
                 ]);
 
-                $supplier = Supplier::firstOrCreate(
-                    ['nama_supplier' => trim($row['supplier'])],
-                    [
-                        'alamat' => 'Alamat ' . trim($row['supplier']),
-                        'telepon' => '081234567890',
-                        'email' => strtolower(str_replace([' ', '.', ','], '', trim($row['supplier']))) . '@supplier.com'
-                    ]
-                );
+                // Find supplier by name
+                $supplierName = trim($row['supplier']);
+                $supplier = Supplier::whereRaw('LOWER(TRIM(nama_supplier)) = ?', [strtolower($supplierName)])->first();
+                
+                if (!$supplier) {
+                    $supplier = Supplier::create([
+                        'nama_supplier' => $supplierName,
+                        'status' => 'Belum Lengkap'
+                    ]);
+                }
 
                 $kode = 'OBT-' . str_pad($maxId + 1 + $index, 4, '0', STR_PAD_LEFT);
 
@@ -427,6 +598,7 @@ class ObatController extends Controller
 
             session()->forget(['temp_import_data', 'temp_import_dir']);
             return redirect()->route('obat.index')->with('success', count($data) . ' data obat berhasil diimport.');
+            
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('obat.index')->with('error', 'Terjadi kesalahan saat import data: ' . $e->getMessage());

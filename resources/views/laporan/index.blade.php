@@ -71,11 +71,127 @@
         </div>
     </div>
 
+    <!-- Filters Section -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-6">
+        <form action="{{ route('laporan.index') }}" method="GET" class="m-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+            <!-- Start Date -->
+            <div>
+                <label for="start_date" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Mulai</label>
+                <input type="date" id="start_date" name="start_date" value="{{ request('start_date') }}"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-700">
+            </div>
+
+            <!-- End Date -->
+            <div>
+                <label for="end_date" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Selesai</label>
+                <input type="date" id="end_date" name="end_date" value="{{ request('end_date') }}"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-700">
+            </div>
+
+            <!-- Status -->
+            <div>
+                <label for="status" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status</label>
+                <select id="status" name="status"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-700 bg-white">
+                    <option value="">-- Semua Status --</option>
+                    @foreach($statuses as $status)
+                        <option value="{{ $status }}" {{ request('status') === $status ? 'selected' : '' }}>
+                            {{ $status }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Kasir -->
+            <div>
+                <label for="user_id" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kasir</label>
+                <select id="user_id" name="user_id"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-700 bg-white">
+                    <option value="">-- Semua Kasir --</option>
+                    @foreach($cashiers as $cashier)
+                        <option value="{{ $cashier->id }}" {{ request('user_id') == $cashier->id ? 'selected' : '' }}>
+                            {{ $cashier->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Jenis Transaksi -->
+            <div>
+                <label for="jenis_transaksi" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis Transaksi</label>
+                <select id="jenis_transaksi" name="jenis_transaksi"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-700 bg-white">
+                    <option value="">-- Semua Jenis --</option>
+                    <option value="POS" {{ request('jenis_transaksi') === 'POS' ? 'selected' : '' }}>POS (Kasir)</option>
+                    <option value="Online" {{ request('jenis_transaksi') === 'Online' ? 'selected' : '' }}>Online (Marketplace)</option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="lg:col-span-5 flex justify-end gap-3 pt-2">
+                <a href="{{ route('laporan.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition text-sm">
+                    Reset Filter
+                </a>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold shadow transition text-sm flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Terapkan Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Table Card Container -->
     <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
-        <div class="p-5 border-b border-slate-50 bg-slate-50/25">
-            <h3 class="font-bold text-slate-800 text-base">Daftar Transaksi Terakhir</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Berikut daftar rekap 50 transaksi penjualan obat terakhir di apotek:</p>
+        <div class="p-5 border-b border-slate-50 bg-slate-50/25 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h3 class="font-bold text-slate-800 text-base">Daftar Transaksi Terfilter</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Berikut daftar rekap data transaksi penjualan obat terfilter:</p>
+            </div>
+
+            <!-- Export Buttons -->
+            <div x-data="{ exportingPdf: false, exportingExcel: false }" class="flex items-center gap-2">
+                <!-- PDF -->
+                <button type="button" 
+                    @click="if(!exportingPdf) { exportingPdf = true; setTimeout(() => exportingPdf = false, 6000); window.location.href='{{ route('laporan.export-pdf', request()->query()) }}'; }"
+                    :disabled="exportingPdf"
+                    :class="exportingPdf ? 'opacity-60 cursor-not-allowed' : ''"
+                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-xl font-bold transition text-xs">
+                    <template x-if="!exportingPdf">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </template>
+                    <template x-if="exportingPdf">
+                        <svg class="animate-spin h-4 w-4 text-rose-600" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </template>
+                    <span x-text="exportingPdf ? 'Mengunduh...' : 'Export PDF'"></span>
+                </button>
+
+                <!-- Excel -->
+                <button type="button" 
+                    @click="if(!exportingExcel) { exportingExcel = true; setTimeout(() => exportingExcel = false, 6000); window.location.href='{{ route('laporan.export-excel', request()->query()) }}'; }"
+                    :disabled="exportingExcel"
+                    :class="exportingExcel ? 'opacity-60 cursor-not-allowed' : ''"
+                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 rounded-xl font-bold transition text-xs">
+                    <template x-if="!exportingExcel">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </template>
+                    <template x-if="exportingExcel">
+                        <svg class="animate-spin h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </template>
+                    <span x-text="exportingExcel ? 'Mengunduh...' : 'Export Excel'"></span>
+                </button>
+            </div>
         </div>
         
         <div class="overflow-x-auto">
@@ -86,37 +202,53 @@
                         <th class="py-4 px-6">Kode Transaksi</th>
                         <th class="py-4 px-6">Tanggal</th>
                         <th class="py-4 px-6">Pelanggan</th>
+                        <th class="py-4 px-6">Kasir</th>
+                        <th class="py-4 px-6 text-center w-32">Jenis</th>
                         <th class="py-4 px-6 text-right w-40">Total Harga</th>
-                        <th class="py-4 px-6 text-right w-40">Tunai Dibayar</th>
-                        <th class="py-4 px-6 text-right w-40">Uang Kembalian</th>
+                        <th class="py-4 px-6 text-center w-40">Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-600 font-medium">
                     @forelse($transaksis as $t)
+                        @php
+                            $pelanggan = $t->pelanggan->nama_pelanggan ?? ($t->nama_pelanggan ?? 'Umum');
+                            $kasir = $t->user->name ?? '-';
+                            $jenis = $t->nama_pelanggan ? 'Online' : 'POS';
+                            $status = $t->user_id ? ($t->status === 'Dibatalkan' ? 'Dibatalkan' : 'Selesai') : $t->status;
+                        @endphp
                         <tr class="hover:bg-slate-50/50 transition">
-                            <td class="py-4 px-6 text-center font-bold text-slate-400">{{ $loop->iteration }}</td>
+                            <td class="py-4 px-6 text-center font-bold text-slate-400">
+                                {{ ($transaksis->currentPage() - 1) * $transaksis->perPage() + $loop->iteration }}
+                            </td>
                             <td class="py-4 px-6 font-mono font-bold text-blue-600 whitespace-nowrap">
                                 {{ $t->kode_transaksi }}
                             </td>
                             <td class="py-4 px-6 whitespace-nowrap text-slate-500">
-                                {{ \Carbon\Carbon::parse($t->tanggal_transaksi)->format('d M Y') }}
+                                {{ \Carbon\Carbon::parse($t->tanggal_transaksi)->format('d M Y H:i') }}
                             </td>
                             <td class="py-4 px-6 font-bold text-slate-800">
-                                {{ $t->pelanggan->nama_pelanggan ?? 'Umum' }}
+                                {{ $pelanggan }}
+                            </td>
+                            <td class="py-4 px-6 text-slate-600">
+                                {{ $kasir }}
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-lg {{ $t->nama_pelanggan ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-blue-50 text-blue-600 border border-blue-100' }}">
+                                    {{ $jenis }}
+                                </span>
                             </td>
                             <td class="py-4 px-6 font-bold text-slate-850 text-right whitespace-nowrap">
                                 Rp {{ number_format($t->total_harga, 0, ',', '.') }}
                             </td>
-                            <td class="py-4 px-6 text-slate-500 text-right whitespace-nowrap">
-                                Rp {{ number_format($t->bayar, 0, ',', '.') }}
-                            </td>
-                            <td class="py-4 px-6 text-emerald-600 font-bold text-right whitespace-nowrap">
-                                Rp {{ number_format($t->kembalian, 0, ',', '.') }}
+                            <td class="py-4 px-6 text-center whitespace-nowrap">
+                                <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-lg {{ $status === 'Selesai' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : ($status === 'Dibatalkan' || $status === 'Ditolak' ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-amber-50 text-amber-600 border border-amber-100') }}">
+                                    {{ $status }}
+                                </span>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-12 text-center text-slate-400 font-medium bg-slate-50/10">
+                            <td colspan="8" class="py-12 text-center text-slate-400 font-medium bg-slate-50/10">
                                 <div class="flex flex-col items-center justify-center">
                                     <svg class="w-10 h-10 stroke-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-6h13v6M3 7h18M5 17h2m10 0h2" />
@@ -129,6 +261,12 @@
                 </tbody>
             </table>
         </div>
+
+        @if ($transaksis->hasPages())
+            <div class="p-5 border-t border-slate-100 bg-slate-50/10">
+                {{ $transaksis->links() }}
+            </div>
+        @endif
     </div>
 </div>
 @endsection
