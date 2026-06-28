@@ -5,6 +5,14 @@
 @section('content')
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    .leaflet-container img {
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+</style>
 
 @php
     $cartItems = $cartItems ?? [];
@@ -107,26 +115,20 @@
                     </label>
                 </div>
 
-                <div x-show="form.metode === 'Antar ke Alamat'" x-collapse class="mb-6 space-y-6">
+                <div x-show="form.metode === 'Antar ke Alamat' || form.metode === 'Gunakan Lokasi Saya Saat Ini'" x-collapse class="mb-6 space-y-6">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Pilih Lokasi Pengiriman <span class="text-red-500">*</span></label>
-                        <p class="text-xs text-slate-500 mb-3 font-light">Geser pin atau klik pada peta untuk menentukan lokasi akurat pengiriman.</p>
-                        <div id="map" class="h-64 sm:h-80 w-full rounded-2xl z-0 border border-slate-200 shadow-sm relative z-[1]"></div>
+                        <div x-show="form.metode === 'Antar ke Alamat'" class="mb-3">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Pilih Lokasi Pengiriman <span class="text-red-500">*</span></label>
+                            <p class="text-xs text-slate-500 font-light">Geser pin atau klik pada peta untuk menentukan lokasi akurat pengiriman.</p>
+                        </div>
+                        <div x-show="form.metode === 'Gunakan Lokasi Saya Saat Ini'" class="mb-3">
+                            <h3 class="text-sm font-semibold text-slate-700 mb-1.5" x-text="form.lat ? '📍 Lokasi Saat Ini Berhasil Ditemukan' : 'Mencari lokasi...' "></h3>
+                            <p x-show="!form.lat" class="text-xs text-slate-500 animate-pulse">Mohon izinkan akses lokasi pada browser Anda.</p>
+                        </div>
+
+                        <div id="map" x-ignore class="h-64 sm:h-80 w-full rounded-2xl border border-slate-200 shadow-sm relative z-[1]"></div>
                         <p x-show="errors.location" class="text-red-500 text-xs mt-1.5 font-medium">Lokasi pada peta wajib dipilih</p>
                         
-                        <div class="mt-2.5 text-xs font-medium text-slate-500 flex flex-wrap gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100" x-show="form.lat && form.lng">
-                            <span>Lat: <span x-text="form.lat" class="text-slate-800"></span></span>
-                            <span>Lng: <span x-text="form.lng" class="text-slate-800"></span></span>
-                            <span x-show="jarak > 0">Jarak: <span x-text="jarak.toFixed(2) + ' KM'" class="text-blue-600 font-bold"></span></span>
-                            <span x-show="jarak > 0">Perkiraan Ongkir: <span x-text="formatRp(ongkir)" class="text-blue-600 font-bold"></span></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div x-show="form.metode === 'Gunakan Lokasi Saya Saat Ini'" x-collapse class="mb-6 space-y-6">
-                    <div>
-                        <h3 class="text-sm font-semibold text-slate-700 mb-1.5" x-text="form.lat ? '📍 Lokasi Saat Ini Berhasil Ditemukan' : 'Mencari lokasi...' "></h3>
-                        <p x-show="!form.lat" class="text-xs text-slate-500 animate-pulse">Mohon izinkan akses lokasi pada browser Anda.</p>
                         <div class="mt-2.5 text-xs font-medium text-slate-500 flex flex-wrap gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100" x-show="form.lat && form.lng">
                             <span>Lat: <span x-text="form.lat" class="text-slate-800"></span></span>
                             <span>Lng: <span x-text="form.lng" class="text-slate-800"></span></span>
@@ -308,6 +310,10 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 function checkoutPage() {
+    let leafletMap = null;
+    let leafletMarker = null;
+    let leafletRouteLayer = null;
+
     return {
         form: {
             nama: '',
@@ -336,8 +342,6 @@ function checkoutPage() {
             rating: false,
             komentar: false
         },
-        map: null,
-        marker: null,
         apotekLat: -0.9507097707252123, // Koordinat Mekar Pharmacy akurat
         apotekLng: 100.36891688154128, // Koordinat Mekar Pharmacy akurat
         jarak: 0,
@@ -367,15 +371,31 @@ function checkoutPage() {
                 } else if (val === 'Antar ke Alamat') {
                     setTimeout(() => {
                         this.initMap();
+                        if (leafletMap) {
+                            leafletMap.invalidateSize(true);
+                            if (this.form.lat && this.form.lng) {
+                                leafletMarker.setLatLng([this.form.lat, this.form.lng]);
+                            }
+                        }
                     }, 300);
-                    if (this.form.lat && this.form.lng) {
-                        this.updateLocation(this.form.lat, this.form.lng);
-                    }
                 } else if (val === 'Gunakan Lokasi Saya Saat Ini') {
                     if (navigator.geolocation) {
+                        setTimeout(() => {
+                            this.initMap();
+                            if (leafletMap) leafletMap.invalidateSize(true);
+                        }, 300);
+
                         navigator.geolocation.getCurrentPosition(
                             (position) => {
-                                this.updateLocation(position.coords.latitude, position.coords.longitude);
+                                let lat = position.coords.latitude;
+                                let lng = position.coords.longitude;
+                                if (leafletMap) {
+                                    leafletMap.setView([lat, lng], 15);
+                                }
+                                if (leafletMarker) {
+                                    leafletMarker.setLatLng([lat, lng]);
+                                }
+                                this.updateLocation(lat, lng);
                             },
                             (error) => {
                                 alert("Lokasi tidak dapat diakses. Silakan pilih lokasi secara manual pada peta.");
@@ -391,8 +411,8 @@ function checkoutPage() {
         },
 
         initMap() {
-            if (this.map) {
-                this.map.invalidateSize();
+            if (leafletMap) {
+                leafletMap.invalidateSize(true);
                 return;
             }
             
@@ -400,31 +420,38 @@ function checkoutPage() {
             let defaultLat = this.apotekLat;
             let defaultLng = this.apotekLng;
 
-            this.map = L.map('map').setView([defaultLat, defaultLng], 14);
+            // Set default image path to unpkg CDN
+            L.Icon.Default.imagePath = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
+
+            leafletMap = L.map('map').setView([defaultLat, defaultLng], 14);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(this.map);
+            }).addTo(leafletMap);
 
             // Marker Apotek
             L.marker([this.apotekLat, this.apotekLng], {
                 title: "Mekar Pharmacy"
-            }).addTo(this.map).bindPopup("<div class='text-center'><b class='text-blue-600 font-bold'>Mekar Pharmacy</b><br/><span class='text-xs text-slate-500'>Lokasi Apotek</span></div>").openPopup();
+            }).addTo(leafletMap).bindPopup("<div class='text-center'><b class='text-blue-600 font-bold'>Mekar Pharmacy</b><br/><span class='text-xs text-slate-500'>Lokasi Apotek</span></div>").openPopup();
 
             // Marker Pembeli
-            // Tempatkan sedikit bergeser agar tidak menumpuk dengan marker apotek
-            this.marker = L.marker([defaultLat - 0.005, defaultLng + 0.005], {draggable: true}).addTo(this.map);
+            let initialLat = this.form.lat || (defaultLat - 0.005);
+            let initialLng = this.form.lng || (defaultLng + 0.005);
+            
+            leafletMarker = L.marker([initialLat, initialLng], {
+                draggable: true
+            }).addTo(leafletMap);
 
-            this.marker.on('dragend', (e) => {
-                let position = this.marker.getLatLng();
+            leafletMarker.on('dragend', (e) => {
+                let position = leafletMarker.getLatLng();
                 this.updateLocation(position.lat, position.lng);
             });
 
-            this.map.on('click', (e) => {
-                this.marker.setLatLng(e.latlng);
+            leafletMap.on('click', (e) => {
+                leafletMarker.setLatLng(e.latlng);
                 this.updateLocation(e.latlng.lat, e.latlng.lng);
             });
             
-            setTimeout(() => { this.map.invalidateSize(); }, 100);
+            setTimeout(() => { leafletMap.invalidateSize(true); }, 100);
         },
 
         updateLocation(lat, lng) {
@@ -441,20 +468,61 @@ function checkoutPage() {
                     }
                 }).catch(err => console.error(err));
 
-            // Haversine Distance Calculation
-            let distanceKm = this.calculateDistance(this.apotekLat, this.apotekLng, lat, lng);
-            this.distanceKm = distanceKm;
-            this.jarak = distanceKm;
+            // Routing OSRM & Distance Calculation
+            fetch(`https://router.project-osrm.org/route/v1/driving/${this.apotekLng},${this.apotekLat};${lng},${lat}?overview=full&geometries=geojson`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.routes && data.routes.length > 0) {
+                        let route = data.routes[0];
+                        let distanceKm = route.distance / 1000; // OSRM returns distance in meters
+                        
+                        this.distanceKm = distanceKm;
+                        this.jarak = distanceKm;
 
-            // Rumus ongkir dinamis
-            let hitungOngkir = 10000 + (distanceKm * 2500);
-            let calculatedOngkir = Math.round(hitungOngkir / 500) * 500;
-            if (calculatedOngkir < 10000) {
-                calculatedOngkir = 10000;
-            }
-            
-            this.ongkir = calculatedOngkir;
-            this.total = this.calculateTotal();
+                        // Rumus ongkir dinamis
+                        let hitungOngkir = 10000 + (distanceKm * 2500);
+                        let calculatedOngkir = Math.round(hitungOngkir / 500) * 500;
+                        if (calculatedOngkir < 10000) {
+                            calculatedOngkir = 10000;
+                        }
+                        
+                        this.ongkir = calculatedOngkir;
+                        this.total = this.calculateTotal();
+
+                        // Gambar Rute di Peta
+                        if (leafletRouteLayer) {
+                            leafletMap.removeLayer(leafletRouteLayer);
+                        }
+                        
+                        leafletRouteLayer = L.geoJSON(route.geometry, {
+                            style: {
+                                color: '#3b82f6', // Tailwind blue-500
+                                weight: 5,
+                                opacity: 0.8,
+                                lineJoin: 'round'
+                            }
+                        }).addTo(leafletMap);
+                    } else {
+                        throw new Error("No route found");
+                    }
+                })
+                .catch(err => {
+                    console.error("Gagal mendapatkan rute jalan, menggunakan jarak lurus (Haversine).", err);
+                    
+                    // Fallback to Haversine Distance Calculation
+                    let distanceKm = this.calculateDistance(this.apotekLat, this.apotekLng, lat, lng);
+                    this.distanceKm = distanceKm;
+                    this.jarak = distanceKm;
+
+                    let hitungOngkir = 10000 + (distanceKm * 2500);
+                    let calculatedOngkir = Math.round(hitungOngkir / 500) * 500;
+                    if (calculatedOngkir < 10000) {
+                        calculatedOngkir = 10000;
+                    }
+                    
+                    this.ongkir = calculatedOngkir;
+                    this.total = this.calculateTotal();
+                });
         },
 
         calculateDistance(lat1, lon1, lat2, lon2) {
