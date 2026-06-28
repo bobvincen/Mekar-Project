@@ -55,7 +55,7 @@ jobs:
 
       # Install seluruh dependency project (Frontend dependencies)
       - name: Install NPM Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Frontend Assets
         run: npm run build
