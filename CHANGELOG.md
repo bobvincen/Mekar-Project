@@ -4,22 +4,37 @@ Semua perubahan penting pada project **Mekar Pharmacy** akan didokumentasikan di
 
 ---
 
-## [v1.2.0] - 2026-06-27
+## [v1.2.0] - 2026-06-28
 
 ### Added
-* **WhatsApp Fonnte API Backend Integration**:
-  * Mengintegrasikan Fonnte API di backend untuk notifikasi otomatis pengiriman rincian pesanan saat checkout pelanggan.
-  * Mengintegrasikan Fonnte API di backend untuk notifikasi unggahan resep dokter ke nomor WhatsApp admin.
-  * Membuat class `FonnteService` yang dibungkus dengan Laravel HTTP client untuk melakukan request POST secara dinamis.
-  * Penanganan Error Lengkap: Menambahkan log rinci untuk nomor tujuan, isi pesan, payload request, HTTP status code, respons JSON Fonnte API, dan logging exception kegagalan koneksi atau timeout.
-* **Artisan Diagnostic Command**:
-  * Membuat command baru `php artisan whatsapp:test` untuk menguji integrasi WhatsApp dan koneksi Fonnte API secara langsung dari terminal.
-* **WhatsApp Diagnostic Page (Admin-only)**:
-  * Membuat halaman khusus admin `/admin/whatsapp-diagnostic` (System -> WhatsApp Diagnostic) untuk melihat status keaktifan token, URL API, nomor default penerima, status koneksi perangkat (online/offline), log rincian API terakhir, dan tombol uji kirim pesan manual.
+* **Fitur Konsultasi Apoteker**:
+  * Integrasi layanan konsultasi langsung via WhatsApp dengan apoteker.
+  * Penambahan section khusus di homepage dan floating WhatsApp button.
+  * Sistem pencatatan log (`konsultasi_log`) untuk merekam metrik interaksi (sumber, timestamp, IP).
+  * Widget statistik harian dan bulanan konsultasi pada dashboard admin.
+* **Notifikasi Obat Kadaluarsa**:
+  * Sistem pelacakan otomatis untuk obat yang masa kadaluarsanya tersisa kurang dari 30 hari.
+  * Menampilkan peringatan obat secara langsung di panel dashboard admin.
+* **Navbar Logo Branding & UI Improvements**:
+  * Menambahkan logo resmi Mekar Pharmacy pada navigation bar untuk memperkuat branding.
+  * Fitur ulasan (review) web untuk meningkatkan interaksi pengguna.
+  * Fungsionalitas scroll-spy pada navbar menggunakan Intersection Observer untuk perpindahan active state dinamis ("Beranda" & "Konsultasi Apoteker").
+
+### Changed
+* **Sistem Harga & Checkout Marketplace**:
+  * Menghapus logika diskon dan voucher lama (legacy) guna menyederhanakan dan menstabilkan perhitungan harga (Subtotal + Ongkir = Total).
+  * Memastikan state reaktivitas AlpineJS selalu tersinkronisasi secara real-time dengan OpenRouteService API saat checkout.
+* **Tampilan Halaman Admin & Web Utama**:
+  * Mengubah dan memodernisasi gaya UI menggunakan Tailwind CSS untuk mencapai hierarki visual premium.
+  * Menyempurnakan grafik ringkasan penjualan pada dashboard admin.
 
 ### Fixed
-* **Pencegahan Undefined Array Key pada Checkout**:
-  * Memperbaiki error `Undefined array key "alamat"` pada `CheckoutController` dengan menangani parameter input opsional secara defensif menggunakan operator null coalescing (`??`).
+* **Spatie Permission Error**:
+  * Menyelesaikan isu `Trait "Spatie\Permission\Traits\HasRoles" not found` akibat konflik dependensi versi.
+* **Konflik Manajemen Role**:
+  * Memperbaiki sistem role management dan potensi konflik pada kode.
+* **Navbar Active State & Routing**:
+  * Memperbaiki kendala tampilan Navbar agar selalu reaktif mengikuti scroll pengguna tanpa sekadar bergantung pada URL routes.
 
 ---
 

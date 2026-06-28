@@ -61,7 +61,37 @@
         }
     </style>
 </head>
-<body class="bg-[#f8fbff] text-slate-700 antialiased selection:bg-blue-200 selection:text-blue-900 relative min-h-screen flex flex-col" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)">
+@php
+    $navIsHome    = request()->is('/') || request()->is('marketplace') || request()->routeIs('marketplace.home');
+    $navIsProduct = request()->is('products') || request()->is('products/*') || request()->routeIs('marketplace.products') || request()->routeIs('marketplace.showProduct') || request()->routeIs('marketplace.category');
+@endphp
+<body class="bg-[#f8fbff] text-slate-700 antialiased selection:bg-blue-200 selection:text-blue-900 relative min-h-screen flex flex-col" 
+    x-data="{ 
+        scrolled: false,
+        activeMenu: '{{ $navIsHome ? 'home' : ($navIsProduct ? 'products' : '') }}'
+    }" 
+    @scroll.window="scrolled = (window.pageYOffset > 20)"
+    x-init="
+        if ('{{ $navIsHome }}' == '1') {
+            setTimeout(() => {
+                const konsultasiEl = document.getElementById('konsultasi');
+                if (konsultasiEl) {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                activeMenu = 'konsultasi';
+                            } else {
+                                if (entry.boundingClientRect.top > 0) {
+                                    activeMenu = 'home';
+                                }
+                            }
+                        });
+                    }, { threshold: 0.2 });
+                    observer.observe(konsultasiEl);
+                }
+            }, 100);
+        }
+    ">
 
     <!-- Background Decoration -->
     <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#eef6ff_50%,#f8fbff_100%)]">
@@ -95,22 +125,25 @@
                 </a>
 
                 <!-- Navigation Links (Desktop) -->
-                @php
-                    $navIsHome    = request()->is('/') || request()->is('marketplace') || request()->routeIs('marketplace.home');
-                    $navIsProduct = request()->is('products') || request()->is('products/*') || request()->routeIs('marketplace.products') || request()->routeIs('marketplace.showProduct') || request()->routeIs('marketplace.category');
-                @endphp
                 <div class="hidden lg:flex items-center gap-5">
-                    <a href="/" class="text-[13px] font-semibold transition-colors duration-300 relative group {{ $navIsHome ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600' }}">
+                    <a href="/" class="text-[13px] font-semibold transition-colors duration-300 relative group"
+                       :class="activeMenu === 'home' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'">
                         Beranda
-                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left {{ $navIsHome ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100' }}"></span>
+                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left"
+                              :class="activeMenu === 'home' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
                     </a>
-                    <a href="/products" class="text-[13px] font-semibold transition-colors duration-300 relative group {{ $navIsProduct ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600' }}">
+                    <a href="/products" class="text-[13px] font-semibold transition-colors duration-300 relative group"
+                       :class="activeMenu === 'products' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'">
                         Semua Produk
-                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left {{ $navIsProduct ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100' }}"></span>
+                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left"
+                              :class="activeMenu === 'products' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
                     </a>
-                    <a href="/#konsultasi" class="text-[13px] font-semibold transition-colors duration-300 relative group text-slate-600 hover:text-blue-600">
+                    <a href="/#konsultasi" class="text-[13px] font-semibold transition-colors duration-300 relative group"
+                       :class="activeMenu === 'konsultasi' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'"
+                       @click="if('{{ $navIsHome }}' == '1') { activeMenu = 'konsultasi'; }">
                         Konsultasi Apoteker
-                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left scale-x-0 group-hover:scale-x-100"></span>
+                        <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-blue-600 rounded-full transition-transform duration-300 origin-left"
+                              :class="activeMenu === 'konsultasi' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
                     </a>
                 </div>
 
