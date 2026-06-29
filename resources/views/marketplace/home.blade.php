@@ -450,67 +450,67 @@
 
 {{-- ===== KONSULTASI APOTEKER ===== --}}
 <section id="konsultasi" class="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-10 py-12">
-    <div class="relative bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] overflow-hidden shadow-2xl shadow-blue-500/20" data-aos="fade-up">
+    <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-800 border border-blue-400/30 flex flex-col items-center justify-center min-h-[500px] md:min-h-[550px] p-6 sm:p-10 lg:p-16 shadow-2xl shadow-blue-900/20 group z-10" data-aos="fade-up">
         
-        <!-- Abstract Background Vectors -->
-        <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-[80px] pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-80 h-80 bg-cyan-400 opacity-10 rounded-full blur-[100px] pointer-events-none transform -translate-x-1/3 translate-y-1/3"></div>
+        <!-- Full Background Image -->
+        <img src="/apoteker_konsultasi.png" alt="Konsultasi Apoteker Mekar Pharmacy" class="absolute inset-0 w-full h-full object-cover object-center opacity-75 mix-blend-overlay transition-transform duration-1000 group-hover:scale-105 pointer-events-none">
         
-        <div class="relative flex flex-col md:flex-row items-center justify-between p-8 md:p-12 lg:p-16 gap-8">
-            
-            <div class="flex-1 max-w-2xl text-white">
-                <div class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 backdrop-blur-md text-[10px] font-bold px-3 py-1.5 rounded-md mb-4 text-cyan-100 uppercase tracking-wider">
-                    <span class="relative flex h-2 w-2 mr-1">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-300"></span>
-                    </span>
-                    Tanya Apoteker
-                </div>
-                
-                <h2 class="text-3xl sm:text-4xl lg:text-[40px] font-extrabold tracking-tight mb-4 leading-[1.2]">
-                    Konsultasi Langsung dengan <span class="text-cyan-300">Apoteker</span>
-                </h2>
-                
-                <p class="text-blue-100 font-medium text-sm sm:text-base leading-relaxed mb-8 max-w-lg opacity-90">
-                    Bingung memilih obat? Konsultasikan keluhan kesehatan Anda langsung dengan apoteker Mekar Pharmacy melalui WhatsApp.
-                </p>
-                
-                <ul class="space-y-3 mb-8">
-                    <li class="flex items-center gap-3 text-sm text-white font-medium">
-                        <div class="w-6 h-6 rounded-full bg-cyan-400/20 flex items-center justify-center shrink-0">
-                            <svg class="w-3.5 h-3.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                        </div>
-                        Gratis konsultasi awal
-                    </li>
-                    <li class="flex items-center gap-3 text-sm text-white font-medium">
-                        <div class="w-6 h-6 rounded-full bg-cyan-400/20 flex items-center justify-center shrink-0">
-                            <svg class="w-3.5 h-3.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                        </div>
-                        Respon cepat melalui WhatsApp
-                    </li>
-                    <li class="flex items-center gap-3 text-sm text-white font-medium">
-                        <div class="w-6 h-6 rounded-full bg-cyan-400/20 flex items-center justify-center shrink-0">
-                            <svg class="w-3.5 h-3.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                        </div>
-                        Dibantu oleh apoteker terpercaya
-                    </li>
-                </ul>
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-blue-800/60 via-blue-700/40 to-indigo-900/70 pointer-events-none"></div>
+        
+        <!-- Background Abstract Elements -->
+        <div class="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none mix-blend-overlay"></div>
+        <div class="absolute top-[-10%] right-[-10%] w-[40%] h-[60%] rounded-full bg-cyan-400/20 blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[60%] rounded-full bg-white/10 blur-[120px] pointer-events-none"></div>
 
-                <button onclick="openKonsultasi('homepage')" class="group relative inline-flex items-center justify-center gap-2 bg-white text-blue-700 hover:text-blue-800 font-bold px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+        <!-- Main Content Center -->
+        <div class="relative z-10 w-full max-w-3xl flex flex-col items-center text-center text-white mt-4">
+            
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold tracking-wide uppercase px-4 py-2 rounded-full shadow-sm mb-6 cursor-default" data-aos="fade-down" data-aos-duration="600">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> Tanya Apoteker
+            </div>
+            
+            <!-- Title -->
+            <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] mb-5 drop-shadow-lg" data-aos="fade-up" data-aos-duration="700" data-aos-delay="100">
+                Konsultasi Langsung dengan <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">Apoteker</span>
+            </h2>
+            
+            <!-- Subtitle -->
+            <p class="text-blue-50 text-[15px] sm:text-lg font-light mb-8 leading-relaxed max-w-xl mx-auto drop-shadow-md" data-aos="fade-up" data-aos-duration="700" data-aos-delay="200">
+                Bingung memilih obat? Konsultasikan keluhan kesehatan Anda langsung dengan apoteker Mekar Pharmacy melalui WhatsApp.
+            </p>
+            
+            <!-- Features List Inline -->
+            <div class="flex flex-wrap justify-center gap-4 sm:gap-8 mb-10" data-aos="fade-up" data-aos-duration="700" data-aos-delay="300">
+                <div class="flex items-center gap-2 text-sm text-white font-medium">
+                    <div class="w-6 h-6 rounded-full bg-cyan-400/20 flex items-center justify-center shrink-0">
+                        <svg class="w-3.5 h-3.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                    </div>
+                    Gratis konsultasi awal
+                </div>
+                <div class="flex items-center gap-2 text-sm text-white font-medium">
+                    <div class="w-6 h-6 rounded-full bg-cyan-400/20 flex items-center justify-center shrink-0">
+                        <svg class="w-3.5 h-3.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                    </div>
+                    Respon cepat via WhatsApp
+                </div>
+                <div class="flex items-center gap-2 text-sm text-white font-medium">
+                    <div class="w-6 h-6 rounded-full bg-cyan-400/20 flex items-center justify-center shrink-0">
+                        <svg class="w-3.5 h-3.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                    </div>
+                    Apoteker terpercaya
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="400">
+                <button onclick="openKonsultasi('homepage')" class="group relative inline-flex items-center justify-center gap-2 bg-white text-blue-800 hover:text-blue-900 font-extrabold px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
                     <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-white via-blue-50 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <svg class="w-5 h-5 text-green-500 relative z-10" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-                    <span class="relative z-10 text-[14px]">Konsultasi Sekarang</span>
+                    <span class="relative z-10 text-[15px]">Konsultasi Sekarang</span>
                 </button>
             </div>
-            
-            <div class="hidden md:flex flex-col items-center justify-center shrink-0 w-[200px] lg:w-[300px]">
-                <div class="relative w-48 h-48 lg:w-64 lg:h-64 rounded-full bg-white/10 backdrop-blur-sm border-2 border-white/20 shadow-inner flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
-                    <svg class="w-24 h-24 lg:w-32 lg:h-32 text-cyan-300 drop-shadow-lg animate-float" style="animation-duration: 4s;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-            </div>
-
         </div>
     </div>
 </section>
