@@ -250,15 +250,14 @@
 
                 <div class="p-4 pt-1">
                     <div class="text-blue-600 text-[15px] font-black mb-3">{{ $formattedPrice }}</div>
-                    <form action="/cart/add/{{ $p->id }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full bg-slate-50 hover:bg-blue-600 border border-slate-200 hover:border-blue-600 text-slate-700 hover:text-white text-[11px] font-bold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                            Keranjang
-                        </button>
-                    </form>
+                    <button type="button"
+                            data-product-id="{{ $p->id }}"
+                            class="add-to-cart-btn w-full bg-slate-50 hover:bg-blue-600 border border-slate-200 hover:border-blue-600 text-slate-700 hover:text-white text-[11px] font-bold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 cart-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span class="btn-text">Keranjang</span>
+                    </button>
                 </div>
             </div>
         @empty
@@ -334,15 +333,14 @@
 
                 <div class="p-4 pt-1">
                     <div class="text-blue-600 text-[15px] font-black mb-3">{{ $formattedPrice }}</div>
-                    <form action="/cart/add/{{ $p->id }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 text-[11px] font-bold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                            Keranjang
-                        </button>
-                    </form>
+                    <button type="button"
+                            data-product-id="{{ $p->id }}"
+                            class="add-to-cart-btn w-full bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 text-[11px] font-bold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 cart-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span class="btn-text">Keranjang</span>
+                    </button>
                 </div>
             </div>
         @empty
@@ -532,5 +530,60 @@
     </div>
     @endif
 </section>
+
+{{-- ===== SCRIPT ADD TO CART (AJAX) ===== --}}
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const productId = btn.dataset.productId;
+            const btnTextEl = btn.querySelector('.btn-text');
+            const originalText = btnTextEl.textContent;
+
+            btn.disabled = true;
+            btnTextEl.textContent = 'Menambahkan...';
+
+            fetch(`/cart/add/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ qty: 1 })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    btnTextEl.textContent = 'Ditambahkan ✓';
+
+                    // Update badge jumlah keranjang di navbar jika elemen ada
+                    const cartBadge = document.querySelector('#cart-count');
+                    if (cartBadge) {
+                        cartBadge.textContent = data.cartCount;
+                        cartBadge.classList.remove('hidden');
+                    }
+
+                    setTimeout(() => {
+                        btnTextEl.textContent = originalText;
+                        btn.disabled = false;
+                    }, 1200);
+                } else {
+                    alert(data.message || 'Gagal menambahkan ke keranjang');
+                    btnTextEl.textContent = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(() => {
+                alert('Terjadi kesalahan, coba lagi.');
+                btnTextEl.textContent = originalText;
+                btn.disabled = false;
+            });
+        });
+    });
+});
+</script>
+@endpush
 
 @endsection
