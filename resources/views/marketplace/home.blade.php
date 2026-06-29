@@ -53,69 +53,117 @@
 
 {{-- ===== HERO BANNER SECTION ===== --}}
 <section class="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-10 mt-4 sm:mt-6 mb-12 relative">
-    <div class="relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-800 border border-blue-400/30 flex flex-col md:flex-row justify-between items-center min-h-[400px] p-6 sm:p-10 shadow-2xl shadow-blue-900/15 group z-10" data-aos="fade-up">
+    <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-800 border border-blue-400/30 flex flex-col items-center justify-center min-h-[550px] md:min-h-[650px] lg:min-h-[720px] p-6 sm:p-10 lg:p-16 shadow-2xl shadow-blue-900/20 group z-10" data-aos="zoom-in" data-aos-duration="700">
+        
+        <!-- Full Background Image -->
+        <img src="/keluarga_baru.png" alt="Mekar Pharmacy Family" class="absolute inset-0 w-full h-full object-cover object-center opacity-75 mix-blend-overlay transition-transform duration-1000 group-hover:scale-105 pointer-events-none">
+        
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-blue-800/60 via-blue-700/40 to-indigo-900/70 pointer-events-none"></div>
         
         <!-- Background Abstract Elements -->
-        <div class="absolute inset-0 opacity-20 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
-        <div class="absolute top-[-20%] right-[-10%] w-[50%] h-[80%] rounded-full bg-cyan-400/20 blur-[100px] pointer-events-none"></div>
-        <div class="absolute bottom-[-20%] left-[-10%] w-[40%] h-[70%] rounded-full bg-indigo-500/20 blur-[100px] pointer-events-none"></div>
+        <div class="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none mix-blend-overlay"></div>
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[60%] rounded-full bg-blue-400/30 blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[60%] rounded-full bg-cyan-400/20 blur-[120px] pointer-events-none"></div>
         
         <!-- Decorative SVG Medical Crosses -->
-        <div class="absolute top-8 left-8 text-white/10 w-12 h-12 animate-float-delayed">
+        <div class="absolute top-16 left-[15%] text-white/20 w-12 h-12 animate-float-delayed pointer-events-none hidden md:block">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 10h-5V5h-4v5H5v4h5v5h4v-5h5v-4z"/></svg>
         </div>
-        <div class="absolute bottom-16 right-1/2 text-white/10 w-10 h-10 animate-float">
+        <div class="absolute bottom-32 right-[15%] text-white/10 w-16 h-16 animate-float pointer-events-none hidden md:block">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 10h-5V5h-4v5H5v4h5v5h4v-5h5v-4z"/></svg>
         </div>
 
-        <div class="relative z-10 w-full md:w-[60%] flex flex-col justify-center h-full text-white">
+        <!-- Main Content Center -->
+        <div class="relative z-10 w-full max-w-4xl flex flex-col items-center text-center text-white mt-8 lg:mt-4">
             
-            <div class="flex flex-wrap gap-2 mb-5" data-aos="fade-right" data-aos-delay="100">
-                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Apotek Terpercaya
+            <!-- Badges -->
+            <div class="flex flex-wrap justify-center gap-3 mb-6" data-aos="fade-down" data-aos-duration="600" data-aos-delay="100">
+                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold tracking-wide uppercase px-4 py-2 rounded-full shadow-sm transition hover:bg-white/20 cursor-default">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Apotek Terpercaya
                 </span>
-                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Produk Original
+                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold tracking-wide uppercase px-4 py-2 rounded-full shadow-sm transition hover:bg-white/20 cursor-default hidden sm:inline-flex">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> Produk Original
                 </span>
-                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Konsultasi Cepat
+                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold tracking-wide uppercase px-4 py-2 rounded-full shadow-sm transition hover:bg-white/20 cursor-default">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Konsultasi Cepat
                 </span>
             </div>
 
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.15] mb-4" data-aos="fade-up" data-aos-delay="200">
-                Kesehatan Anda, <br>
-                <span class="text-cyan-300 font-light italic">Prioritas Utama Kami.</span>
+            <!-- Title -->
+            <h1 class="text-4xl sm:text-5xl lg:text-[4.25rem] font-extrabold tracking-tight leading-[1.15] mb-6 drop-shadow-lg" data-aos="fade-up" data-aos-duration="700" data-aos-delay="200">
+                Lindungi Kesehatan <br class="hidden sm:block">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">Keluarga Tercinta Anda</span>
             </h1>
             
-            <p class="text-blue-100 text-[13px] sm:text-sm font-light mb-8 leading-relaxed max-w-lg" data-aos="fade-up" data-aos-delay="300">
-                Dapatkan obat dan vitamin original terverifikasi klinis. Layanan pesan antar instan langsung dari apoteker profesional Mekar Pharmacy.
+            <!-- Subtitle -->
+            <p class="text-blue-50 text-[15px] sm:text-lg font-light mb-10 leading-relaxed max-w-2xl mx-auto drop-shadow-md" data-aos="fade-up" data-aos-duration="700" data-aos-delay="300">
+                Dapatkan obat, vitamin, dan produk kesehatan original dengan layanan konsultasi apoteker profesional serta pengiriman cepat langsung ke rumah Anda.
             </p>
             
-            <div class="flex flex-wrap items-center gap-3" data-aos="fade-up" data-aos-delay="400">
-                <a href="#produk" class="btn-glow bg-white text-blue-700 hover:text-blue-800 font-bold px-6 py-3 rounded-full text-sm transition-all duration-300 flex items-center gap-1.5 group transform hover:-translate-y-0.5">
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto" data-aos="fade-up" data-aos-duration="700" data-aos-delay="400">
+                <a href="#produk" class="w-full sm:w-auto btn-glow bg-white text-blue-800 hover:text-blue-900 font-extrabold px-8 py-4 rounded-full text-[15px] transition-all duration-300 flex items-center justify-center gap-2 group transform hover:-translate-y-1 shadow-xl shadow-white/10">
                     Belanja Sekarang
-                    <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                    <svg class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
                 </a>
-                <a href="{{ route('resep.create') }}" class="relative bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-900 font-extrabold px-6 py-3 rounded-full text-sm transition-all duration-300 flex items-center gap-1.5 group hover:-translate-y-0.5 shadow-lg shadow-yellow-500/30 border border-yellow-300">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                <a href="{{ route('resep.create') }}" class="w-full sm:w-auto relative bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-900 font-extrabold px-8 py-4 rounded-full text-[15px] transition-all duration-300 flex items-center justify-center gap-2 group transform hover:-translate-y-1 shadow-xl shadow-yellow-500/30 border border-yellow-300">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                     Upload Resep Dokter
-                    <!-- Red glowing ping -->
-                    <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                    <span class="absolute -top-1.5 -right-1.5 flex h-4 w-4">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-500 border-2 border-white"></span>
+                        <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-white"></span>
                     </span>
                 </a>
             </div>
         </div>
 
-        <div class="relative z-10 w-full md:w-[40%] h-[250px] md:h-[350px] mt-8 md:mt-0 flex justify-center md:justify-end items-center" data-aos="zoom-in" data-aos-delay="300">
-            <!-- Decorative Capsule -->
-            <div class="absolute top-5 left-5 w-12 h-6 bg-white/20 backdrop-blur-lg rounded-full rotate-45 animate-float-delayed border border-white/30"></div>
-            <!-- Main Hero Image -->
-            <img src="/keluarga.png" alt="Healthy Family" class="h-full object-cover object-center rounded-[1.5rem] md:rounded-[2rem] animate-float shadow-xl border-4 border-white/10">
-            <!-- Decorative Capsule -->
-            <div class="absolute bottom-5 right-5 w-10 h-5 bg-cyan-300/30 backdrop-blur-lg rounded-full -rotate-12 animate-float border border-white/20"></div>
+        <!-- Feature Bar (Glassmorphism) -->
+        <div class="relative z-10 w-full max-w-5xl mt-16 pt-8 border-t border-white/10" data-aos="fade-up" data-aos-duration="700" data-aos-delay="500">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Feature 1 -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3 hover:bg-white/15 transition-colors">
+                    <div class="bg-white/20 rounded-xl p-2.5 shrink-0 text-white">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-white text-[13px] sm:text-sm font-bold">Produk Original</h4>
+                        <p class="text-blue-100 text-[10px] sm:text-xs mt-0.5 font-medium">100% Asli & Terjamin</p>
+                    </div>
+                </div>
+                <!-- Feature 2 -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3 hover:bg-white/15 transition-colors">
+                    <div class="bg-white/20 rounded-xl p-2.5 shrink-0 text-white">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-white text-[13px] sm:text-sm font-bold">Pengiriman Cepat</h4>
+                        <p class="text-blue-100 text-[10px] sm:text-xs mt-0.5 font-medium">Langsung ke Rumah</p>
+                    </div>
+                </div>
+                <!-- Feature 3 -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3 hover:bg-white/15 transition-colors">
+                    <div class="bg-white/20 rounded-xl p-2.5 shrink-0 text-white">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-white text-[13px] sm:text-sm font-bold">Konsultasi Ahli</h4>
+                        <p class="text-blue-100 text-[10px] sm:text-xs mt-0.5 font-medium">Apoteker Profesional</p>
+                    </div>
+                </div>
+                <!-- Feature 4 -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3 hover:bg-white/15 transition-colors">
+                    <div class="bg-white/20 rounded-xl p-2.5 shrink-0 text-white">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-white text-[13px] sm:text-sm font-bold">Pembayaran Aman</h4>
+                        <p class="text-blue-100 text-[10px] sm:text-xs mt-0.5 font-medium">Transaksi Terenkripsi</p>
+                    </div>
+                </div>
+            </div>
         </div>
+        
     </div>
 </section>
 
