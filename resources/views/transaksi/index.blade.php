@@ -74,8 +74,9 @@
                     value="{{ request('tanggal_selesai', now()->format('Y-m-d')) }}">
             </div>
 
-            <button type="submit" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-semibold text-xs transition inline-flex items-center gap-1.5 shadow-sm">
-                Cetak PDF
+            <button type="submit"
+                class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-xs transition inline-flex items-center justify-center gap-1.5 shadow-sm">
+                 Cetak PDF
             </button>
         </form>
     </div>
@@ -84,7 +85,7 @@
     <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left border-collapse table-auto">
-                <thead class="bg-slate-50 text-slate-400 font-bold text-xs uppercase border-b border-slate-100 tracking-wider">
+               <thead class="bg-slate-100 text-slate-600 font-bold text-xs uppercase border-b border-slate-200 tracking-wider">
                     <tr>
                         <th class="py-4 px-5 w-16 text-center">No</th>
                         <th class="py-4 px-5">Kode Transaksi</th>
@@ -99,7 +100,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-600 font-medium">
                     @forelse($transaksis as $t)
-                        <tr class="hover:bg-slate-50/50 transition">
+                        <tr class="hover:bg-blue-50 transition duration-200">
                             <td class="py-4 px-5 text-center font-bold text-slate-400">{{ $loop->iteration }}</td>
                             <td class="py-4 px-5 font-mono font-bold text-blue-600 whitespace-nowrap">
                                 {{ $t->kode_transaksi }}
@@ -111,7 +112,7 @@
                                 {{ $t->pelanggan->nama_pelanggan ?? 'Umum' }}
                             </td>
                             <td class="py-4 px-5 text-center">
-                                <span class="px-2.5 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded-lg">
+                                <span class="inline-flex items-center px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full"></span>
                                     {{ $t->detailTransaksis->count() }} item
                                 </span>
                             </td>

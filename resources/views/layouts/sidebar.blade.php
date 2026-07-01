@@ -598,8 +598,8 @@
             <!-- Resep Dokter Link -->
             @if(auth()->user()->can('Verifikasi Resep'))
                 @php
-                    $isResepActive = request()->routeIs('admin.resep.*') || request()->routeIs('apoteker.resep.*');
-                    $resepUrl = auth()->user()->can('Kelola User') ? route('admin.resep.index') : route('apoteker.resep.index');
+                    $isResepActive = request()->routeIs('admin.resep.*') || request()->routeIs('apoteker.resep.*') || request()->routeIs('resep.proses');
+                    $resepUrl = auth()->user()->can('Kelola Pesanan Online') ? route('admin.resep.index') : route('apoteker.resep.index');
                 @endphp
                 <div class="relative group" @mouseenter="activeTooltip = 'resep'" @mouseleave="activeTooltip = null">
                     <a href="{{ $resepUrl }}"

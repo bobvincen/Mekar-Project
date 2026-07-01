@@ -47,20 +47,93 @@ class MarketplaceController extends Controller
 
         // Search filter
         if ($request->filled('search')) {
-            $search = $request->input('search');
+            $search = strtolower(trim($request->input('search')));
             $searchTokens = array_filter(explode(' ', $search));
             $noSpaceSearch = str_replace(' ', '', $search);
 
-            $query->where(function($q) use ($search, $searchTokens, $noSpaceSearch) {
-                // 1. Basic LIKE (already case-insensitive in MySQL by default)
-                $q->where('nama_obat', 'like', '%' . $search . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $search . '%')
-                  ->orWhere('kode_obat', 'like', '%' . $search . '%');
+            // 1. Kamus Bahasa Sehari-hari (Thesaurus Gejala & Typo Obat untuk toleransi orang tua)
+            $synonyms = [
+                // Gejala / Penyakit Umum
+                'pusing' => ['sakit kepala', 'pusing', 'migrain', 'vertigo', 'paracetamol', 'panadol', 'bodrex', 'paramex', 'oskadon', 'neuralgin'],
+                'demam' => ['panas', 'demam', 'paracetamol', 'sanmol', 'ibuprofen', 'proris', 'tempra'],
+                'batuk' => ['batuk', 'berdahak', 'kering', 'komik', 'obh', 'siladex', 'woods', 'bisolvon', 'laserin', 'actifed'],
+                'pilek' => ['flu', 'pilek', 'hidung tersumbat', 'meler', 'rhinos', 'mixagrip', 'procold', 'demacolin', 'decolgen', 'tremenza'],
+                'mencret' => ['diare', 'mencret', 'mules', 'diapet', 'lodia', 'imodium', 'entrostop', 'tay pin san', 'oralit'],
+                'lambung' => ['maag', 'asam lambung', 'gerd', 'perih', 'mual', 'promag', 'mylanta', 'polysilane', 'antasida', 'omeprazole', 'lansoprazole'],
+                'maag' => ['maag', 'asam lambung', 'gerd', 'perih', 'mual', 'promag', 'mylanta', 'polysilane', 'antasida'],
+                'muntah' => ['mual', 'muntah', 'antimo', 'ondansetron', 'domperidone', 'vometa'],
+                'pegal' => ['pegal', 'linu', 'nyeri otot', 'keseleo', 'koyok', 'salonpas', 'hotin', 'voltaren', 'counterpain', 'neo rheumacyl'],
+                'luka' => ['luka', 'berdarah', 'betadine', 'rivanol', 'hansaplast', 'plester', 'bioplacenton'],
+                'gatal' => ['gatal', 'alergi', 'biduran', 'kaligata', 'ctm', 'incidal', 'cetirizine', 'caladine', 'salep', 'daktarin', 'loratadine'],
+                'vitamin' => ['vitamin', 'suplemen', 'daya tahan', 'imun', 'enervon', 'imboost', 'fatigon', 'stimuno', 'blackmores', 'c'],
+                'darah tinggi' => ['hipertensi', 'darah tinggi', 'amlodipine', 'captopril', 'tensivask', 'candesartan'],
+                'kencing manis' => ['diabetes', 'kencing manis', 'gula darah', 'metformin', 'glimepiride', 'insulin'],
+                'capek' => ['letih', 'lesu', 'capek', 'lelah', 'vitamin', 'suplemen', 'fatigon', 'sangobion', 'hemabion'],
+                'kurang darah' => ['anemia', 'kurang darah', 'sangobion', 'zat besi'],
+                'sariawan' => ['sariawan', 'panas dalam', 'albotyl', 'kenalog', 'larutan', 'adem sari'],
+                'asam urat' => ['asam urat', 'nyeri sendi', 'allopurinol', 'piroxicam', 'meloxicam'],
+                'kolesterol' => ['kolesterol', 'simvastatin', 'atorvastatin'],
+                'gigi' => ['sakit gigi', 'nyeri', 'ponstan', 'mefenamat', 'katarak', 'cataflam'],
+                'mata' => ['sakit mata', 'merah', 'insto', 'rohto', 'cendocitrol'],
+
+                // Typo Toleransi Ekstra Obat Populer
+                'paramek' => ['paramex'],
+                'bodrek' => ['bodrex'],
+                'sanmol' => ['sanmol', 'paracetamol'],
+                'amoxilin' => ['amoxicillin', 'amoksisilin'],
+                'amosilin' => ['amoxicillin', 'amoksisilin'],
+                'ibupropen' => ['ibuprofen'],
+                'antasid' => ['antasida'],
+                'proma' => ['promag'],
+                'koyo' => ['koyok', 'salonpas'],
+            ];
+
+            // 2. Expand search terms based on synonyms and typo tolerance
+            $expandedSearchTerms = [$search];
+            foreach ($synonyms as $key => $relatedTerms) {
+                // If user typed string contains a synonym key (e.g. "obat pusing")
+                if (str_contains($search, $key)) {
+                    $expandedSearchTerms = array_merge($expandedSearchTerms, $relatedTerms);
+                }
+            }
+
+            // 3. Typo handling using similar_text on synonym keys (Toleransi Typo)
+            foreach ($searchTokens as $token) {
+                if (strlen($token) >= 4) { // Ignore short words like 'di', 'ke', 'ini'
+                    foreach ($synonyms as $key => $relatedTerms) {
+                        similar_text($key, $token, $percent);
+                        if ($percent >= 70) { // 70% similarity to tolerate 'pusng', 'demamm', 'muntahhh'
+                            $expandedSearchTerms = array_merge($expandedSearchTerms, $relatedTerms);
+                        }
+                    }
+                }
+            }
+
+            $expandedSearchTerms = array_unique($expandedSearchTerms);
+
+            $query->where(function($q) use ($search, $searchTokens, $noSpaceSearch, $expandedSearchTerms) {
+                // Pengecekan pada semua term yang diperluas
+                foreach ($expandedSearchTerms as $term) {
+                    $q->orWhere('nama_obat', 'like', '%' . $term . '%')
+                      ->orWhere('deskripsi', 'like', '%' . $term . '%');
+                }
                 
-                // 2. Space insensitive match (handles "para setamol" vs "paracetamol")
+                // Pencarian berdasarkan kategori
+                foreach ($expandedSearchTerms as $term) {
+                    $q->orWhereHas('kategori', function($kq) use ($term) {
+                        $kq->where('nama_kategori', 'like', '%' . $term . '%');
+                    });
+                }
+                
+                $q->orWhere('kode_obat', 'like', '%' . $search . '%');
+
+                // Phonetic match (Membantu mencocokkan kemiripan bunyi seperti 'paramek' dengan 'paramex' di database)
+                $q->orWhereRaw("SOUNDEX(nama_obat) = SOUNDEX(?)", [$search]);
+
+                // Space insensitive match (handles "para setamol" vs "paracetamol")
                 $q->orWhereRaw("REPLACE(nama_obat, ' ', '') LIKE ?", ['%' . $noSpaceSearch . '%']);
 
-                // 3. Tokenized match (handles order swapping, e.g., "sirup batuk" vs "batuk sirup")
+                // Tokenized match (handles order swapping, e.g., "sirup batuk" vs "batuk sirup")
                 if (count($searchTokens) > 1) {
                     $q->orWhere(function($subQ) use ($searchTokens) {
                         foreach($searchTokens as $token) {
