@@ -10,12 +10,12 @@ class CartController extends Controller
     public function index()
     {
         $cartItems = session()->get('cart', []);
-        
+
         $subtotal = 0;
         foreach ($cartItems as $item) {
             $subtotal += $item['price'] * $item['qty'];
         }
-        
+
         $total = $subtotal;
 
         \Illuminate\Support\Facades\Log::info('Cart Index - Perhitungan Harga:', [
@@ -29,9 +29,12 @@ class CartController extends Controller
     public function add($id, Request $request)
     {
         $product = Obat::with('kategori')->findOrFail($id);
-        
+
         // Check if stock is available
         if ($product->stok < 1) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Stok obat habis!'], 422);
+            }
             return redirect()->back()->with('error', 'Stok obat habis!');
         }
 
@@ -47,8 +50,8 @@ class CartController extends Controller
             $cart[$id]['subtotal'] = $cart[$id]['qty'] * $cart[$id]['price'];
         } else {
             // Determine fallback premium image
-            $imageFallback = str_contains(strtolower($product->kategori->nama_kategori ?? ''), 'vitamin') 
-                ? '/premium_supplement_bottle.png' 
+            $imageFallback = str_contains(strtolower($product->kategori->nama_kategori ?? ''), 'vitamin')
+                ? '/premium_supplement_bottle.png'
                 : '/premium_medicine_box.png';
 
             $cart[$id] = [
@@ -64,6 +67,17 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
+        // Kalau request dari AJAX (fetch), kembalikan JSON, tetap di halaman yang sama
+        if ($request->wantsJson() || $request->ajax()) {
+            $cartCount = count(session()->get('cart', []));
+            return response()->json([
+                'success'   => true,
+                'message'   => 'Obat berhasil ditambahkan ke keranjang!',
+                'cartCount' => $cartCount,
+            ]);
+        }
+
+        // Fallback kalau JS dimatikan
         return redirect()->route('cart.index')->with('success', 'Obat berhasil ditambahkan ke keranjang!');
     }
 
