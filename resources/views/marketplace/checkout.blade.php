@@ -37,7 +37,7 @@
                 <span class="text-blue-600 text-sm font-medium">Checkout</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Checkout Pesanan</h1>
-            <p class="text-sm text-slate-400 font-light mt-1">Lengkapi data Anda untuk menyelesaikan pemesanan</p>
+            <p class="text-sm text-slate-400 font-light mt-1"></p>
         </div>
 
         <div class="flex flex-col lg:flex-row gap-8 items-start">
@@ -292,7 +292,7 @@
                                 d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a1 1 0 11-2 0 1 1 0 012 0z" />
                         </svg>
 
-                        <span class="tracking-wide">Lanjutkan ke Pembayaran</span>
+                        <span class="tracking-wide">Konfirmasi Pembayaran</span>
                     </button>
                 </div>
 
@@ -413,14 +413,16 @@
 
             return {
                 form: {
-                    nama: '',
-                    whatsapp: '',
-                    alamat: '',
-                    lat: '',
-                    lng: '',
-                    catatan: '',
-                    metode: 'Ambil di Apotek'
-                },
+
+            nama: @json(auth()->user()->name ?? ''),
+            whatsapp: @json(auth()->user()->whatsapp ?? ''),
+            alamat: '',
+            lat: '',
+            lng: '',
+            catatan: '',
+            metode: 'Ambil di Apotek'
+
+        },
                 errors: {
                     nama: false,
                     whatsapp: false,
