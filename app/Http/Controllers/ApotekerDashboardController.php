@@ -13,14 +13,14 @@ class ApotekerDashboardController extends Controller
      */
     public function index()
     {
-        // Statistics
+        // Statistics (Count awaiting verification)
         $totalResep = ResepDokter::count();
-        $pendingResepCount = ResepDokter::where('status', 'pending')->count();
+        $pendingResepCount = ResepDokter::where('status', 'menunggu_verifikasi')->count();
         $totalObat = Obat::count();
         $lowStockObatCount = Obat::where('stok', '<=', 20)->count();
 
         // Data lists for quick preview
-        $pendingReseps = ResepDokter::where('status', 'pending')
+        $pendingReseps = ResepDokter::where('status', 'menunggu_verifikasi')
             ->latest()
             ->limit(5)
             ->get();
@@ -49,7 +49,17 @@ class ApotekerDashboardController extends Controller
         $status = $request->get('status');
         $query = ResepDokter::latest();
 
-        if ($status && in_array($status, ['pending', 'disetujui', 'ditolak'])) {
+        $allowedStatuses = [
+            'menunggu_verifikasi',
+            'sedang_diproses',
+            'menunggu_persetujuan',
+            'siap_checkout',
+            'checkout',
+            'selesai',
+            'ditolak'
+        ];
+
+        if ($status && in_array($status, $allowedStatuses)) {
             $query->where('status', $status);
         }
 
@@ -67,7 +77,7 @@ class ApotekerDashboardController extends Controller
     }
 
     /**
-     * Verify prescription (approve/reject).
+     * Verify prescription (approve/reject) - kept for backward compatibility.
      */
     public function resepVerify(Request $request, $id)
     {
@@ -82,15 +92,15 @@ class ApotekerDashboardController extends Controller
             'catatan_verifikasi.max' => 'Catatan verifikasi maksimal 1000 karakter.',
         ]);
 
+        $statusValue = $request->status === 'disetujui' ? 'selesai' : 'ditolak';
+
         $resep->update([
-            'status' => $request->status,
+            'status' => $statusValue,
             'catatan_verifikasi' => $request->catatan_verifikasi,
         ]);
 
-        $statusText = $request->status === 'disetujui' ? 'disetujui' : 'ditolak';
-
         return redirect()->route('apoteker.resep.show', $resep->id)
-            ->with('success', 'Resep dokter berhasil ' . $statusText);
+            ->with('success', 'Resep dokter berhasil ' . ($statusValue === 'selesai' ? 'disetujui' : 'ditolak'));
     }
 
     /**
