@@ -133,6 +133,14 @@ class CheckoutController extends Controller
 
             \Illuminate\Support\Facades\DB::commit();
 
+            // Complete prescription checkout if any in 'siap_checkout' status
+            try {
+                $resepService = app(\App\Services\ResepDokterService::class);
+                $resepService->completeCheckout(auth()->id());
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Gagal memperbarui status resep saat checkout: ' . $e->getMessage());
+            }
+
             // Clear session cart
             session()->forget('checkout_cart');
             $mainCart = session()->get('cart', []);

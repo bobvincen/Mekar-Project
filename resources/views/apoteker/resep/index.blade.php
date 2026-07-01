@@ -10,17 +10,29 @@
     </div>
     
     <!-- Filter Status -->
-    <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-gray-200">
-        <a href="{{ route('apoteker.resep.index') }}" class="px-4 py-2 rounded-lg text-xs font-semibold transition {{ !$status ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
+    <div class="flex flex-wrap items-center gap-1.5 bg-white p-1.5 rounded-xl border border-gray-200">
+        <a href="{{ route('apoteker.resep.index') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ !$status ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
             Semua
         </a>
-        <a href="{{ route('apoteker.resep.index', ['status' => 'pending']) }}" class="px-4 py-2 rounded-lg text-xs font-semibold transition {{ $status === 'pending' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
-            Menunggu
+        <a href="{{ route('apoteker.resep.index', ['status' => 'menunggu_verifikasi']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'menunggu_verifikasi' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
+            Menunggu Verifikasi
         </a>
-        <a href="{{ route('apoteker.resep.index', ['status' => 'disetujui']) }}" class="px-4 py-2 rounded-lg text-xs font-semibold transition {{ $status === 'disetujui' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
-            Disetujui
+        <a href="{{ route('apoteker.resep.index', ['status' => 'sedang_diproses']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'sedang_diproses' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
+            Sedang Diproses
         </a>
-        <a href="{{ route('apoteker.resep.index', ['status' => 'ditolak']) }}" class="px-4 py-2 rounded-lg text-xs font-semibold transition {{ $status === 'ditolak' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
+        <a href="{{ route('apoteker.resep.index', ['status' => 'menunggu_persetujuan']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'menunggu_persetujuan' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
+            Menunggu Persetujuan
+        </a>
+        <a href="{{ route('apoteker.resep.index', ['status' => 'siap_checkout']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'siap_checkout' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
+            Siap Checkout
+        </a>
+        <a href="{{ route('apoteker.resep.index', ['status' => 'checkout']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'checkout' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
+            Checkout
+        </a>
+        <a href="{{ route('apoteker.resep.index', ['status' => 'selesai']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'selesai' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
+            Selesai
+        </a>
+        <a href="{{ route('apoteker.resep.index', ['status' => 'ditolak']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'ditolak' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
             Ditolak
         </a>
     </div>
@@ -50,6 +62,30 @@
             </thead>
             <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
                 @forelse($reseps as $resep)
+                @php
+                    $statusColors = [
+                        'menunggu_verifikasi' => 'bg-amber-50 text-amber-600 border-amber-200',
+                        'sedang_diproses'     => 'bg-blue-50 text-blue-600 border-blue-200',
+                        'menunggu_persetujuan' => 'bg-purple-50 text-purple-600 border-purple-200',
+                        'siap_checkout'       => 'bg-indigo-50 text-indigo-650 border-indigo-200',
+                        'checkout'            => 'bg-sky-50 text-sky-600 border-sky-200',
+                        'selesai'             => 'bg-green-50 text-green-600 border-green-200',
+                        'ditolak'             => 'bg-red-50 text-red-600 border-red-200',
+                    ];
+
+                    $statusLabels = [
+                        'menunggu_verifikasi' => 'Menunggu Verifikasi',
+                        'sedang_diproses'     => 'Sedang Diproses',
+                        'menunggu_persetujuan' => 'Menunggu Persetujuan',
+                        'siap_checkout'       => 'Siap Checkout',
+                        'checkout'            => 'Checkout',
+                        'selesai'             => 'Selesai',
+                        'ditolak'             => 'Ditolak',
+                    ];
+
+                    $colorClass = $statusColors[$resep->status] ?? 'bg-slate-50 text-slate-650 border-slate-200';
+                    $label = $statusLabels[$resep->status] ?? $resep->status;
+                @endphp
                 <tr class="hover:bg-gray-50/50 transition">
                     <td class="py-4 px-6 whitespace-nowrap text-gray-500">
                         {{ $resep->created_at->format('d M Y, H:i') }}
@@ -58,7 +94,7 @@
                         {{ $resep->nama }}
                     </td>
                     <td class="py-4 px-6">
-                        <a href="https://wa.me/{{ $resep->whatsapp }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                        <a href="https://wa.me/{{ preg_replace('/^0/', '62', $resep->whatsapp) }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
                             {{ $resep->whatsapp }} ↗
                         </a>
                     </td>
@@ -66,24 +102,22 @@
                         {{ $resep->catatan ?: '-' }}
                     </td>
                     <td class="py-4 px-6 text-center whitespace-nowrap">
-                        @if($resep->status === 'pending')
-                            <span class="px-2.5 py-1 text-xs font-semibold bg-amber-50 text-amber-600 rounded-lg uppercase tracking-wider">
-                                Menunggu
-                            </span>
-                        @elseif($resep->status === 'disetujui')
-                            <span class="px-2.5 py-1 text-xs font-semibold bg-green-50 text-green-600 rounded-lg uppercase tracking-wider">
-                                Disetujui
-                            </span>
-                        @else
-                            <span class="px-2.5 py-1 text-xs font-semibold bg-red-50 text-red-600 rounded-lg uppercase tracking-wider">
-                                Ditolak
-                            </span>
-                        @endif
+                        <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold border rounded-lg uppercase tracking-wider {{ $colorClass }}">
+                            {{ $label }}
+                        </span>
                     </td>
                     <td class="py-4 px-6 text-right whitespace-nowrap">
-                        <a href="{{ route('apoteker.resep.show', $resep->id) }}" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg text-xs font-bold transition">
-                            Lihat Detail
-                        </a>
+                        <div class="flex justify-end gap-2">
+                            @if(in_array($resep->status, ['menunggu_verifikasi', 'sedang_diproses', 'menunggu_persetujuan']))
+                                <a href="{{ route('resep.proses', $resep->id) }}" class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg text-xs font-bold transition">
+                                    Proses Resep
+                                </a>
+                            @else
+                                <a href="{{ route('apoteker.resep.show', $resep->id) }}" class="bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg text-xs font-bold transition">
+                                    Lihat Detail
+                                </a>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty

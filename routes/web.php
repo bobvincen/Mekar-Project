@@ -33,9 +33,6 @@ Route::get('/products', [MarketplaceController::class, 'products'])->name('marke
 Route::get('/products/{id}', [MarketplaceController::class, 'showProduct'])->name('marketplace.showProduct');
 Route::get('/category/{id}', [MarketplaceController::class, 'category'])->name('marketplace.category');
 
-Route::get('/upload-resep', [ResepDokterController::class, 'create'])->name('resep.create');
-Route::post('/upload-resep', [ResepDokterController::class, 'store'])->name('resep.store');
-
 Route::post('/konsultasi-log', [MarketplaceController::class, 'logKonsultasi'])->name('konsultasi.log');
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -52,7 +49,7 @@ Route::post('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananControlle
 |--------------------------------------------------------------------------
 | Profile & Customer Order Routes (Auth Required)
 |--------------------------------------------------------------------------
-*/
+|*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
@@ -66,9 +63,28 @@ Route::middleware('auth')->group(function () {
     // API Route for dynamic sales summary chart data
     Route::get('/api/sales-summary', [DashboardController::class, 'salesSummary'])
         ->name('api.sales-summary');
+
+    // Secure prescription file serving
+    Route::get('/resep-dokter/file/{id}', [ResepDokterController::class, 'showFile'])->name('resep.file');
+
+    // Shared processing routes for Admin and Apoteker
+    Route::middleware(['role:admin|apoteker'])->group(function () {
+        Route::get('/resep-dokter/{id}/proses', [ResepDokterController::class, 'prosesForm'])->name('resep.proses');
+        Route::post('/resep-dokter/{id}/proses', [ResepDokterController::class, 'prosesSubmit'])->name('resep.proses.submit');
+        Route::post('/resep-dokter/{id}/tolak', [ResepDokterController::class, 'prosesReject'])->name('resep.proses.reject');
+        Route::get('/api/obats/search', [ResepDokterController::class, 'searchObat'])->name('api.obats.search');
+    });
 });
 
 Route::middleware(['auth', 'phone_verified'])->group(function () {
+    // Resep Customer Routes
+    Route::get('/upload-resep', [ResepDokterController::class, 'create'])->name('resep.create');
+    Route::post('/upload-resep', [ResepDokterController::class, 'store'])->name('resep.store');
+    Route::get('/resep-saya', [ResepDokterController::class, 'index'])->name('resep.index');
+    Route::get('/resep-saya/{id}', [ResepDokterController::class, 'show'])->name('resep.show');
+    Route::post('/resep-saya/{id}/setujui', [ResepDokterController::class, 'approve'])->name('resep.approve');
+    Route::post('/resep-saya/{id}/revisi', [ResepDokterController::class, 'revise'])->name('resep.revise');
+
     // Checkout & Invoice Routes
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
