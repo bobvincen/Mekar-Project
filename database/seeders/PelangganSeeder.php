@@ -8,6 +8,15 @@ use Faker\Factory as Faker;
 
 class PelangganSeeder extends Seeder
 {
+    /**
+     * Menjalankan proses seeding untuk tabel pelanggan.
+     * 
+     * Fungsi ini akan membuat beberapa data pelanggan awal secara statis
+     * dan juga meng-generate 15 data pelanggan acak tambahan menggunakan library Faker,
+     * lalu menyimpannya ke dalam database.
+     *
+     * @return void
+     */
     public function run(): void
     {
         $faker = Faker::create('id_ID');

@@ -9,7 +9,12 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
-    {{-- Page Header --}}
+    {{-- 
+        ========================================================
+        HEADER HALAMAN
+        Berisi breadcrumb navigasi dan judul halaman riwayat pesanan.
+        ======================================================== 
+    --}}
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <div class="flex items-center gap-2 mb-1 text-sm text-slate-400">
@@ -24,7 +29,13 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
-        {{-- Left: Orders List (66%) --}}
+        {{-- 
+            ========================================================
+            KOLOM KIRI: DAFTAR TRANSAKSI
+            Menampilkan loop seluruh transaksi pengguna dari yang terbaru.
+            Jika kosong, akan menampilkan pesan 'Belum Ada Transaksi'.
+            ======================================================== 
+        --}}
         <div class="lg:col-span-2 space-y-4">
             <h2 class="font-bold text-slate-800 text-lg tracking-tight mb-2">Daftar Transaksi</h2>
             
@@ -58,7 +69,7 @@
                     </span>
                 </div>
 
-                {{-- Summary items inside order --}}
+                {{-- Ringkasan pesanan di dalam card transaksi (Metode Pengambilan & Total) --}}
                 <div class="text-sm text-slate-600 bg-slate-50/50 rounded-2xl p-4 border border-slate-50">
                     <div class="flex justify-between items-center">
                         <span class="font-light text-xs uppercase tracking-wider text-slate-400">Metode</span>
@@ -70,7 +81,7 @@
                     </div>
                 </div>
 
-                {{-- Action Links --}}
+                {{-- Tombol Aksi: Lihat Invoice Detail & Cetak PDF --}}
                 <div class="flex flex-wrap gap-2 pt-2 justify-end">
                     <a href="{{ route('marketplace.invoice', $trx->kode_transaksi) }}"
                         class="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 hover:border-blue-200 font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm">
@@ -95,7 +106,14 @@
             @endforelse
         </div>
 
-        {{-- Right: Medicines Purchased History (34%) --}}
+        {{-- 
+            ========================================================
+            KOLOM KANAN: RIWAYAT PEMBELIAN OBAT (REORDER)
+            Mengambil semua obat unik yang pernah dibeli pengguna 
+            dari transaksi yang berstatus "Selesai", sehingga memudahkan
+            pengguna untuk membeli obat yang sama secara berulang.
+            ======================================================== 
+        --}}
         <div class="space-y-6">
             <h2 class="font-bold text-slate-800 text-lg tracking-tight mb-2">Riwayat Pembelian Obat</h2>
             

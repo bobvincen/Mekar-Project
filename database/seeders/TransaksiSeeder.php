@@ -13,6 +13,18 @@ use Carbon\Carbon;
 
 class TransaksiSeeder extends Seeder
 {
+    /**
+     * Menjalankan proses seeding untuk tabel transaksi dan detail transaksi.
+     * 
+     * Fungsi ini menghasilkan dua jenis transaksi tiruan:
+     * 1. Transaksi Offline (Kasir): Membuat 40 riwayat transaksi secara langsung di apotek
+     *    termasuk logika penentuan uang bayar dan kembalian.
+     * 2. Transaksi Online (Marketplace): Membuat 25 riwayat transaksi pesanan online
+     *    dengan berbagai status pesanan, perhitungan ongkos kirim (jika dikirim), 
+     *    dan rincian lokasi pelanggan (latitude/longitude).
+     *
+     * @return void
+     */
     public function run(): void
     {
         $faker = Faker::create('id_ID');

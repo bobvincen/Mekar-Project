@@ -16,7 +16,12 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
-    {{-- ===== PAGE HEADER ===== --}}
+    {{-- 
+        ========================================================
+        HEADER HALAMAN
+        Bagian judul keranjang belanja dan breadcrumb navigasi
+        ======================================================== 
+    --}}
     <div class="mb-8">
         <div class="flex items-center gap-2 mb-1">
             <a href="/" class="text-slate-400 hover:text-blue-600 transition-colors text-sm font-light">Beranda</a>
@@ -32,13 +37,24 @@
 
     @if($itemCount > 0)
 
-    {{-- ===== TWO-COLUMN LAYOUT ===== --}}
+    {{-- 
+        ========================================================
+        LAYOUT DUA KOLOM (Desktop) ATAU STACK (Mobile)
+        Menggunakan Alpine.js (x-data="cartPage()") untuk mengatur state reaktif
+        keranjang belanja tanpa memuat ulang (reload) halaman.
+        ======================================================== 
+    --}}
     <div class="flex flex-col lg:flex-row gap-8 items-start" x-data="cartPage()">
 
-        {{-- =================== LEFT COLUMN (70%) =================== --}}
+        {{-- 
+            ======================================================================
+            KOLOM KIRI (70%)
+            Berisi daftar produk, fitur pilih semua (select all), dan kontrol kuantitas.
+            ====================================================================== 
+        --}}
         <div class="w-full lg:w-[70%] flex flex-col gap-4">
 
-            {{-- SELECT ALL BAR --}}
+            {{-- BAR PILIH SEMUA (SELECT ALL) --}}
             <div class="bg-white border border-slate-100 rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm">
                 <label class="flex items-center gap-3 cursor-pointer select-none group">
                     <div class="relative">
@@ -60,12 +76,12 @@
                 <span class="text-xs text-slate-400 font-light" x-text="selectedCount + ' item dipilih'"></span>
             </div>
 
-            {{-- PRODUCT CARDS --}}
+            {{-- DAFTAR KARTU PRODUK (LOOPING DARI SESSION/DB) --}}
             @foreach($cartItems as $index => $item)
             <div class="group bg-white border border-slate-100 hover:border-blue-200 rounded-3xl shadow-sm hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300 p-5 sm:p-6">
                 <div class="flex items-start gap-4">
 
-                    {{-- CHECKBOX --}}
+                    {{-- CHECKBOX ITEM PRODUK (Di-binding ke array selected di AlpineJS) --}}
                     <div class="pt-1 shrink-0">
                         <label class="flex items-center cursor-pointer">
                             <input
@@ -81,12 +97,12 @@
                         </label>
                     </div>
 
-                    {{-- PRODUCT IMAGE --}}
+                    {{-- GAMBAR PRODUK --}}
                     <div class="shrink-0 w-20 h-20 sm:w-24 sm:h-24 bg-blue-50/30 rounded-2xl flex items-center justify-center overflow-hidden">
                         <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain transition-transform duration-300 group-hover:scale-105">
                     </div>
 
-                    {{-- PRODUCT INFO --}}
+                    {{-- INFORMASI DETAIL PRODUK (Nama, Kategori, Harga) --}}
                     <div class="flex-1 min-w-0">
                         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
 
@@ -102,7 +118,7 @@
                                 </p>
                             </div>
 
-                            {{-- RIGHT SIDE: QTY + SUBTOTAL + DELETE --}}
+                            {{-- BAGIAN KANAN CARD: KONTROL QTY + SUBTOTAL + TOMBOL HAPUS --}}
                             <div class="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-4 shrink-0">
 
                                 {{-- DELETE BUTTON --}}
@@ -143,7 +159,7 @@
                             </div>
                         </div>
 
-                        {{-- MOBILE SUBTOTAL --}}
+                        {{-- SUBTOTAL (HANYA TAMPIL DI LAYAR MOBILE) --}}
                         <div class="sm:hidden mt-3 pt-3 border-t border-slate-50 flex justify-between items-center">
                             <span class="text-xs text-slate-400 font-light">Subtotal</span>
                             <span class="text-sm font-bold text-slate-900" x-text="formatRp(items[{{ $loop->index }}].qty * items[{{ $loop->index }}].price)"></span>
@@ -167,7 +183,13 @@
         </div>
         {{-- END LEFT COLUMN --}}
 
-        {{-- =================== RIGHT COLUMN (30%) =================== --}}
+        {{-- 
+            ======================================================================
+            KOLOM KANAN (30%)
+            Berisi Ringkasan Belanja (Total Harga Terpilih) dan Tombol Checkout.
+            Kolom ini dibuat lengket (sticky) agar terus terlihat saat scroll ke bawah.
+            ====================================================================== 
+        --}}
         <div class="w-full lg:w-[30%] lg:sticky lg:top-24 flex flex-col gap-4">
 
             {{-- ORDER SUMMARY CARD --}}
@@ -232,7 +254,12 @@
 
     @else
 
-    {{-- ===== EMPTY STATE ===== --}}
+    {{-- 
+        ========================================================
+        KONDISI KERANJANG KOSONG
+        Ditampilkan apabila array/koleksi keranjang bernilai kosong.
+        ======================================================== 
+    --}}
     <div class="flex flex-col items-center justify-center py-24 text-center">
         <div class="w-28 h-28 bg-blue-50 border border-blue-100/60 rounded-[32px] flex items-center justify-center mb-6">
             <svg class="w-14 h-14 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">

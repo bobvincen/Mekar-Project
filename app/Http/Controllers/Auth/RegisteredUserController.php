@@ -17,7 +17,9 @@ use App\Http\Controllers\Auth\OtpVerificationController;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Menampilkan halaman pendaftaran (register) untuk pengguna baru.
+     *
+     * @return \Illuminate\View\View
      */
     public function create(): View
     {
@@ -25,9 +27,15 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
+     * Memproses permintaan pendaftaran pengguna baru.
+     * 
+     * Fungsi ini akan melakukan validasi input, menghapus data pengguna lama yang belum terverifikasi (jika ada),
+     * menyimpan data pengguna baru ke database, memberikan peran (role) pelanggan, 
+     * serta mengirimkan kode OTP ke nomor WhatsApp pengguna.
      *
-     * @throws ValidationException
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
