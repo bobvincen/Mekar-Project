@@ -16,32 +16,68 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
-        {{-- ===== PAGE HEADER ===== --}}
-        <div class="mb-8">
-            <div class="flex items-center gap-2 mb-1">
-                <a href="/" class="text-slate-400 hover:text-blue-600 transition-colors text-sm font-light">Beranda</a>
-                <svg class="w-3.5 h-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                <span class="text-blue-600 text-sm font-medium">Keranjang</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                Keranjang Belanja
-                <span id="header-count" class="text-blue-600">({{ $itemCount }} Produk)</span>
-            </h1>
-            <p class="text-sm text-slate-400 font-light mt-1">Periksa kembali produk sebelum melanjutkan pembayaran</p>
+    {{-- 
+        ========================================================
+        HEADER HALAMAN
+        Bagian judul keranjang belanja dan breadcrumb navigasi
+        ======================================================== 
+    --}}
+    <div class="mb-8">
+        <div class="flex items-center gap-2 mb-1">
+            <a href="/" class="text-slate-400 hover:text-blue-600 transition-colors text-sm font-light">Beranda</a>
+            <svg class="w-3.5 h-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            <span class="text-blue-600 text-sm font-medium">Keranjang</span>
         </div>
 
-        @if($itemCount > 0)
+    @if($itemCount > 0)
 
-        {{-- ===== TWO-COLUMN LAYOUT ===== --}}
-        <div class="flex flex-col lg:flex-row gap-8 items-start" x-data="cartPage()">
+    {{-- 
+        ========================================================
+        LAYOUT DUA KOLOM (Desktop) ATAU STACK (Mobile)
+        Menggunakan Alpine.js (x-data="cartPage()") untuk mengatur state reaktif
+        keranjang belanja tanpa memuat ulang (reload) halaman.
+        ======================================================== 
+    --}}
+    <div class="flex flex-col lg:flex-row gap-8 items-start" x-data="cartPage()">
 
-            {{-- =================== LEFT COLUMN (70%) =================== --}}
-            <div class="w-full lg:w-[70%] flex flex-col gap-4">
+        {{-- 
+            ======================================================================
+            KOLOM KIRI (70%)
+            Berisi daftar produk, fitur pilih semua (select all), dan kontrol kuantitas.
+            ====================================================================== 
+        --}}
+        <div class="w-full lg:w-[70%] flex flex-col gap-4">
 
-                {{-- SELECT ALL BAR --}}
-                <div class="bg-white border border-slate-100 rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm">
-                    <label class="flex items-center gap-3 cursor-pointer select-none group">
-                        <div class="relative">
+            {{-- BAR PILIH SEMUA (SELECT ALL) --}}
+            <div class="bg-white border border-slate-100 rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm">
+                <label class="flex items-center gap-3 cursor-pointer select-none group">
+                    <div class="relative">
+                        <input
+                            type="checkbox"
+                            id="select-all"
+                            x-model="allSelected"
+                            @change="toggleAll()"
+                            class="sr-only peer"
+                        >
+                        <div class="w-5 h-5 rounded-md border-2 border-slate-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                            <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">Pilih Semua Produk</span>
+                </label>
+                <span class="text-xs text-slate-400 font-light" x-text="selectedCount + ' item dipilih'"></span>
+            </div>
+
+            {{-- DAFTAR KARTU PRODUK (LOOPING DARI SESSION/DB) --}}
+            @foreach($cartItems as $index => $item)
+            <div class="group bg-white border border-slate-100 hover:border-blue-200 rounded-3xl shadow-sm hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300 p-5 sm:p-6">
+                <div class="flex items-start gap-4">
+
+                    {{-- CHECKBOX ITEM PRODUK (Di-binding ke array selected di AlpineJS) --}}
+                    <div class="pt-1 shrink-0">
+                        <label class="flex items-center cursor-pointer">
                             <input
                                 type="checkbox"
                                 id="select-all"
@@ -54,11 +90,32 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
                                 </svg>
                             </div>
-                        </div>
-                        <span class="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">Pilih Semua Produk</span>
-                    </label>
-                    <span class="text-xs text-slate-400 font-light" x-text="selectedCount + ' item dipilih'"></span>
-                </div>
+                        </label>
+                    </div>
+
+                    {{-- GAMBAR PRODUK --}}
+                    <div class="shrink-0 w-20 h-20 sm:w-24 sm:h-24 bg-blue-50/30 rounded-2xl flex items-center justify-center overflow-hidden">
+                        <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain transition-transform duration-300 group-hover:scale-105">
+                    </div>
+
+                    {{-- INFORMASI DETAIL PRODUK (Nama, Kategori, Harga) --}}
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+
+                            <div class="min-w-0">
+                                <span class="inline-block bg-blue-50 text-blue-600 border border-blue-100/60 text-[10px] font-semibold px-2 py-0.5 rounded-lg mb-2">
+                                    {{ $item['category'] }}
+                                </span>
+                                <h3 class="text-sm sm:text-base font-semibold text-slate-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                    {{ $item['name'] }}
+                                </h3>
+                                <p class="text-blue-600 text-base sm:text-lg font-bold mt-1">
+                                    {{ $formatRp($item['price']) }}
+                                </p>
+                            </div>
+
+                            {{-- BAGIAN KANAN CARD: KONTROL QTY + SUBTOTAL + TOMBOL HAPUS --}}
+                            <div class="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-4 shrink-0">
 
                 {{-- PRODUCT CARDS --}}
                 @foreach($cartItems as $index => $item)
@@ -143,11 +200,10 @@
                                 </div>
                             </div>
 
-                            {{-- MOBILE SUBTOTAL --}}
-                            <div class="sm:hidden mt-3 pt-3 border-t border-slate-50 flex justify-between items-center">
-                                <span class="text-xs text-slate-400 font-light">Subtotal</span>
-                                <span class="text-sm font-bold text-slate-900" x-text="formatRp(items[{{ $loop->index }}].qty * items[{{ $loop->index }}].price)"></span>
-                            </div>
+                        {{-- SUBTOTAL (HANYA TAMPIL DI LAYAR MOBILE) --}}
+                        <div class="sm:hidden mt-3 pt-3 border-t border-slate-50 flex justify-between items-center">
+                            <span class="text-xs text-slate-400 font-light">Subtotal</span>
+                            <span class="text-sm font-bold text-slate-900" x-text="formatRp(items[{{ $loop->index }}].qty * items[{{ $loop->index }}].price)"></span>
                         </div>
 
                     </div>
@@ -167,8 +223,14 @@
             </div>
             {{-- END LEFT COLUMN --}}
 
-            {{-- =================== RIGHT COLUMN (30%) =================== --}}
-            <div class="w-full lg:w-[30%] lg:sticky lg:top-24 flex flex-col gap-4">
+        {{-- 
+            ======================================================================
+            KOLOM KANAN (30%)
+            Berisi Ringkasan Belanja (Total Harga Terpilih) dan Tombol Checkout.
+            Kolom ini dibuat lengket (sticky) agar terus terlihat saat scroll ke bawah.
+            ====================================================================== 
+        --}}
+        <div class="w-full lg:w-[30%] lg:sticky lg:top-24 flex flex-col gap-4">
 
                 {{-- ORDER SUMMARY CARD --}}
                 <div class="bg-white border border-slate-100 rounded-3xl shadow-sm p-5">
@@ -232,26 +294,17 @@
 
         @else
 
-        {{-- ===== EMPTY STATE ===== --}}
-        <div class="flex flex-col items-center justify-center py-24 text-center">
-            <div class="w-28 h-28 bg-blue-50 border border-blue-100/60 rounded-[32px] flex items-center justify-center mb-6">
-                <svg class="w-14 h-14 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
-                </svg>
-            </div>
-            <h2 class="text-2xl font-bold text-slate-800 mb-2">Keranjang Masih Kosong</h2>
-            <p class="text-slate-400 font-light text-sm max-w-xs leading-relaxed mb-8">
-                Yuk mulai belanja kebutuhan kesehatan Anda dari apotek terpercaya kami.
-            </p>
-            <a
-                href="/"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-8 py-4 rounded-2xl shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-300 flex items-center gap-2 group"
-            >
-                <svg class="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
-                </svg>
-                Belanja Sekarang
-            </a>
+    {{-- 
+        ========================================================
+        KONDISI KERANJANG KOSONG
+        Ditampilkan apabila array/koleksi keranjang bernilai kosong.
+        ======================================================== 
+    --}}
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div class="w-28 h-28 bg-blue-50 border border-blue-100/60 rounded-[32px] flex items-center justify-center mb-6">
+            <svg class="w-14 h-14 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+            </svg>
         </div>
 
         @endif
