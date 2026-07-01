@@ -200,18 +200,23 @@ class WhatsAppTest extends TestCase
             'api.fonnte.com/send' => Http::response(['status' => true], 200)
         ]);
 
+        $user = User::factory()->create([
+            'name' => 'Budi Santoso',
+            'whatsapp' => '081234567890',
+            'phone_verified_at' => now(),
+            'role' => 'pelanggan'
+        ]);
+
         $fakePhoto = UploadedFile::fake()->image('resep.jpg', 600, 800);
 
-        $response = $this->post('/upload-resep', [
-            'nama' => 'Budi Santoso',
-            'whatsapp' => '081234567890',
+        $response = $this->actingAs($user)->post('/upload-resep', [
             'catatan' => 'Butuh segera',
             'foto_resep' => $fakePhoto
         ]);
 
-        $response->assertStatus(302); // Redirect back
+        $response->assertStatus(302); // Redirect
+        $response->assertRedirect(route('resep.index'));
         $response->assertSessionHas('success');
-        $response->assertSessionHas('waUrl');
 
         Http::assertSent(function ($request) {
             return $request->url() === 'https://api.fonnte.com/send' &&

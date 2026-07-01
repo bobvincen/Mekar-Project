@@ -102,20 +102,31 @@ Memfasilitasi transaksi pembelian langsung di kasir fisik apotek secara cepat da
 
 ---
 
-## 6. Unggah & Verifikasi Resep Dokter
+## 6. Alur Kerja Unggah & Proses Resep Dokter (Redesign)
 
 ### Tujuan
-Memungkinkan pelanggan mengunggah foto resep dokter mereka dari rumah agar dikonfirmasi dan disiapkan oleh apoteker.
+Menyediakan alur verifikasi resep medis yang aman, aman dari akses langsung (private storage), terintegrasi dengan pencarian database obat apotek, serta mendukung sistem persetujuan pelanggan sebelum checkout keranjang belanja.
 
-### Alur Kerja
-1. **Pelanggan (Unggah)**:
-   * Mengisi form nama, nomor WhatsApp, catatan opsional, dan mengunggah berkas foto resep (JPEG, PNG, JPG, maks. 5MB).
-   * Setelah dikirim, data disimpan di server dan pelanggan diarahkan secara otomatis ke tautan WhatsApp API Admin yang memuat detail pesanan.
-2. **Admin (Daftar & Hapus)**:
-   * Melihat tabel resep dokter masuk dan memiliki otoritas menghapus catatan resep dokter.
-3. **Apoteker (Verifikasi)**:
-   * Membuka detail foto resep dokter secara utuh.
-   * Melakukan verifikasi dengan memilih tindakan (Setujui / Tolak) dan memberikan catatan verifikasi apoteker (misalnya aturan minum obat atau alasan penolakan).
+### Fitur Utama & Otorisasi
+1. **Penyimpanan Berkas Medis Private**:
+   * File foto resep dokter disimpan secara terenkripsi (hash acak) di direktori private Laravel (`storage/app/private/prescriptions/`).
+   * Berkas **wajib** diakses melalui controller otorisasi (hanya bisa dibuka oleh Pelanggan pemilik resep, Admin, atau Apoteker). Pengguna ilegal atau guest diblokir (`403 Forbidden`).
+2. **Unggah Resep (Pelanggan)**:
+   * Pelanggan harus login terlebih dahulu. Form hanya meminta **Catatan Tambahan (opsional)** dan **Berkas Foto Resep**. Nama lengkap dan WhatsApp diambil otomatis dari akun login.
+   * Status awal diset sebagai **Menunggu Verifikasi**.
+3. **Pemrosesan Resep (Admin / Apoteker)**:
+   * Staf melihat detail resep beserta gambar resep secara aman.
+   * Staf memasukkan daftar obat penawaran dengan mencari dari database obat secara langsung (autocomplete).
+   * Menetapkan jumlah (`Qty`) dan status ketersediaan (**Tersedia** atau **Tidak Tersedia**).
+   * Jika tidak tersedia, staf dapat memilih **Obat Pengganti** dari database serta memberikan catatan alasan.
+   * Staf mengirimkan penawaran, mengubah status resep menjadi **Menunggu Persetujuan**, serta memicu notifikasi WhatsApp otomatis (via Fonnte API) berisi daftar ketersediaan obat dan petunjuk persetujuan.
+4. **Persetujuan Pelanggan & Draft Keranjang**:
+   * Pelanggan membuka detail resep di menu **Resep Saya**. Pelanggan melihat detail obat penawaran, obat pengganti, catatan apoteker, dan estimasi total harga.
+   * Pelanggan dapat mengklik **Setujui dan Masukkan ke Keranjang** yang otomatis memasukkan obat-obat tersedia (atau obat pengganti) ke session Cart aktif pelanggan dengan kuantitas yang sesuai, lalu mengubah status resep ke **Siap Checkout**.
+   * Pelanggan dapat mengklik **Ajukan Revisi** untuk menulis umpan balik revisi resep, mengubah status resep kembali ke **Sedang Diproses**.
+5. **Checkout & Penyelesaian Transaksi**:
+   * Setelah pelanggan checkout isi keranjang belanja, status resep disinkronkan menjadi **Checkout**.
+   * Ketika transaksi selesai diverifikasi (di-verifikasi lunas atau diselesaikan), status resep bertransisi menjadi **Selesai**.
 
 ---
 

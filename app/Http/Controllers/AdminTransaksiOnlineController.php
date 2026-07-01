@@ -79,6 +79,16 @@ class AdminTransaksiOnlineController extends Controller
             $transaksi->status = $newStatus;
             $transaksi->save();
 
+            // If the transaction status is updated to Selesai, complete the linked prescription (if any)
+            if ($newStatus === 'Selesai') {
+                try {
+                    $resepService = app(\App\Services\ResepDokterService::class);
+                    $resepService->completeTransaction($transaksi->user_id);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Gagal memperbarui status resep saat transaksi selesai: ' . $e->getMessage());
+                }
+            }
+
             DB::commit();
             return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui menjadi ' . $newStatus);
         } catch (\Exception $e) {

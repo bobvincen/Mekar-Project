@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Verifikasi Resep - ' . $resep->nama)
+@section('title', 'Detail Resep - ' . $resep->nama)
 
 @section('content')
 <div class="mb-6">
@@ -10,7 +10,7 @@
         </svg>
         Kembali ke Daftar Resep
     </a>
-    <h2 class="text-2xl font-bold text-gray-800 mt-2">Detail & Verifikasi Resep</h2>
+    <h2 class="text-2xl font-bold text-gray-800 mt-2">Detail Resep Dokter</h2>
     <p class="text-sm text-gray-500">Periksa detail dokumen resep dokter pelanggan di bawah ini</p>
 </div>
 
@@ -24,7 +24,7 @@
 @endif
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Panel Kiri: Informasi Pelanggan & Form Verifikasi -->
+    <!-- Panel Kiri: Informasi Pelanggan & Status -->
     <div class="lg:col-span-1 space-y-6">
         <!-- Info Pelanggan -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
@@ -36,7 +36,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">WhatsApp</label>
-                    <a href="https://wa.me/{{ $resep->whatsapp }}" target="_blank" class="block font-semibold text-blue-600 hover:underline mt-0.5">
+                    <a href="https://wa.me/{{ preg_replace('/^0/', '62', $resep->whatsapp) }}" target="_blank" class="block font-semibold text-blue-600 hover:underline mt-0.5">
                         {{ $resep->whatsapp }} ↗
                     </a>
                 </div>
@@ -53,74 +53,73 @@
 
         <!-- Status & Aksi Verifikasi -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-50 pb-2">Status Verifikasi</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-50 pb-2">Status Penawaran</h3>
             
-            @if($resep->status !== 'pending')
-                <!-- Sudah di Verifikasi -->
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Status saat ini</label>
-                        @if($resep->status === 'disetujui')
-                            <span class="inline-block px-3 py-1.5 text-xs font-bold bg-green-50 text-green-600 rounded-lg uppercase tracking-wider border border-green-200">
-                                ✓ Disetujui
-                            </span>
-                        @else
-                            <span class="inline-block px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 rounded-lg uppercase tracking-wider border border-red-200">
-                                ✗ Ditolak
-                            </span>
-                        @endif
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Catatan Apoteker</label>
-                        <p class="text-gray-700 mt-1.5 bg-gray-50 p-3 rounded-lg border border-gray-100 italic">{{ $resep->catatan_verifikasi ?: 'Tidak ada catatan verifikasi' }}</p>
-                    </div>
+            @php
+                $statusColors = [
+                    'menunggu_verifikasi' => 'bg-amber-50 text-amber-600 border-amber-250',
+                    'sedang_diproses'     => 'bg-blue-50 text-blue-605 border-blue-200',
+                    'menunggu_persetujuan' => 'bg-purple-50 text-purple-650 border-purple-200',
+                    'siap_checkout'       => 'bg-indigo-50 text-indigo-600 border-indigo-200',
+                    'checkout'            => 'bg-sky-50 text-sky-655 border-sky-200',
+                    'selesai'             => 'bg-green-50 text-green-600 border-green-200',
+                    'ditolak'             => 'bg-red-50 text-red-600 border-red-200',
+                ];
+
+                $statusLabels = [
+                    'menunggu_verifikasi' => 'Menunggu Verifikasi',
+                    'sedang_diproses'     => 'Sedang Diproses',
+                    'menunggu_persetujuan' => 'Menunggu Persetujuan',
+                    'siap_checkout'       => 'Siap Checkout',
+                    'checkout'            => 'Checkout',
+                    'selesai'             => 'Selesai',
+                    'ditolak'             => 'Ditolak',
+                ];
+
+                $colorClass = $statusColors[$resep->status] ?? 'bg-slate-50 text-slate-650 border-slate-200';
+                $label = $statusLabels[$resep->status] ?? $resep->status;
+            @endphp
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Status saat ini</label>
+                    <span class="inline-block px-3 py-1.5 text-xs font-bold border rounded-lg uppercase tracking-wider {{ $colorClass }}">
+                        {{ $label }}
+                    </span>
                 </div>
-            @else
-                <!-- Form Verifikasi -->
-                <form action="{{ route('apoteker.resep.verify', $resep->id) }}" method="POST" class="space-y-4">
-                    @csrf
-                    
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Tindakan</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="border rounded-xl p-3 flex items-center justify-center gap-2 cursor-pointer transition @error('status') border-red-500 bg-red-50 @else border-gray-200 hover:border-green-300 @enderror">
-                                <input type="radio" name="status" value="disetujui" required class="text-green-600 focus:ring-green-500">
-                                <span class="text-sm font-semibold text-green-700">Setujui</span>
-                            </label>
-                            <label class="border rounded-xl p-3 flex items-center justify-center gap-2 cursor-pointer transition @error('status') border-red-500 bg-red-50 @else border-gray-200 hover:border-red-300 @enderror">
-                                <input type="radio" name="status" value="ditolak" class="text-red-600 focus:ring-red-500">
-                                <span class="text-sm font-semibold text-red-700">Tolak</span>
-                            </label>
-                        </div>
-                        @error('status')
-                            <p class="text-red-500 text-xs mt-1.5 font-medium">{{ $message }}</p>
-                        @enderror
-                    </div>
 
-                    <div>
-                        <label for="catatan_verifikasi" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Catatan Verifikasi</label>
-                        <textarea name="catatan_verifikasi" id="catatan_verifikasi" rows="4" placeholder="Masukkan instruksi penyiapan obat atau alasan penolakan resep..."
-                            class="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('catatan_verifikasi') border-red-500 bg-red-50 @else border-gray-300 @enderror">{{ old('catatan_verifikasi') }}</textarea>
-                        @error('catatan_verifikasi')
-                            <p class="text-red-500 text-xs mt-1.5 font-medium">{{ $message }}</p>
-                        @enderror
+                @if(in_array($resep->status, ['menunggu_verifikasi', 'sedang_diproses', 'menunggu_persetujuan']))
+                    <div class="pt-2">
+                        <a href="{{ route('resep.proses', $resep->id) }}" class="w-full text-center block bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition">
+                            Proses Resep Sekarang
+                        </a>
                     </div>
+                @endif
 
-                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg transition">
-                        Kirim Keputusan
-                    </button>
-                </form>
-            @endif
+                @if($resep->catatan_verifikasi)
+                    <div class="pt-2 border-t border-gray-50">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Catatan Apoteker</label>
+                        <p class="text-gray-700 mt-1 bg-gray-50 p-3 rounded-lg border border-gray-100 italic">{{ $resep->catatan_verifikasi }}</p>
+                    </div>
+                @endif
+
+                @if($resep->catatan_revisi)
+                    <div class="pt-2 border-t border-gray-50">
+                        <label class="block text-xs font-semibold text-red-400 uppercase tracking-wider mb-1">Catatan Revisi Pelanggan</label>
+                        <p class="text-gray-750 mt-1 bg-red-50 p-3 rounded-lg border border-red-100">{{ $resep->catatan_revisi }}</p>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 
-    <!-- Panel Kanan: Foto Resep -->
+    <!-- Panel Kanan: Foto Resep (Private) -->
     <div class="lg:col-span-2">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 h-full flex flex-col">
             <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-50 pb-2">Dokumen Foto Resep</h3>
             <div class="flex-1 bg-gray-50 rounded-xl border border-dashed border-gray-200 p-4 flex items-center justify-center overflow-hidden">
-                <a href="{{ asset('storage/' . $resep->foto_resep) }}" target="_blank" class="hover:opacity-95 transition flex flex-col items-center">
-                    <img src="{{ asset('storage/' . $resep->foto_resep) }}" alt="Foto Resep {{ $resep->nama }}" class="max-h-[500px] w-auto rounded shadow-sm border border-gray-200 object-contain">
+                <a href="{{ route('resep.file', $resep->id) }}" target="_blank" class="hover:opacity-95 transition flex flex-col items-center">
+                    <img src="{{ route('resep.file', $resep->id) }}" alt="Foto Resep {{ $resep->nama }}" class="max-h-[500px] w-auto rounded shadow-sm border border-gray-200 object-contain">
                     <span class="text-xs text-blue-600 font-semibold mt-3 hover:underline">Buka Gambar di Tab Baru ↗</span>
                 </a>
             </div>
