@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
@@ -49,34 +50,25 @@ class CheckoutController extends Controller
     public function process(Request $request)
     {
         $validated = $request->validate([
-            'alamat' => 'nullable|string',
-            'metode' => 'required|string',
-            'lat' => 'nullable|numeric',
-            'lng' => 'nullable|numeric',
-            'jarak' => 'nullable|numeric',
-            'ongkir' => 'required|numeric',
-            'subtotal' => 'required|numeric',
-            'total' => 'required|numeric',
-            'catatan' => 'nullable|string',
-<<<<<<< HEAD
-        ], [
-            'nama.required' => 'Nama lengkap wajib diisi.',
-            'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
-=======
-<<<<<<< HEAD
-=======
-        ], [
->>>>>>> 750dc18166dc1dd7544ae9979ab7be5c0c7e637c
+        
+        'alamat' => 'nullable|string',
+        'metode' => 'required|string',
+        'lat' => 'nullable|numeric',
+        'lng' => 'nullable|numeric',
+        'jarak' => 'nullable|numeric',
+        'ongkir' => 'required|numeric',
+        'subtotal' => 'required|numeric',
+        'total' => 'required|numeric',
+        'catatan' => 'nullable|string',
+], [
+
             'metode.required' => 'Metode pengambilan wajib dipilih.',
             'ongkir.required' => 'Ongkir wajib diisi.',
             'subtotal.required' => 'Subtotal wajib diisi.',
             'total.required' => 'Total wajib diisi.',
-<<<<<<< HEAD
-=======
->>>>>>> 7916183 (refactor:checkout)
->>>>>>> 750dc18166dc1dd7544ae9979ab7be5c0c7e637c
-        ]);
-        $user = auth()->user();
+
+]);
+        $user = Auth::user();
 
         if (!$user) {
             return response()->json([
@@ -119,24 +111,16 @@ class CheckoutController extends Controller
             // Save Transaksi
             $transaksi = \App\Models\Transaksi::create([
                 'kode_transaksi' => $kodeTransaksi,
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'tanggal_transaksi' => now(),
                 'total_harga' => $validated['total'],
                 'bayar' => 0, // Placeholder
                 'kembalian' => 0, // Placeholder
-<<<<<<< HEAD
-                'nama_pelanggan' => $validated['nama'],
-                'whatsapp' => $validated['whatsapp'],
-<<<<<<< HEAD
-                'alamat' => $validated['alamat'] ?? null,
-=======
-                'alamat' => $validated['alamat'],
-=======
+
                 'nama_pelanggan' => $user->name,
-                'whatsapp' => $validated['whatsapp'] ?? $user->whatsapp,
+                'whatsapp' => $user->whatsapp,
                 'alamat' => $validated['alamat'] ?? null,
->>>>>>> 7916183 (refactor:checkout)
->>>>>>> 750dc18166dc1dd7544ae9979ab7be5c0c7e637c
+
                 'metode_pengambilan' => $validated['metode'],
                 'latitude' => $validated['lat'] ?? null,
                 'longitude' => $validated['lng'] ?? null,
@@ -163,7 +147,7 @@ class CheckoutController extends Controller
             // Complete prescription checkout if any in 'siap_checkout' status
             try {
                 $resepService = app(\App\Services\ResepDokterService::class);
-                $resepService->completeCheckout(auth()->id());
+                $resepService->completeCheckout(Auth::id());
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Gagal memperbarui status resep saat checkout: ' . $e->getMessage());
             }
