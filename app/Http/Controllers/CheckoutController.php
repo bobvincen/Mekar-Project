@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+
 class CheckoutController extends Controller
 {
     public function index(Request $request)
@@ -48,8 +49,6 @@ class CheckoutController extends Controller
     public function process(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'whatsapp' => 'required|string|max:20',
             'alamat' => 'nullable|string',
             'metode' => 'required|string',
             'lat' => 'nullable|numeric',
@@ -59,14 +58,32 @@ class CheckoutController extends Controller
             'subtotal' => 'required|numeric',
             'total' => 'required|numeric',
             'catatan' => 'nullable|string',
+<<<<<<< HEAD
         ], [
             'nama.required' => 'Nama lengkap wajib diisi.',
             'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
+=======
+<<<<<<< HEAD
+=======
+        ], [
+>>>>>>> 750dc18166dc1dd7544ae9979ab7be5c0c7e637c
             'metode.required' => 'Metode pengambilan wajib dipilih.',
             'ongkir.required' => 'Ongkir wajib diisi.',
             'subtotal.required' => 'Subtotal wajib diisi.',
             'total.required' => 'Total wajib diisi.',
+<<<<<<< HEAD
+=======
+>>>>>>> 7916183 (refactor:checkout)
+>>>>>>> 750dc18166dc1dd7544ae9979ab7be5c0c7e637c
         ]);
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda harus Login untuk melakukan checkout.'
+            ], 401);
+        }
 
         $cartItems = session()->get('checkout_cart', session()->get('cart', []));
 
@@ -107,9 +124,19 @@ class CheckoutController extends Controller
                 'total_harga' => $validated['total'],
                 'bayar' => 0, // Placeholder
                 'kembalian' => 0, // Placeholder
+<<<<<<< HEAD
                 'nama_pelanggan' => $validated['nama'],
                 'whatsapp' => $validated['whatsapp'],
+<<<<<<< HEAD
                 'alamat' => $validated['alamat'] ?? null,
+=======
+                'alamat' => $validated['alamat'],
+=======
+                'nama_pelanggan' => $user->name,
+                'whatsapp' => $validated['whatsapp'] ?? $user->whatsapp,
+                'alamat' => $validated['alamat'] ?? null,
+>>>>>>> 7916183 (refactor:checkout)
+>>>>>>> 750dc18166dc1dd7544ae9979ab7be5c0c7e637c
                 'metode_pengambilan' => $validated['metode'],
                 'latitude' => $validated['lat'] ?? null,
                 'longitude' => $validated['lng'] ?? null,
