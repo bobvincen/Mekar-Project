@@ -36,11 +36,36 @@
                         <th class="py-4 px-6 w-44">Kontak WA</th>
                         <th class="py-4 px-6 max-w-xs">Catatan</th>
                         <th class="py-4 px-6 text-center w-32">Foto Resep</th>
+                        <th class="py-4 px-6 text-center w-32">Status</th>
                         <th class="py-4 px-6 text-center w-28">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-600 font-medium">
                     @forelse($reseps as $resep)
+                        @php
+                            $statusColors = [
+                                'menunggu_verifikasi' => 'bg-amber-50 text-amber-600 border-amber-200',
+                                'sedang_diproses'     => 'bg-blue-50 text-blue-600 border-blue-200',
+                                'menunggu_persetujuan' => 'bg-purple-50 text-purple-600 border-purple-200',
+                                'siap_checkout'       => 'bg-indigo-50 text-indigo-650 border-indigo-200',
+                                'checkout'            => 'bg-sky-50 text-sky-600 border-sky-200',
+                                'selesai'             => 'bg-green-50 text-green-600 border-green-200',
+                                'ditolak'             => 'bg-red-50 text-red-600 border-red-200',
+                            ];
+
+                            $statusLabels = [
+                                'menunggu_verifikasi' => 'Menunggu Verifikasi',
+                                'sedang_diproses'     => 'Sedang Diproses',
+                                'menunggu_persetujuan' => 'Menunggu Persetujuan',
+                                'siap_checkout'       => 'Siap Checkout',
+                                'checkout'            => 'Checkout',
+                                'selesai'             => 'Selesai',
+                                'ditolak'             => 'Ditolak',
+                            ];
+
+                            $colorClass = $statusColors[$resep->status] ?? 'bg-slate-50 text-slate-650 border-slate-200';
+                            $label = $statusLabels[$resep->status] ?? $resep->status;
+                        @endphp
                         <tr class="hover:bg-slate-50/50 transition">
                             <td class="py-4 px-6 whitespace-nowrap text-slate-500">
                                 {{ $resep->created_at->format('d M Y, H:i') }}
@@ -62,14 +87,27 @@
                                 {{ $resep->catatan ?: '-' }}
                             </td>
                             <td class="py-4 px-6 text-center">
-                                <a href="{{ asset('storage/' . $resep->foto_resep) }}" target="_blank"
+                                <a href="{{ route('resep.file', $resep->id) }}" target="_blank"
                                     class="inline-block hover:opacity-90 transition rounded-xl overflow-hidden border border-slate-200 bg-slate-50 p-0.5">
-                                    <img src="{{ asset('storage/' . $resep->foto_resep) }}" alt="Resep {{ $resep->nama }}"
+                                    <img src="{{ route('resep.file', $resep->id) }}" alt="Resep {{ $resep->nama }}"
                                         class="h-12 w-12 object-cover rounded-lg">
                                 </a>
                             </td>
+                            <td class="py-4 px-6 text-center whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-1 text-xs font-bold border rounded-lg uppercase tracking-wider {{ $colorClass }}">
+                                    {{ $label }}
+                                </span>
+                            </td>
                             <td class="py-4 px-6">
-                                <div class="flex justify-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    @if(in_array($resep->status, ['menunggu_verifikasi', 'sedang_diproses', 'menunggu_persetujuan']))
+                                        <a href="{{ route('resep.proses', $resep->id) }}" 
+                                            class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-650 hover:text-blue-700 border border-blue-100 rounded-xl text-xs font-bold transition flex items-center gap-1" 
+                                            title="Proses Resep">
+                                            Proses
+                                        </a>
+                                    @endif
+                                    
                                     <form action="{{ route('admin.resep.destroy', $resep->id) }}" method="POST"
                                         class="inline-block"
                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus data resep ini?');">
