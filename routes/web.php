@@ -35,12 +35,15 @@ Route::get('/category/{id}', [MarketplaceController::class, 'category'])->name('
 
 Route::post('/konsultasi-log', [MarketplaceController::class, 'logKonsultasi'])->name('konsultasi.log');
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart/add/{id}', [CartController::class, 'add']); // Fallback GET method for simple links
-Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-Route::get('/cart/update', [CartController::class, 'update']); // Fallback GET method for easy query param updates
-Route::get('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+    Route::get('/cart/update', [CartController::class, 'update']); // Fallback GET method for easy query param updates
+    Route::get('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+});
 
 Route::post('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'store'])->name('feedback.store');
 

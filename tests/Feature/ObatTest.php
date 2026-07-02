@@ -127,3 +127,60 @@ test('admin can import medications and create or update suppliers from preview d
         'harga_jual' => 5000,
     ]);
 });
+
+test('obat image accessors return correct urls and fallbacks', function () {
+    $kategoriObat = \App\Models\Kategori::create(['nama_kategori' => 'Obat Demam']);
+    $kategoriVitamin = \App\Models\Kategori::create(['nama_kategori' => 'Vitamin Anak']);
+    $supplier = \App\Models\Supplier::create(['nama_supplier' => 'PT Test Supplier']);
+
+    $obatNoImage = \App\Models\Obat::create([
+        'kode_obat' => 'OBT-9991',
+        'nama_obat' => 'Test Obat No Image',
+        'kategori_id' => $kategoriObat->id,
+        'supplier_id' => $supplier->id,
+        'stok' => 10,
+        'harga_jual' => 10000,
+        'tanggal_kadaluarsa' => '2027-01-01',
+        'image_path' => null
+    ]);
+
+    $vitaminNoImage = \App\Models\Obat::create([
+        'kode_obat' => 'OBT-9992',
+        'nama_obat' => 'Test Vitamin No Image',
+        'kategori_id' => $kategoriVitamin->id,
+        'supplier_id' => $supplier->id,
+        'stok' => 10,
+        'harga_jual' => 10000,
+        'tanggal_kadaluarsa' => '2027-01-01',
+        'image_path' => null
+    ]);
+
+    // Test fallbacks
+    expect($obatNoImage->image_url)->toContain('premium_medicine_box.png');
+    expect($obatNoImage->image)->toContain('premium_medicine_box.png');
+    expect($obatNoImage->gambar)->toContain('premium_medicine_box.png');
+
+    expect($vitaminNoImage->image_url)->toContain('premium_supplement_bottle.png');
+    expect($vitaminNoImage->image)->toContain('premium_supplement_bottle.png');
+    expect($vitaminNoImage->gambar)->toContain('premium_supplement_bottle.png');
+
+    // Test with actual image
+    \Illuminate\Support\Facades\Storage::fake('public');
+    $imagePath = 'obat/test-image.jpg';
+    \Illuminate\Support\Facades\Storage::disk('public')->put($imagePath, 'dummy content');
+
+    $obatWithImage = \App\Models\Obat::create([
+        'kode_obat' => 'OBT-9993',
+        'nama_obat' => 'Test Obat With Image',
+        'kategori_id' => $kategoriObat->id,
+        'supplier_id' => $supplier->id,
+        'stok' => 10,
+        'harga_jual' => 10000,
+        'tanggal_kadaluarsa' => '2027-01-01',
+        'image_path' => $imagePath
+    ]);
+
+    expect($obatWithImage->image_url)->toContain('storage/' . $imagePath);
+    expect($obatWithImage->image)->toContain('storage/' . $imagePath);
+    expect($obatWithImage->gambar)->toContain('storage/' . $imagePath);
+});
