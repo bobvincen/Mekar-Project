@@ -143,14 +143,25 @@
                     Belanja Sekarang
                     <svg class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
                 </a>
-                <a href="{{ route('resep.create') }}" class="w-full sm:w-auto relative bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-900 font-extrabold px-8 py-4 rounded-full text-[15px] transition-all duration-300 flex items-center justify-center gap-2 group transform hover:-translate-y-1 shadow-xl shadow-yellow-500/30 border border-yellow-300">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-                    Upload Resep Dokter
-                    <span class="absolute -top-1.5 -right-1.5 flex h-4 w-4">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-white"></span>
-                    </span>
-                </a>
+                @auth
+                    <a href="{{ route('resep.create') }}" class="w-full sm:w-auto relative bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-900 font-extrabold px-8 py-4 rounded-full text-[15px] transition-all duration-300 flex items-center justify-center gap-2 group transform hover:-translate-y-1 shadow-xl shadow-yellow-500/30 border border-yellow-300">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                        Upload Resep Dokter
+                        <span class="absolute -top-1.5 -right-1.5 flex h-4 w-4">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-white"></span>
+                        </span>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="w-full sm:w-auto relative bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-900 font-extrabold px-8 py-4 rounded-full text-[15px] transition-all duration-300 flex items-center justify-center gap-2 group transform hover:-translate-y-1 shadow-xl shadow-yellow-500/30 border border-yellow-300">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                        Upload Resep Dokter
+                        <span class="absolute -top-1.5 -right-1.5 flex h-4 w-4">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-white"></span>
+                        </span>
+                    </a>
+                @endauth
             </div>
         </div>
         <div class="relative z-10 w-full max-w-5xl mt-16 pt-8 border-t border-white/10" data-aos="fade-up" data-aos-duration="700" data-aos-delay="500">
@@ -631,6 +642,56 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
             openModal(btn);
+            const productId = btn.dataset.productId;
+            const btnTextEl = btn.querySelector('.btn-text');
+            const originalText = btnTextEl.textContent;
+
+            btn.disabled = true;
+            btnTextEl.textContent = 'Menambahkan...';
+
+            fetch(`/cart/add/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ qty: 1 })
+            })
+            .then(res => {
+                if (res.status === 401) {
+                    window.location.href = "{{ route('login') }}";
+                    return null;
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (!data) return;
+                if (data.success) {
+                    btnTextEl.textContent = 'Ditambahkan ✓';
+
+                    // Update badge jumlah keranjang di navbar jika elemen ada
+                    const cartBadge = document.querySelector('#cart-count');
+                    if (cartBadge) {
+                        cartBadge.textContent = data.cartCount;
+                        cartBadge.classList.remove('hidden');
+                    }
+
+                    setTimeout(() => {
+                        btnTextEl.textContent = originalText;
+                        btn.disabled = false;
+                    }, 1200);
+                } else {
+                    alert(data.message || 'Gagal menambahkan ke keranjang');
+                    btnTextEl.textContent = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(() => {
+                alert('Terjadi kesalahan, coba lagi.');
+                btnTextEl.textContent = originalText;
+                btn.disabled = false;
+            });
         });
     });
 
