@@ -231,6 +231,10 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // POS & Reports (Shared/Individual Staff)
+    Route::middleware('permission:Tambah Transaksi')->group(function () {
+        Route::get('/transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
+        Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
+    });
     Route::middleware('permission:Lihat Transaksi')->group(function () {
         Route::get('transaksi/export-pdf', [TransaksiController::class, 'exportPdf'])
             ->name('transaksi.export-pdf');
@@ -239,10 +243,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/transaksi/{transaksi}/edit', [TransaksiController::class, 'edit'])->name('transaksi.edit');
         Route::put('/transaksi/{transaksi}', [TransaksiController::class, 'update'])->name('transaksi.update');
         Route::delete('/transaksi/{transaksi}', [TransaksiController::class, 'destroy'])->name('transaksi.destroy');
-    });
-    Route::middleware('permission:Tambah Transaksi')->group(function () {
-        Route::get('/transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
-        Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
     });
 
     Route::get('/laporan', [LaporanController::class, 'index'])->middleware('role:admin|kasir')->name('laporan.index');
