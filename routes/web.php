@@ -41,6 +41,7 @@ Route::get('/cart/add/{id}', [CartController::class, 'add']); // Fallback GET me
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::get('/cart/update', [CartController::class, 'update']); // Fallback GET method for easy query param updates
 Route::get('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::get('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 Route::post('/feedback-layanan', [\App\Http\Controllers\FeedbackLayananController::class, 'store'])->name('feedback.store');
 
