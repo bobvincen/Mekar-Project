@@ -222,36 +222,68 @@
                     </a>
 
                     <!-- Upload Resep (Global Navbar) -->
-                    <a href="{{ route('resep.create') }}"
-                        class="hidden md:flex items-center gap-1.5 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/60 text-blue-700 px-3.5 py-1.5 rounded-full text-[13px] font-bold transition-all duration-300 group shadow-sm hover:shadow-md relative">
-                        <svg class="w-4 h-4 text-blue-500 transition-transform group-hover:scale-110" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                        </svg>
-                        Upload Resep
-                        <span class="absolute -top-1 -right-0.5 flex h-2.5 w-2.5">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                        </span>
-                    </a>
-
-                    <!-- Cart -->
-                    <a href="/cart"
-                        class="relative flex items-center gap-2 bg-white border border-slate-200/80 hover:border-blue-200 text-slate-700 hover:text-blue-600 px-3.5 py-1.5 rounded-full text-[13px] font-bold transition-all duration-300 shadow-sm hover:shadow-md group">
-                        <div class="relative">
-                            <svg class="w-4.5 h-4.5 transition-transform duration-300 group-hover:-translate-y-0.5 text-blue-600"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    @auth
+                        <a href="{{ route('resep.create') }}"
+                            class="hidden md:flex items-center gap-1.5 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/60 text-blue-700 px-3.5 py-1.5 rounded-full text-[13px] font-bold transition-all duration-300 group shadow-sm hover:shadow-md relative">
+                            <svg class="w-4 h-4 text-blue-500 transition-transform group-hover:scale-110" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                             </svg>
-                            @php $cartCount = count(session('cart', [])); @endphp
-                            <span id="cart-count"
-                                class="absolute -top-1.5 -right-2 w-4 h-4 bg-red-500 text-[10px] font-bold text-white rounded-full flex items-center justify-center border border-white shadow-sm {{ $cartCount > 0 ? '' : 'hidden' }}">{{ $cartCount }}</span>
-                        </div>
-                        <span class="hidden sm:inline">Keranjang</span>
-                    </a>
+                            Upload Resep
+                            <span class="absolute -top-1 -right-0.5 flex h-2.5 w-2.5">
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                            </span>
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}"
+                            class="hidden md:flex items-center gap-1.5 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/60 text-blue-700 px-3.5 py-1.5 rounded-full text-[13px] font-bold transition-all duration-300 group shadow-sm hover:shadow-md relative">
+                            <svg class="w-4 h-4 text-blue-500 transition-transform group-hover:scale-110" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                            </svg>
+                            Upload Resep
+                            <span class="absolute -top-1 -right-0.5 flex h-2.5 w-2.5">
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                            </span>
+                        </a>
+                    @endauth
+ 
+                    <!-- Cart -->
+                    @auth
+                        <a href="/cart"
+                            class="relative flex items-center gap-2 bg-white border border-slate-200/80 hover:border-blue-200 text-slate-700 hover:text-blue-600 px-3.5 py-1.5 rounded-full text-[13px] font-bold transition-all duration-300 shadow-sm hover:shadow-md group">
+                            <div class="relative">
+                                <svg class="w-4.5 h-4.5 transition-transform duration-300 group-hover:-translate-y-0.5 text-blue-600"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                                @php $cartCount = count(session('cart', [])); @endphp
+                                <span id="cart-count"
+                                    class="absolute -top-1.5 -right-2 w-4 h-4 bg-red-500 text-[10px] font-bold text-white rounded-full flex items-center justify-center border border-white shadow-sm {{ $cartCount > 0 ? '' : 'hidden' }}">{{ $cartCount }}</span>
+                            </div>
+                            <span class="hidden sm:inline">Keranjang</span>
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}"
+                            class="relative flex items-center gap-2 bg-white border border-slate-200/80 hover:border-blue-200 text-slate-700 hover:text-blue-600 px-3.5 py-1.5 rounded-full text-[13px] font-bold transition-all duration-300 shadow-sm hover:shadow-md group">
+                            <div class="relative">
+                                <svg class="w-4.5 h-4.5 transition-transform duration-300 group-hover:-translate-y-0.5 text-blue-600"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                                <span id="cart-count" class="hidden">0</span>
+                            </div>
+                            <span class="hidden sm:inline">Keranjang</span>
+                        </a>
+                    @endauth
 
                     <!-- User Profile / Login -->
                     @guest

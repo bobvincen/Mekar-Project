@@ -28,6 +28,14 @@ class CartController extends Controller
 
     public function add($id, Request $request)
     {
+        if (!auth()->check()) {
+            if ($request->wantsJson() || $request->ajax()) {
+                session()->put('url.intended', url()->previous());
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+            return redirect()->guest(route('login'));
+        }
+
         $product = Obat::with('kategori')->findOrFail($id);
 
         // Check if stock is available
@@ -148,4 +156,9 @@ class CartController extends Controller
 
         return redirect()->route('cart.index')->with('success', 'Produk berhasil dihapus dari keranjang.');
     }
+    public function clear()
+{
+    session()->forget('cart');
+    return redirect()->route('cart.index')->with('success', 'Keranjang berhasil dikosongkan.');
+}
 }

@@ -723,7 +723,6 @@
                         catatan: this.form.catatan,
                         _token: '{{ csrf_token() }}'
                     };
-
                     try {
                         let response = await fetch('/checkout/process', {
                             method: 'POST',
@@ -733,6 +732,11 @@
                             },
                             body: JSON.stringify(payload)
                         });
+
+                        if (response.status === 401) {
+                            window.location.href = "{{ route('login') }}";
+                            return;
+                        }
 
                         let result = await response.json();
 
