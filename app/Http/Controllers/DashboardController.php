@@ -58,7 +58,8 @@ class DashboardController extends Controller
 
         // New Widget Data
         $pendingPembayaranCount = Transaksi::where('status', 'Menunggu Verifikasi')->count();
-        $pendingResepCount = ResepDokter::where('status', 'pending')->count();
+        $pendingResepCount = ResepDokter::where('status', 'menunggu_verifikasi')->count();
+        $revisiResepCount = ResepDokter::where('status', 'menunggu_revisi')->count();
         $totalPendapatan = Transaksi::sum('total_harga');
         $totalPelanggan = User::role('pelanggan')->count();
 
@@ -70,6 +71,7 @@ class DashboardController extends Controller
             'totalPendapatan' => $totalPendapatan,
             'pendingPembayaranCount' => $pendingPembayaranCount,
             'pendingResepCount' => $pendingResepCount,
+            'revisiResepCount' => $revisiResepCount,
             'stokRendah' => $stokRendah,
             'obatKadaluarsa' => $obatKadaluarsa,
             'transaksiTerbaru' => $transaksiTerbaru,

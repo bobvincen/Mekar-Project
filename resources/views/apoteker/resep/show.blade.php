@@ -59,6 +59,7 @@
                 $statusColors = [
                     'menunggu_verifikasi' => 'bg-amber-50 text-amber-600 border-amber-250',
                     'sedang_diproses'     => 'bg-blue-50 text-blue-605 border-blue-200',
+                    'menunggu_revisi'     => 'bg-rose-50 text-rose-600 border-rose-200 animate-pulse',
                     'menunggu_persetujuan' => 'bg-purple-50 text-purple-650 border-purple-200',
                     'siap_checkout'       => 'bg-indigo-50 text-indigo-600 border-indigo-200',
                     'checkout'            => 'bg-sky-50 text-sky-655 border-sky-200',
@@ -67,11 +68,12 @@
                 ];
 
                 $statusLabels = [
-                    'menunggu_verifikasi' => 'Menunggu Verifikasi',
+                    'menunggu_verifikasi' => 'Menunggu Verifikasi Resep',
                     'sedang_diproses'     => 'Sedang Diproses',
-                    'menunggu_persetujuan' => 'Menunggu Persetujuan',
+                    'menunggu_revisi'     => 'Perlu Direvisi',
+                    'menunggu_persetujuan' => 'Menunggu Persetujuan Pelanggan',
                     'siap_checkout'       => 'Siap Checkout',
-                    'checkout'            => 'Checkout',
+                    'checkout'            => 'Menunggu Pembayaran',
                     'selesai'             => 'Selesai',
                     'ditolak'             => 'Ditolak',
                 ];

@@ -17,6 +17,9 @@
         <a href="{{ route('apoteker.resep.index', ['status' => 'menunggu_verifikasi']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'menunggu_verifikasi' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
             Menunggu Verifikasi
         </a>
+        <a href="{{ route('apoteker.resep.index', ['status' => 'menunggu_revisi']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'menunggu_revisi' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
+            Perlu Direvisi
+        </a>
         <a href="{{ route('apoteker.resep.index', ['status' => 'sedang_diproses']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $status === 'sedang_diproses' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50' }}">
             Sedang Diproses
         </a>
@@ -66,19 +69,21 @@
                     $statusColors = [
                         'menunggu_verifikasi' => 'bg-amber-50 text-amber-600 border-amber-200',
                         'sedang_diproses'     => 'bg-blue-50 text-blue-600 border-blue-200',
+                        'menunggu_revisi'     => 'bg-rose-50 text-rose-600 border-rose-200 animate-pulse',
                         'menunggu_persetujuan' => 'bg-purple-50 text-purple-600 border-purple-200',
                         'siap_checkout'       => 'bg-indigo-50 text-indigo-650 border-indigo-200',
-                        'checkout'            => 'bg-sky-50 text-sky-600 border-sky-200',
+                        'checkout'            => 'bg-sky-50 text-sky-650 border-sky-200',
                         'selesai'             => 'bg-green-50 text-green-600 border-green-200',
                         'ditolak'             => 'bg-red-50 text-red-600 border-red-200',
                     ];
 
                     $statusLabels = [
-                        'menunggu_verifikasi' => 'Menunggu Verifikasi',
+                        'menunggu_verifikasi' => 'Menunggu Verifikasi Resep',
                         'sedang_diproses'     => 'Sedang Diproses',
-                        'menunggu_persetujuan' => 'Menunggu Persetujuan',
+                        'menunggu_revisi'     => 'Perlu Direvisi',
+                        'menunggu_persetujuan' => 'Menunggu Persetujuan Pelanggan',
                         'siap_checkout'       => 'Siap Checkout',
-                        'checkout'            => 'Checkout',
+                        'checkout'            => 'Menunggu Pembayaran',
                         'selesai'             => 'Selesai',
                         'ditolak'             => 'Ditolak',
                     ];
@@ -108,7 +113,7 @@
                     </td>
                     <td class="py-4 px-6 text-right whitespace-nowrap">
                         <div class="flex justify-end gap-2">
-                            @if(in_array($resep->status, ['menunggu_verifikasi', 'sedang_diproses', 'menunggu_persetujuan']))
+                            @if(in_array($resep->status, ['menunggu_verifikasi', 'menunggu_revisi', 'sedang_diproses', 'menunggu_persetujuan']))
                                 <a href="{{ route('resep.proses', $resep->id) }}" class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg text-xs font-bold transition">
                                     Proses Resep
                                 </a>

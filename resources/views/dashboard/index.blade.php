@@ -16,8 +16,18 @@
     </div>
 
     <!-- Urgent Alerts Section -->
-    @if($pendingPembayaranCount > 0 || $pendingResepCount > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
+    @php
+        $alertCount = ($pendingPembayaranCount > 0 ? 1 : 0) + ($pendingResepCount > 0 ? 1 : 0) + ($revisiResepCount > 0 ? 1 : 0);
+        $gridCols = match($alertCount) {
+            1 => 'grid-cols-1',
+            2 => 'grid-cols-1 md:grid-cols-2',
+            3 => 'grid-cols-1 md:grid-cols-3',
+            default => 'grid-cols-1'
+        };
+    @endphp
+
+    @if($alertCount > 0)
+        <div class="grid {{ $gridCols }} gap-4 animate-fade-in">
             @if($pendingPembayaranCount > 0)
                 <div class="flex items-center justify-between p-4 bg-amber-50 border border-amber-100 rounded-2xl shadow-sm">
                     <div class="flex items-center gap-3">
@@ -59,6 +69,31 @@
                     @elseif(auth()->user()->can('Kelola Pesanan Online'))
                         <a href="{{ route('admin.resep.index') }}" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm transition">
                             Periksa
+                        </a>
+                    @endif
+                </div>
+            @endif
+
+            @if($revisiResepCount > 0)
+                <div class="flex items-center justify-between p-4 bg-rose-50 border border-rose-100 rounded-2xl shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <span class="p-2.5 bg-rose-100 text-rose-700 rounded-xl">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h4 class="font-bold text-rose-900 text-sm">Permintaan Revisi Resep</h4>
+                            <p class="text-xs text-rose-700 mt-0.5">Ada <span class="font-bold">{{ $revisiResepCount }}</span> resep dokter yang perlu direvisi.</p>
+                        </div>
+                    </div>
+                    @if(auth()->user()->can('Verifikasi Resep'))
+                        <a href="{{ route('apoteker.resep.index', ['status' => 'menunggu_revisi']) }}" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-sm transition">
+                            Revisi
+                        </a>
+                    @elseif(auth()->user()->can('Kelola Pesanan Online'))
+                        <a href="{{ route('admin.resep.index') }}" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-sm transition">
+                            Revisi
                         </a>
                     @endif
                 </div>
