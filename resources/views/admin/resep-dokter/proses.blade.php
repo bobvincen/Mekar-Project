@@ -208,7 +208,7 @@
                             ✗ Tolak Resep
                         </button>
                         
-                        <button type="submit" class="px-6 py-3 bg-blue-650 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition w-full sm:w-auto">
+                        <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition w-full sm:w-auto">
                             Kirim Penawaran Obat
                         </button>
                     </div>
