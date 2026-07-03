@@ -95,6 +95,14 @@
             box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15);
         }
     </style>
+    <script>
+    // Force reload saat user tekan tombol Back browser
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
 </head>
 @php
     $navIsHome = request()->is('/') || request()->is('marketplace') || request()->routeIs('marketplace.home');

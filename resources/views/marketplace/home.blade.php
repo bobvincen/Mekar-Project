@@ -645,62 +645,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ===== BUKA MODAL SAAT TOMBOL KERANJANG DIKLIK =====
-    document.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            openModal(btn);
-            const productId = btn.dataset.productId;
-            const btnTextEl = btn.querySelector('.btn-text');
-            const originalText = btnTextEl.textContent;
-
-            btn.disabled = true;
-            btnTextEl.textContent = 'Menambahkan...';
-
-            fetch(`/cart/add/${productId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ qty: 1 })
-            })
-            .then(res => {
-                if (res.status === 401) {
-                    window.location.href = "{{ route('login') }}";
-                    return null;
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (!data) return;
-                if (data.success) {
-                    btnTextEl.textContent = 'Ditambahkan ✓';
-
-                    // Update badge jumlah keranjang di navbar jika elemen ada
-                    const cartBadge = document.querySelector('#cart-count');
-                    if (cartBadge) {
-                        cartBadge.textContent = data.cartCount;
-                        cartBadge.classList.remove('hidden');
-                    }
-
-                    setTimeout(() => {
-                        btnTextEl.textContent = originalText;
-                        btn.disabled = false;
-                    }, 1200);
-                } else {
-                    alert(data.message || 'Gagal menambahkan ke keranjang');
-                    btnTextEl.textContent = originalText;
-                    btn.disabled = false;
-                }
-            })
-            .catch(() => {
-                alert('Terjadi kesalahan, coba lagi.');
-                btnTextEl.textContent = originalText;
-                btn.disabled = false;
-            });
-        });
+ // ===== BUKA MODAL SAAT TOMBOL KERANJANG DIKLIK =====
+document.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        openModal(btn); // hanya buka modal, fetch dilakukan di submitBtn
     });
+});
 
 });
 </script>
