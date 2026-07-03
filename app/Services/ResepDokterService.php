@@ -184,7 +184,7 @@ class ResepDokterService
         $resep = ResepDokter::findOrFail($resepId);
         $user = auth()->user();
 
-        $resep->status = 'sedang_diproses';
+        $resep->status = 'menunggu_revisi';
         $resep->catatan_revisi = $catatanRevisi;
         $resep->save();
 

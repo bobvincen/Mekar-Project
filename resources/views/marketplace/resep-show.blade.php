@@ -26,19 +26,21 @@
                 $statusColors = [
                     'menunggu_verifikasi' => 'bg-amber-50 text-amber-600 border-amber-200',
                     'sedang_diproses'     => 'bg-blue-50 text-blue-600 border-blue-200',
+                    'menunggu_revisi'     => 'bg-rose-50 text-rose-600 border-rose-200 animate-pulse',
                     'menunggu_persetujuan' => 'bg-purple-50 text-purple-600 border-purple-200',
-                    'siap_checkout'       => 'bg-indigo-50 text-indigo-600 border-indigo-200',
-                    'checkout'            => 'bg-sky-50 text-sky-600 border-sky-200',
+                    'siap_checkout'       => 'bg-indigo-50 text-indigo-650 border-indigo-200',
+                    'checkout'            => 'bg-sky-50 text-sky-650 border-sky-200',
                     'selesai'             => 'bg-green-50 text-green-600 border-green-200',
                     'ditolak'             => 'bg-red-50 text-red-600 border-red-200',
                 ];
 
                 $statusLabels = [
-                    'menunggu_verifikasi' => 'Menunggu Verifikasi',
+                    'menunggu_verifikasi' => 'Menunggu Verifikasi Resep',
                     'sedang_diproses'     => 'Sedang Diproses',
-                    'menunggu_persetujuan' => 'Menunggu Persetujuan',
+                    'menunggu_revisi'     => 'Menunggu Revisi Apoteker',
+                    'menunggu_persetujuan' => 'Menunggu Persetujuan Pelanggan',
                     'siap_checkout'       => 'Siap Checkout',
-                    'checkout'            => 'Checkout',
+                    'checkout'            => 'Menunggu Pembayaran',
                     'selesai'             => 'Selesai',
                     'ditolak'             => 'Ditolak',
                 ];
@@ -92,13 +94,16 @@
                     <div class="relative">
                         @php
                             $isProcessed = in_array($resep->status, ['menunggu_persetujuan', 'siap_checkout', 'checkout', 'selesai']);
-                            $dotColor = $isProcessed ? 'bg-blue-600' : 'bg-slate-300';
-                            $titleColor = $isProcessed ? 'text-slate-800 font-bold' : 'text-slate-400 font-medium';
+                            $isRevising = $resep->status === 'menunggu_revisi';
+                            $dotColor = $isProcessed ? 'bg-blue-600' : ($isRevising ? 'bg-rose-500 animate-pulse' : 'bg-slate-300');
+                            $titleColor = ($isProcessed || $isRevising) ? 'text-slate-800 font-bold' : 'text-slate-400 font-medium';
                         @endphp
                         <div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full {{ $dotColor }} border-4 border-white shadow-sm"></div>
                         <h4 class="text-sm {{ $titleColor }}">Diverifikasi & Diproses Apoteker</h4>
                         @if($isProcessed)
                             <p class="text-xs text-slate-500 mt-1">Apoteker telah meninjau resep dan menyiapkan penawaran obat.</p>
+                        @elseif($isRevising)
+                            <p class="text-xs text-rose-600 font-medium mt-1">Anda mengajukan revisi. Menunggu Apoteker merevisi penawaran.</p>
                         @else
                             <p class="text-xs text-slate-400 mt-1">Menunggu Apoteker memverifikasi berkas resep.</p>
                         @endif
@@ -115,6 +120,8 @@
                         <h4 class="text-sm {{ $titleColorApprove }}">Persetujuan Pelanggan</h4>
                         @if($resep->status === 'menunggu_persetujuan')
                             <p class="text-xs text-purple-600 font-medium mt-1">Menunggu konfirmasi persetujuan draf obat dari Anda.</p>
+                        @elseif($resep->status === 'menunggu_revisi')
+                            <p class="text-xs text-slate-400 mt-1">Penawaran obat sedang direvisi oleh apoteker.</p>
                         @elseif($isApproved)
                             <p class="text-xs text-slate-500 mt-1">Draf obat telah disetujui dan dimasukkan ke keranjang belanja Anda.</p>
                         @else

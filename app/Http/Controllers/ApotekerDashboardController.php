@@ -13,14 +13,15 @@ class ApotekerDashboardController extends Controller
      */
     public function index()
     {
-        // Statistics (Count awaiting verification)
+        // Statistics (Count awaiting verification & revision)
         $totalResep = ResepDokter::count();
         $pendingResepCount = ResepDokter::where('status', 'menunggu_verifikasi')->count();
+        $revisiResepCount = ResepDokter::where('status', 'menunggu_revisi')->count();
         $totalObat = Obat::count();
         $lowStockObatCount = Obat::where('stok', '<=', 20)->count();
 
         // Data lists for quick preview
-        $pendingReseps = ResepDokter::where('status', 'menunggu_verifikasi')
+        $pendingReseps = ResepDokter::whereIn('status', ['menunggu_verifikasi', 'menunggu_revisi'])
             ->latest()
             ->limit(5)
             ->get();
@@ -34,6 +35,7 @@ class ApotekerDashboardController extends Controller
         return view('apoteker.dashboard', compact(
             'totalResep',
             'pendingResepCount',
+            'revisiResepCount',
             'totalObat',
             'lowStockObatCount',
             'pendingReseps',
@@ -51,6 +53,7 @@ class ApotekerDashboardController extends Controller
 
         $allowedStatuses = [
             'menunggu_verifikasi',
+            'menunggu_revisi',
             'sedang_diproses',
             'menunggu_persetujuan',
             'siap_checkout',

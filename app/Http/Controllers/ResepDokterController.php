@@ -182,8 +182,8 @@ class ResepDokterController extends Controller
     {
         $resep = ResepDokter::with(['items.obat', 'items.obatPengganti'])->findOrFail($id);
         
-        // Transisi status otomatis ke 'sedang_diproses' jika masih 'menunggu_verifikasi'
-        if ($resep->status === 'menunggu_verifikasi') {
+        // Transisi status otomatis ke 'sedang_diproses' jika masih 'menunggu_verifikasi' atau 'menunggu_revisi'
+        if ($resep->status === 'menunggu_verifikasi' || $resep->status === 'menunggu_revisi') {
             $resep->status = 'sedang_diproses';
             $resep->save();
             

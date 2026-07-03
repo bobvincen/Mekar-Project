@@ -602,18 +602,32 @@
                 @php
                     $isResepActive = request()->routeIs('admin.resep.*') || request()->routeIs('apoteker.resep.*') || request()->routeIs('resep.proses');
                     $resepUrl = auth()->user()->can('Kelola Pesanan Online') ? route('admin.resep.index') : route('apoteker.resep.index');
+                    $resepPendingCount = \App\Models\ResepDokter::whereIn('status', ['menunggu_verifikasi', 'menunggu_revisi'])->count();
                 @endphp
                 <div class="relative group" @mouseenter="activeTooltip = 'resep'" @mouseleave="activeTooltip = null">
                     <a href="{{ $resepUrl }}"
                        class="h-12 flex items-center rounded-xl transition-all duration-200 relative border group {{ $isResepActive ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
                        :class="sidebarCollapsed ? 'justify-center px-0' : 'justify-between px-4'">
                         <div class="flex items-center gap-3 min-w-0" :class="sidebarCollapsed ? 'mx-auto justify-center' : ''">
-                            <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0">
+                            <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0 relative">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
+                                @if($resepPendingCount > 0)
+                                    <span class="absolute -top-1 -right-1 flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                @endif
                             </span>
-                            <span x-show="!sidebarCollapsed" x-transition class="text-sm font-medium tracking-wide transition-transform duration-200 group-hover:translate-x-1 truncate">Resep Dokter</span>
+                            <span x-show="!sidebarCollapsed" x-transition class="text-sm font-medium tracking-wide transition-transform duration-200 group-hover:translate-x-1 truncate flex items-center gap-1.5">
+                                Resep Dokter
+                                @if($resepPendingCount > 0)
+                                    <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold leading-none text-white bg-red-500 rounded-full">
+                                        {{ $resepPendingCount }}
+                                    </span>
+                                @endif
+                            </span>
                         </div>
                         
                         @if($isResepActive)

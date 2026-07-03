@@ -45,6 +45,7 @@
                         @php
                             $statusColors = [
                                 'menunggu_verifikasi' => 'bg-amber-50 text-amber-600 border-amber-200',
+                                'menunggu_revisi'     => 'bg-rose-50 text-rose-600 border-rose-200 animate-pulse',
                                 'sedang_diproses'     => 'bg-blue-50 text-blue-600 border-blue-200',
                                 'menunggu_persetujuan' => 'bg-purple-50 text-purple-600 border-purple-200',
                                 'siap_checkout'       => 'bg-indigo-50 text-indigo-650 border-indigo-200',
@@ -54,11 +55,12 @@
                             ];
 
                             $statusLabels = [
-                                'menunggu_verifikasi' => 'Menunggu Verifikasi',
+                                'menunggu_verifikasi' => 'Menunggu Verifikasi Resep',
+                                'menunggu_revisi'     => 'Perlu Direvisi',
                                 'sedang_diproses'     => 'Sedang Diproses',
-                                'menunggu_persetujuan' => 'Menunggu Persetujuan',
+                                'menunggu_persetujuan' => 'Menunggu Persetujuan Pelanggan',
                                 'siap_checkout'       => 'Siap Checkout',
-                                'checkout'            => 'Checkout',
+                                'checkout'            => 'Menunggu Pembayaran',
                                 'selesai'             => 'Selesai',
                                 'ditolak'             => 'Ditolak',
                             ];
@@ -100,7 +102,7 @@
                             </td>
                             <td class="py-4 px-6">
                                 <div class="flex items-center justify-center gap-2">
-                                    @if(in_array($resep->status, ['menunggu_verifikasi', 'sedang_diproses', 'menunggu_persetujuan']))
+                                    @if(in_array($resep->status, ['menunggu_verifikasi', 'menunggu_revisi', 'sedang_diproses', 'menunggu_persetujuan']))
                                         <a href="{{ route('resep.proses', $resep->id) }}" 
                                             class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-650 hover:text-blue-700 border border-blue-100 rounded-xl text-xs font-bold transition flex items-center gap-1" 
                                             title="Proses Resep">
@@ -124,7 +126,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-12 text-center text-slate-400 font-medium bg-slate-50/10">
+                            <td colspan="7" class="py-12 text-center text-slate-400 font-medium bg-slate-50/10">
                                 <div class="flex flex-col items-center justify-center">
                                     <svg class="w-10 h-10 stroke-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

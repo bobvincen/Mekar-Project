@@ -88,16 +88,29 @@
                             $statusBadge = match ($transaksi->status) {
                                 'Menunggu Pembayaran' => 'bg-amber-50 text-amber-600 border-amber-200',
                                 'Menunggu Verifikasi' => 'bg-blue-50 text-blue-600 border-blue-200',
-                                'Ditolak' => 'bg-red-50 text-red-600 border-red-200',
+                                'Ditolak' => 'bg-rose-50 text-rose-600 border-rose-250',
                                 'Diproses' => 'bg-sky-50 text-sky-600 border-sky-200',
-                                'Siap Diambil', 'Sedang Diantar' => 'bg-indigo-50 text-indigo-600 border-indigo-200',
-                                'Selesai' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
+                                'Siap Diambil' => 'bg-indigo-50 text-indigo-650 border-indigo-200',
+                                'Sedang Diantar' => 'bg-indigo-50 text-indigo-600 border-indigo-200',
+                                'Selesai' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
                                 'Dibatalkan' => 'bg-slate-50 text-slate-500 border-slate-200',
                                 default => 'bg-slate-50 text-slate-500 border-slate-200',
                             };
+
+                            $statusText = match ($transaksi->status) {
+                                'Menunggu Pembayaran' => 'Menunggu Pembayaran',
+                                'Menunggu Verifikasi' => 'Menunggu Verifikasi',
+                                'Ditolak' => 'Pembayaran Ditolak',
+                                'Diproses' => 'Lunas - Sedang Diproses',
+                                'Siap Diambil' => 'Lunas - Siap Diambil',
+                                'Sedang Diantar' => 'Lunas - Sedang Dikirim',
+                                'Selesai' => 'Lunas - Selesai',
+                                'Dibatalkan' => 'Dibatalkan',
+                                default => $transaksi->status,
+                            };
                         @endphp
                         <span class="px-3 py-1.5 rounded-full text-xs font-bold border shadow-sm {{ $statusBadge }}">
-                            {{ $transaksi->status }}
+                            {{ $statusText }}
                         </span>
                     </div>
 

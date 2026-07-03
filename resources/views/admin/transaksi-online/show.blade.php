@@ -176,34 +176,69 @@
                         <!-- Right: Verification Form or Details -->
                         <div class="flex flex-col justify-between">
                             @if($transaksi->status === 'Menunggu Verifikasi')
-                                <form action="{{ route('admin.transaksi-online.verify', $transaksi->id) }}" method="POST" class="space-y-4 flex-1 flex flex-col justify-between m-0">
-                                    @csrf
-                                    <div class="space-y-3">
-                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Verifikasi Tindakan</label>
-                                        <div class="grid grid-cols-2 gap-3" x-data="{ mode: 'terima' }">
-                                            <label class="flex items-center justify-center gap-2 border-2 rounded-xl p-3 cursor-pointer transition"
-                                                   :class="mode === 'terima' ? 'border-emerald-500 bg-emerald-50/50 text-emerald-700 font-bold' : 'border-slate-200 text-slate-600 hover:bg-slate-50'">
-                                                <input type="radio" name="action" value="terima" x-model="mode" @change="mode = 'terima'" class="sr-only">
-                                                <span>✓ Terima</span>
-                                            </label>
-                                            <label class="flex items-center justify-center gap-2 border-2 rounded-xl p-3 cursor-pointer transition"
-                                                   :class="mode === 'tolak' ? 'border-rose-500 bg-rose-50/50 text-rose-700 font-bold' : 'border-slate-200 text-slate-600 hover:bg-slate-50'">
-                                                <input type="radio" name="action" value="tolak" x-model="mode" @change="mode = 'tolak'" class="sr-only">
-                                                <span>✕ Tolak</span>
-                                            </label>
-                                        </div>
+                                <div x-data="{ mode: 'none', alasan: '', selectQuickReason(reason) { this.alasan = reason; } }" class="space-y-4 flex-1 flex flex-col justify-between">
+                                    
+                                    <!-- Initial Buttons: Terima / Tolak -->
+                                    <div x-show="mode === 'none'" class="space-y-3 flex-1 flex flex-col justify-center">
+                                        <p class="text-xs font-semibold text-slate-500 text-center mb-2">Silakan verifikasi bukti transfer di sebelah kiri.</p>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <!-- Button Terima -->
+                                            <form action="{{ route('admin.transaksi-online.verify', $transaksi->id) }}" method="POST" class="m-0"
+                                                  onsubmit="return confirm('Apakah Anda yakin ingin MENERIMA pembayaran ini?');">
+                                                @csrf
+                                                <input type="hidden" name="action" value="terima">
+                                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                                                    <span>✅ Terima Pembayaran</span>
+                                                </button>
+                                            </form>
 
-                                        <div x-show="mode === 'tolak'" x-transition style="display: none;" class="mt-3">
-                                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Alasan Penolakan <span class="text-rose-500">*</span></label>
-                                            <textarea name="alasan" rows="3" placeholder="Contoh: Bukti transfer terpotong atau nominal tidak sesuai." required
-                                                      class="w-full text-xs font-semibold text-slate-700 border-slate-200 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 p-3"></textarea>
+                                            <!-- Button Tolak -->
+                                            <button type="button" @click="mode = 'tolak'" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                                                <span>❌ Tolak Pembayaran</span>
+                                            </button>
                                         </div>
                                     </div>
 
-                                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold text-xs py-3 px-4 rounded-xl shadow transition mt-4">
-                                        Proses Verifikasi Pembayaran
-                                    </button>
-                                </form>
+                                    <!-- Rejection Form -->
+                                    <div x-show="mode === 'tolak'" x-transition style="display: none;" class="space-y-4">
+                                        <div class="bg-rose-50/50 border border-rose-100 rounded-xl p-3.5">
+                                            <label class="block text-xs font-bold text-rose-800 uppercase tracking-wider mb-2">Pilih Alasan Penolakan Cepat</label>
+                                            <div class="flex flex-wrap gap-1.5">
+                                                <button type="button" @click="selectQuickReason('Nominal tidak sesuai')" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold border border-rose-200 bg-white hover:bg-rose-50 text-rose-700 transition">
+                                                    Nominal tidak sesuai
+                                                </button>
+                                                <button type="button" @click="selectQuickReason('Bukti transfer tidak jelas')" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold border border-rose-200 bg-white hover:bg-rose-50 text-rose-700 transition">
+                                                    Bukti transfer tidak jelas
+                                                </button>
+                                                <button type="button" @click="selectQuickReason('Transfer belum diterima')" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold border border-rose-200 bg-white hover:bg-rose-50 text-rose-700 transition">
+                                                    Transfer belum diterima
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <form action="{{ route('admin.transaksi-online.verify', $transaksi->id) }}" method="POST" class="m-0"
+                                              onsubmit="return confirm('Apakah Anda yakin ingin MENOLAK pembayaran ini?');">
+                                            @csrf
+                                            <input type="hidden" name="action" value="tolak">
+                                            
+                                            <div>
+                                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Deskripsi Alasan Penolakan <span class="text-rose-500">*</span></label>
+                                                <textarea name="alasan" x-model="alasan" rows="3" placeholder="Tulis atau pilih alasan penolakan pembayaran..." required
+                                                          class="w-full text-xs font-semibold text-slate-700 border-slate-200 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 p-3"></textarea>
+                                            </div>
+
+                                            <div class="grid grid-cols-2 gap-3 mt-4">
+                                                <button type="button" @click="mode = 'none'; alasan = '';" class="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs py-2.5 px-4 rounded-xl transition">
+                                                    Batal
+                                                </button>
+                                                <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition">
+                                                    Kirim Penolakan
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                </div>
                             @else
                                 <div class="space-y-4">
                                     <div>
@@ -249,35 +284,97 @@
 
         <!-- Right Column: Customer info & Actions -->
         <div class="space-y-6">
-            <!-- Update Status Card -->
+            <!-- Update Status Card (Smart Next Step Action) -->
             <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-5">
-                <h2 class="font-bold text-slate-850 text-sm border-b border-slate-50 pb-2.5 mb-4">Ubah Status Pesanan</h2>
-                <form action="{{ route('admin.transaksi-online.update-status', $transaksi->id) }}" method="POST" class="space-y-4 m-0">
-                    @csrf
-                    @method('PATCH')
-
-                    <div>
-                        <select name="status"
-                            class="w-full text-xs font-semibold border-slate-200 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-500 bg-white">
-                            <option value="Menunggu Pembayaran" {{ $transaksi->status == 'Menunggu Pembayaran' ? 'selected' : '' }}>Menunggu Pembayaran</option>
-                            <option value="Menunggu Verifikasi" {{ $transaksi->status == 'Menunggu Verifikasi' ? 'selected' : '' }}>Menunggu Verifikasi</option>
-                            <option value="Ditolak" {{ $transaksi->status == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
-                            <option value="Diproses" {{ $transaksi->status == 'Diproses' ? 'selected' : '' }}>Diproses</option>
-                            <option value="Siap Diambil" {{ $transaksi->status == 'Siap Diambil' ? 'selected' : '' }}>Siap Diambil</option>
-                            <option value="Sedang Diantar" {{ $transaksi->status == 'Sedang Diantar' ? 'selected' : '' }}>Sedang Diantar</option>
-                            <option value="Selesai" {{ $transaksi->status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
-                            <option value="Dibatalkan" {{ $transaksi->status == 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
-                        </select>
-                        <p class="text-[10px] text-slate-400 mt-2 font-semibold">Mengubah status ke <b>Diproses</b>, <b>Siap Diambil</b>, <b>Sedang Diantar</b>, atau <b>Selesai</b> otomatis memotong stok obat apotek.</p>
+                <h2 class="font-bold text-slate-850 text-sm border-b border-slate-50 pb-2.5 mb-4">Langkah Alur Pesanan</h2>
+                
+                @if($transaksi->status === 'Menunggu Pembayaran')
+                    <div class="p-4 rounded-2xl bg-amber-50 border border-amber-100 text-center space-y-2">
+                        <span class="text-2xl">⏳</span>
+                        <h4 class="font-bold text-amber-900 text-xs">Menunggu Pembayaran</h4>
+                        <p class="text-[10px] text-amber-700 font-semibold leading-relaxed">
+                            Pesanan telah dibuat. Sistem sedang menunggu pelanggan mengunggah bukti transfer.
+                        </p>
                     </div>
+                @elseif($transaksi->status === 'Menunggu Verifikasi')
+                    <div class="p-4 rounded-2xl bg-blue-50 border border-blue-100 text-center space-y-2">
+                        <span class="text-2xl">💳</span>
+                        <h4 class="font-bold text-blue-900 text-xs">Menunggu Verifikasi</h4>
+                        <p class="text-[10px] text-blue-700 font-semibold leading-relaxed">
+                            Bukti transfer sudah diunggah. Silakan verifikasi pembayaran pada panel bukti transfer.
+                        </p>
+                    </div>
+                @elseif($transaksi->status === 'Ditolak')
+                    <div class="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-center space-y-2">
+                        <span class="text-2xl">❌</span>
+                        <h4 class="font-bold text-rose-900 text-xs">Pembayaran Ditolak</h4>
+                        <p class="text-[10px] text-rose-700 font-semibold leading-relaxed">
+                            Bukti transfer telah ditolak. Menunggu pelanggan mengunggah ulang bukti transfer yang valid.
+                        </p>
+                    </div>
+                @elseif($transaksi->status === 'Diproses')
+                    <form action="{{ route('admin.transaksi-online.update-status', $transaksi->id) }}" method="POST" class="space-y-4 m-0"
+                          onsubmit="return confirm('Apakah Anda yakin ingin menandai pesanan ini sebagai siap?');">
+                        @csrf
+                        @method('PATCH')
+                        
+                        @if($transaksi->metode_pengambilan === 'Ambil di Apotek')
+                            <input type="hidden" name="status" value="Siap Diambil">
+                            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold text-xs py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                                💊 Tandai Obat Siap Diambil
+                            </button>
+                            <p class="text-[10px] text-slate-400 text-center font-semibold">Tindakan ini akan memberi tahu pelanggan bahwa obat telah disiapkan dan siap diambil.</p>
+                        @else
+                            <input type="hidden" name="status" value="Sedang Diantar">
+                            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold text-xs py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                                🚚 Tandai Sedang Dikirim
+                            </button>
+                            <p class="text-[10px] text-slate-400 text-center font-semibold">Tindakan ini menandai bahwa pesanan sedang diantar oleh kurir ke alamat pelanggan.</p>
+                        @endif
+                    </form>
+                @elseif(in_array($transaksi->status, ['Siap Diambil', 'Sedang Diantar']))
+                    <form action="{{ route('admin.transaksi-online.update-status', $transaksi->id) }}" method="POST" class="space-y-4 m-0"
+                          onsubmit="return confirm('Apakah Anda yakin ingin menyelesaikan transaksi ini?');">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="status" value="Selesai">
+                        
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-700 hover:to-green-600 text-white font-bold text-xs py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                            ✅ Selesaikan Pesanan
+                        </button>
+                        <p class="text-[10px] text-slate-400 text-center font-semibold">Tindakan ini menandai bahwa obat telah diterima oleh pelanggan dan transaksi selesai.</p>
+                    </form>
+                @elseif($transaksi->status === 'Selesai')
+                    <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-center space-y-2">
+                        <span class="text-2xl">✓</span>
+                        <h4 class="font-bold text-emerald-950 text-xs">Transaksi Selesai</h4>
+                        <p class="text-[10px] text-emerald-700 font-semibold leading-relaxed">
+                            Pesanan ini telah selesai diproses sepenuhnya. Terima kasih.
+                        </p>
+                    </div>
+                @elseif($transaksi->status === 'Dibatalkan')
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2 text-slate-500">
+                        <span class="text-2xl">🚫</span>
+                        <h4 class="font-bold text-slate-700 text-xs">Pesanan Dibatalkan</h4>
+                        <p class="text-[10px] text-slate-500 font-semibold leading-relaxed">
+                            Pesanan ini telah dibatalkan oleh pihak apotek atau sistem.
+                        </p>
+                    </div>
+                @endif
 
-                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center justify-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        Perbarui Status
-                    </button>
-                </form>
+                @if(!in_array($transaksi->status, ['Selesai', 'Dibatalkan']))
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex justify-center">
+                        <form action="{{ route('admin.transaksi-online.update-status', $transaksi->id) }}" method="POST" class="m-0"
+                              onsubmit="return confirm('Apakah Anda yakin ingin MEMBATALKAN pesanan ini?');">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="Dibatalkan">
+                            <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold hover:underline transition">
+                                🚫 Batalkan Pesanan
+                            </button>
+                        </form>
+                    </div>
+                @endif
 
                 <div class="mt-4 pt-4 border-t border-slate-100">
                     <a href="https://wa.me/{{ preg_replace('/^0/', '62', $transaksi->whatsapp) }}" target="_blank"
