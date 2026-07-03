@@ -46,8 +46,10 @@
     </div>
 
     <!-- Navigation Menu (scrollable area) -->
-    <nav class="flex-grow overflow-y-auto custom-scrollbar px-3 pt-8"
-         :class="sidebarCollapsed ? 'space-y-4 pb-6' : 'space-y-2 pb-4'">
+    <nav id="sidebar-scrollable" class="flex-grow overflow-y-auto custom-scrollbar px-3 pt-8"
+         :class="sidebarCollapsed ? 'space-y-4 pb-6' : 'space-y-2 pb-4'"
+         x-init="$nextTick(() => { $el.scrollTop = sessionStorage.getItem('sidebarScrollPos') || 0 })"
+         @scroll.debounce.50ms="sessionStorage.setItem('sidebarScrollPos', $el.scrollTop)">
         
         <!-- Dashboard Link -->
         <div class="relative group" @mouseenter="activeTooltip = 'dashboard'" @mouseleave="activeTooltip = null">
