@@ -236,52 +236,259 @@
             </div>
 
             {{-- Right: Payment Instructions & Upload Bukti (40%) --}}
-            <div class="space-y-6">
-
-                {{-- Rekening Transfer --}}
+            <div class="space-y-6">                {{-- Rekening Transfer & QRIS --}}
                 <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-5">
                     <h3 class="font-bold text-slate-800 text-sm border-b border-slate-50 pb-3 flex items-center gap-2">
                         💳 Metode Pembayaran
                     </h3>
 
-                    <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-100/60 space-y-3">
-                        <span class="text-xs font-bold text-blue-700 tracking-wide uppercase">BCA Transfer</span>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-slate-800 font-mono">123456789</span>
-                            <button
-                                onclick="navigator.clipboard.writeText('123456789'); alert('Nomor rekening berhasil disalin!');"
-                                class="text-xs font-semibold text-blue-600 bg-white px-2.5 py-1.5 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors shadow-sm">
-                                Salin Rekening
-                            </button>
-                        </div>
-                        <div class="text-xs text-slate-500 font-medium">a.n <strong>Mekar Pharmacy</strong></div>
-                    </div>
+                    @php
+                        $categories = [
+                            'bank_transfer' => [
+                                'name' => 'Transfer Bank',
+                                'icon' => '🏦',
+                                'methods' => $paymentMethods->where('type', 'bank_transfer')
+                            ],
+                            'e_wallet' => [
+                                'name' => 'E-Wallet',
+                                'icon' => '📱',
+                                'methods' => $paymentMethods->where('type', 'e_wallet')
+                            ],
+                            'qris' => [
+                                'name' => 'QRIS',
+                                'icon' => '📷',
+                                'methods' => $paymentMethods->where('type', 'qris')
+                            ]
+                        ];
 
-                    {{-- QRIS --}}
-                    <div class="space-y-2 pt-2">
-                        <span class="text-xs font-bold text-slate-400 tracking-wide uppercase block">Atau Scan QRIS
-                            Resmi</span>
-                        <div
-                            class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center">
-                            {{-- Mock QRIS SVG --}}
-                            <svg class="w-40 h-40" viewBox="0 0 100 100" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <rect x="10" y="10" width="80" height="80" rx="6" fill="white"
-                                    stroke="#e2e8f0" />
-                                <!-- Corners -->
-                                <rect x="15" y="15" width="20" height="20" rx="2" fill="#0284c7" />
-                                <rect x="65" y="15" width="20" height="20" rx="2" fill="#0284c7" />
-                                <rect x="15" y="65" width="20" height="20" rx="2" fill="#0284c7" />
-                                <!-- QR Patterns mockup -->
-                                <path
-                                    d="M45 15h10v10H45zM45 35h10v10H45zM45 55h10v10H45zM45 75h10v10H45zM25 45h10v10H25zM65 45h10v10H65z"
-                                    fill="#475569" />
-                                <circle cx="50" cy="50" r="4" fill="#ef4444" />
-                            </svg>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-3">GPN / QRIS
-                                MEKAR PHARMACY</span>
+                        $activeCategories = collect($categories)->filter(function($cat) {
+                            return $cat['methods']->isNotEmpty();
+                        });
+                    @endphp
+
+                    @if($activeCategories->isNotEmpty())
+                        <div x-data="{
+                            selectedCategory: '{{ $activeCategories->keys()->first() }}',
+                            selectedMethodIds: {
+                                @foreach($activeCategories as $key => $cat)
+                                    '{{ $key }}': '{{ $cat['methods']->first()?->id }}',
+                                @endforeach
+                            },
+                            categoryDropdownOpen: false,
+                            methodDropdownOpen: false
+                        }" class="space-y-4">
+
+                            <!-- Langkah 1: Kategori Pembayaran Custom Dropdown -->
+                            <div class="space-y-1.5 relative">
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pilih Metode</label>
+                                
+                                <!-- Toggle Button -->
+                                <button type="button" @click="categoryDropdownOpen = !categoryDropdownOpen; methodDropdownOpen = false" 
+                                        @click.outside="categoryDropdownOpen = false"
+                                        class="w-full flex items-center justify-between px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 shadow-sm hover:border-blue-400 transition-all focus:outline-none">
+                                    <span class="flex items-center gap-2">
+                                        <template x-if="selectedCategory === 'bank_transfer'">
+                                            <span>🏦 Transfer Bank</span>
+                                        </template>
+                                        <template x-if="selectedCategory === 'e_wallet'">
+                                            <span>📱 E-Wallet</span>
+                                        </template>
+                                        <template x-if="selectedCategory === 'qris'">
+                                            <span>📷 QRIS</span>
+                                        </template>
+                                    </span>
+                                    <svg class="w-4 h-4 text-slate-500 transition-transform duration-200" :class="categoryDropdownOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <!-- Dropdown Menu -->
+                                <div x-show="categoryDropdownOpen" 
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 transform translate-y-[-8px] scale-[0.98]"
+                                     x-transition:enter-end="opacity-100 transform translate-y-0 scale-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 transform translate-y-0 scale-100"
+                                     x-transition:leave-end="opacity-0 transform translate-y-[-8px] scale-[0.98]"
+                                     class="absolute z-30 w-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden py-1"
+                                     style="display: none;">
+                                    
+                                    @foreach($activeCategories as $key => $cat)
+                                        <button type="button" 
+                                                @click="selectedCategory = '{{ $key }}'; categoryDropdownOpen = false;"
+                                                class="w-full flex items-center justify-between px-4 py-3 text-left text-sm font-medium hover:bg-slate-50 transition-colors"
+                                                :class="selectedCategory === '{{ $key }}' ? 'text-blue-600 bg-blue-50/30 font-semibold' : 'text-slate-700'">
+                                            <span class="flex items-center gap-2">
+                                                <span>{{ $cat['icon'] }}</span>
+                                                <span>{{ $cat['name'] }}</span>
+                                            </span>
+                                            <template x-if="selectedCategory === '{{ $key }}'">
+                                                <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </template>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <!-- Langkah 2: Metode Pembayaran (Dropdown Kedua, jika metode > 1) -->
+                            @foreach($activeCategories as $key => $cat)
+                                @if($cat['methods']->count() > 1)
+                                    <div x-show="selectedCategory === '{{ $key }}'" 
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0 transform translate-y-[-8px]"
+                                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                                         x-transition:leave="transition ease-in duration-150"
+                                         x-transition:leave-start="opacity-100 transform translate-y-0"
+                                         x-transition:leave-end="opacity-0 transform translate-y-[-8px]"
+                                         class="space-y-1.5 relative">
+                                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                            @if($key === 'bank_transfer')
+                                                Pilih Bank
+                                            @elseif($key === 'e_wallet')
+                                                Pilih E-Wallet
+                                            @else
+                                                Pilih Metode ({{ $cat['name'] }})
+                                            @endif
+                                        </label>
+                                        
+                                        <!-- Toggle Button -->
+                                        @php
+                                            $methodsList = $cat['methods'];
+                                        @endphp
+                                        <button type="button" @click="methodDropdownOpen = !methodDropdownOpen; categoryDropdownOpen = false" 
+                                                @click.outside="methodDropdownOpen = false"
+                                                class="w-full flex items-center justify-between px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 shadow-sm hover:border-blue-400 transition-all focus:outline-none">
+                                            <span class="flex items-center gap-2">
+                                                @foreach($methodsList as $method)
+                                                    <template x-if="selectedMethodIds['{{ $key }}'] == '{{ $method->id }}'">
+                                                        <span class="flex items-center gap-2">
+                                                            @if($method->image_path)
+                                                                <img src="{{ $method->image_url }}" alt="{{ $method->name }}" class="h-4 w-auto object-contain max-w-[50px]">
+                                                            @endif
+                                                            <span>{{ $method->name }}</span>
+                                                        </span>
+                                                    </template>
+                                                @endforeach
+                                            </span>
+                                            <svg class="w-4 h-4 text-slate-500 transition-transform duration-200" :class="methodDropdownOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+
+                                        <!-- Dropdown Menu -->
+                                        <div x-show="methodDropdownOpen" 
+                                             x-transition:enter="transition ease-out duration-200"
+                                             x-transition:enter-start="opacity-0 transform translate-y-[-8px] scale-[0.98]"
+                                             x-transition:enter-end="opacity-100 transform translate-y-0 scale-100"
+                                             x-transition:leave="transition ease-in duration-150"
+                                             x-transition:leave-start="opacity-100 transform translate-y-0 scale-100"
+                                             x-transition:leave-end="opacity-0 transform translate-y-[-8px] scale-[0.98]"
+                                             class="absolute z-20 w-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden py-1"
+                                             style="display: none;">
+                                            
+                                            @foreach($methodsList as $method)
+                                                <button type="button" 
+                                                        @click="selectedMethodIds['{{ $key }}'] = '{{ $method->id }}'; methodDropdownOpen = false;"
+                                                        class="w-full flex items-center justify-between px-4 py-3 text-left text-sm font-medium hover:bg-slate-50 transition-colors"
+                                                        :class="selectedMethodIds['{{ $key }}'] == '{{ $method->id }}' ? 'text-blue-600 bg-blue-50/30 font-semibold' : 'text-slate-700'">
+                                                    <span class="flex items-center gap-2">
+                                                        @if($method->image_path)
+                                                            <img src="{{ $method->image_url }}" alt="{{ $method->name }}" class="h-4 w-auto object-contain max-w-[50px] bg-white p-0.5 rounded border border-slate-100">
+                                                        @endif
+                                                        <span>{{ $method->name }}</span>
+                                                    </span>
+                                                    <template x-if="selectedMethodIds['{{ $key }}'] == '{{ $method->id }}'">
+                                                        <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    </template>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+
+                            <!-- Detail Metode Pembayaran Terpilih -->
+                            <div class="pt-2">
+                                @foreach($activeCategories as $key => $cat)
+                                    @foreach($cat['methods'] as $method)
+                                        @php
+                                            $isOnlyOne = $cat['methods']->count() === 1;
+                                        @endphp
+                                        <div x-show="selectedCategory === '{{ $key }}' && ({{ $isOnlyOne ? 'true' : "selectedMethodIds['$key'] == '$method->id'" }})" 
+                                             x-transition:enter="transition ease-out duration-200"
+                                             x-transition:enter-start="opacity-0 transform translate-y-2 scale-[0.99]"
+                                             x-transition:enter-end="opacity-100 transform translate-y-0 scale-100"
+                                             class="p-5 rounded-3xl border space-y-4 shadow-sm transition-all duration-200
+                                                    {{ $key === 'qris' ? 'bg-purple-50/50 border-purple-100/60' : 'bg-blue-50/50 border-blue-100/60' }}"
+                                             style="display: none;">
+                                            
+                                            <!-- Header Kartu -->
+                                            <div class="flex items-center justify-between pb-3 border-b {{ $key === 'qris' ? 'border-purple-100/50' : 'border-blue-100/50' }}">
+                                                <span class="text-xs font-bold {{ $key === 'qris' ? 'text-purple-700' : 'text-blue-700' }} tracking-wide uppercase">
+                                                    {{ $method->name }}
+                                                </span>
+                                                @if($method->image_path)
+                                                    <img src="{{ $method->image_url }}" alt="{{ $method->name }}" class="h-6 w-auto object-contain max-w-[80px] rounded p-0.5 bg-white border border-slate-100">
+                                                @endif
+                                            </div>
+
+                                            <!-- Body Rincian -->
+                                            @if($method->type === 'qris')
+                                                <div class="flex flex-col items-center justify-center py-2 space-y-3">
+                                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Scan Kode QRIS di Bawah Ini</span>
+                                                    @if($method->image_path)
+                                                        <img src="{{ $method->image_url }}" alt="{{ $method->name }}" class="w-44 h-44 object-contain rounded-2xl shadow-md border border-slate-100 bg-white p-1">
+                                                    @else
+                                                        <svg class="w-40 h-40 text-slate-350 bg-white rounded-xl border p-2" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <rect x="10" y="10" width="80" height="80" rx="6" fill="white" stroke="#e2e8f0" />
+                                                            <rect x="15" y="15" width="20" height="20" rx="2" fill="#0284c7" />
+                                                            <rect x="65" y="15" width="20" height="20" rx="2" fill="#0284c7" />
+                                                            <rect x="15" y="65" width="20" height="20" rx="2" fill="#0284c7" />
+                                                            <path d="M45 15h10v10H45zM45 35h10v10H45zM45 55h10v10H45zM45 75h10v10H45zM25 45h10v10H25zM65 45h10v10H65z" fill="#475569" />
+                                                            <circle cx="50" cy="50" r="4" fill="#ef4444" />
+                                                        </svg>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <div class="space-y-3">
+                                                    <div class="flex justify-between items-center bg-white px-4 py-2.5 rounded-xl border border-slate-100 shadow-inner">
+                                                        <span class="text-xl font-bold text-slate-800 font-mono tracking-tight">{{ $method->account_number }}</span>
+                                                        <button
+                                                            type="button"
+                                                            onclick="navigator.clipboard.writeText('{{ $method->account_number }}'); alert('Nomor disalin!');"
+                                                            class="text-xs font-bold text-blue-600 hover:text-white bg-blue-50 hover:bg-blue-600 px-3 py-1.5 rounded-xl border border-blue-200 transition-all shadow-sm">
+                                                            Salin
+                                                        </button>
+                                                    </div>
+                                                    <div class="flex justify-between items-center text-xs text-slate-500 px-1">
+                                                        <span>Nama Pemilik</span>
+                                                        <strong class="text-slate-800 font-bold">{{ $method->account_owner }}</strong>
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            <!-- Petunjuk Tambahan -->
+                                            @if($method->description)
+                                                <div class="text-[10px] text-slate-450 leading-relaxed border-t {{ $key === 'qris' ? 'border-purple-100/50' : 'border-blue-100/50' }} pt-2.5">
+                                                    {{ $method->description }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @endif
+
+                    @if($paymentMethods->isEmpty())
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-center text-xs text-slate-450 font-medium">
+                            Belum ada metode pembayaran yang terdaftar. Hubungi admin untuk detail pembayaran.
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Form Upload Bukti --}}
