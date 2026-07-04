@@ -734,6 +734,46 @@
             @endcan
         @endif
 
+        <!-- CONFIGURATION SECTION -->
+        @if(auth()->user()->can('Lihat User'))
+            <div class="px-4 mt-10 mb-4 text-[10px] font-bold text-cyan-200/40 uppercase tracking-widest select-none" x-show="!sidebarCollapsed" x-transition>
+                Pengaturan
+            </div>
+            <div class="w-full border-t border-white/5 my-6" x-show="sidebarCollapsed" x-transition></div>
+
+            <!-- Metode Pembayaran Link -->
+            <div class="relative group" @mouseenter="activeTooltip = 'payment_methods'" @mouseleave="activeTooltip = null">
+                <a href="{{ route('admin.payment-methods.index') }}"
+                   class="h-12 flex items-center rounded-xl transition-all duration-200 relative border group {{ request()->routeIs('admin.payment-methods.*') ? 'bg-white/15 text-white font-semibold shadow-[0_0_15px_rgba(34,211,238,0.25)] border-white/15' : 'hover:bg-white/10 text-cyan-100 hover:text-white border-transparent' }}"
+                   :class="sidebarCollapsed ? 'justify-center px-0' : 'justify-between px-4'">
+                    <div class="flex items-center gap-3 min-w-0" :class="sidebarCollapsed ? 'mx-auto justify-center' : ''">
+                        <span class="text-cyan-200 group-hover:text-white transition-all duration-200 group-hover:scale-110 shrink-0">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                        </span>
+                        <span x-show="!sidebarCollapsed" x-transition class="text-sm font-medium tracking-wide transition-transform duration-200 group-hover:translate-x-1 truncate">Metode Pembayaran</span>
+                    </div>
+                    
+                    @if(request()->routeIs('admin.payment-methods.*'))
+                        <div class="absolute left-0 top-2 bottom-2 w-1 bg-cyan-400 rounded-r-md"></div>
+                    @endif
+                </a>
+                <!-- Collapsed Tooltip -->
+                <div x-show="sidebarCollapsed && activeTooltip === 'payment_methods'" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 translate-x-2"
+                     x-transition:enter-end="opacity-100 translate-x-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-x-0"
+                     x-transition:leave-end="opacity-0 translate-x-2"
+                     class="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3.5 py-2 bg-slate-955/90 backdrop-blur-md text-white text-xs font-semibold rounded-xl shadow-2xl pointer-events-none whitespace-nowrap z-50 border border-white/15"
+                     style="display: none;">
+                    Metode Pembayaran
+                </div>
+            </div>
+        @endif
+
         <!-- SYSTEM SECTION -->
         @if(auth()->user()->can('Lihat User'))
             <div class="px-4 mt-10 mb-4 text-[10px] font-bold text-cyan-200/40 uppercase tracking-widest select-none" x-show="!sidebarCollapsed" x-transition>

@@ -283,26 +283,40 @@
                         <a href="/products/{{ $p->id }}" class="block">
                             <h3 class="text-[13px] font-bold text-slate-800 mb-1.5 line-clamp-2 h-9 leading-snug group-hover:text-blue-600 transition-colors">{{ $p->nama_obat }}</h3>
                         </a>
-                        <div class="flex items-center gap-1 mb-1.5">
-                            <svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <span class="text-[11px] font-bold text-slate-700">{{ $rating }}</span>
-                            <span class="text-slate-300 text-[10px] mx-0.5">•</span>
-                            <span class="text-[10px] text-slate-500 font-medium">{{ $sold }} terjual</span>
+                        <div class="mb-1.5 flex items-center">
+                            @if($p->stok > 0)
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Tersedia
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                    Habis
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>
                 <div class="p-4 pt-1">
                     <div class="text-blue-600 text-[15px] font-black mb-3">{{ $formattedPrice }}</div>
-                    <button type="button"
-                        class="add-to-cart-btn w-full bg-slate-50 hover:bg-blue-600 border border-slate-200 hover:border-blue-600 text-slate-700 hover:text-white text-[11px] font-bold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5"
-                        data-product-id="{{ $p->id }}"
-                        data-product-name="{{ $p->nama_obat }}"
-                        data-product-price="{{ $p->harga_jual }}"
-                        data-product-category="{{ $p->kategori->nama_kategori ?? 'Obat' }}"
-                        data-product-image="{{ $image }}">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                        <span class="btn-text">Keranjang</span>
-                    </button>
+                    @if($p->stok > 0)
+                        <button type="button"
+                            class="add-to-cart-btn w-full bg-slate-50 hover:bg-blue-600 border border-slate-200 hover:border-blue-600 text-slate-700 hover:text-white text-[11px] font-bold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5"
+                            data-product-id="{{ $p->id }}"
+                            data-product-name="{{ $p->nama_obat }}"
+                            data-product-price="{{ $p->harga_jual }}"
+                            data-product-category="{{ $p->kategori->nama_kategori ?? 'Obat' }}"
+                            data-product-image="{{ $image }}">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            <span class="btn-text">Keranjang</span>
+                        </button>
+                    @else
+                        <button type="button" disabled
+                            class="w-full bg-slate-100 border border-slate-200 text-slate-400 text-[11px] font-bold py-2.5 rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5">
+                            <span class="btn-text">Stok Habis</span>
+                        </button>
+                    @endif
                 </div>
             </div>
         @empty
@@ -352,26 +366,40 @@
                         <a href="/products/{{ $p->id }}" class="block">
                             <h3 class="text-[13px] font-bold text-slate-800 mb-1.5 line-clamp-2 h-9 leading-snug group-hover:text-blue-600 transition-colors">{{ $p->nama_obat }}</h3>
                         </a>
-                        <div class="flex items-center gap-1 mb-1.5">
-                            <svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <span class="text-[11px] font-bold text-slate-700">{{ $rating }}</span>
-                            <span class="text-slate-300 text-[10px] mx-0.5">•</span>
-                            <span class="text-[10px] text-slate-500 font-medium">{{ $sold }} terjual</span>
+                        <div class="mb-1.5 flex items-center">
+                            @if($p->stok > 0)
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Tersedia
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                    Habis
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>
                 <div class="p-4 pt-1">
                     <div class="text-blue-600 text-[15px] font-black mb-3">{{ $formattedPrice }}</div>
-                    <button type="button"
-                        class="add-to-cart-btn w-full bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 text-[11px] font-bold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5"
-                        data-product-id="{{ $p->id }}"
-                        data-product-name="{{ $p->nama_obat }}"
-                        data-product-price="{{ $p->harga_jual }}"
-                        data-product-category="{{ $p->kategori->nama_kategori ?? 'Obat' }}"
-                        data-product-image="{{ $image }}">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                        <span class="btn-text">Keranjang</span>
-                    </button>
+                    @if($p->stok > 0)
+                        <button type="button"
+                            class="add-to-cart-btn w-full bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 text-[11px] font-bold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5"
+                            data-product-id="{{ $p->id }}"
+                            data-product-name="{{ $p->nama_obat }}"
+                            data-product-price="{{ $p->harga_jual }}"
+                            data-product-category="{{ $p->kategori->nama_kategori ?? 'Obat' }}"
+                            data-product-image="{{ $image }}">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            <span class="btn-text">Keranjang</span>
+                        </button>
+                    @else
+                        <button type="button" disabled
+                            class="w-full bg-slate-100 border border-slate-200 text-slate-400 text-[11px] font-bold py-2.5 rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5">
+                            <span class="btn-text">Stok Habis</span>
+                        </button>
+                    @endif
                 </div>
             </div>
         @empty

@@ -224,6 +224,14 @@ Route::middleware(['auth'])->group(function () {
         // WhatsApp Diagnostic Routes
         Route::get('/admin/whatsapp-diagnostic', [\App\Http\Controllers\WhatsAppDiagnosticController::class, 'index'])->name('admin.whatsapp-diagnostic');
         Route::post('/admin/whatsapp-diagnostic/test', [\App\Http\Controllers\WhatsAppDiagnosticController::class, 'testSend'])->name('admin.whatsapp-diagnostic.test');
+
+        // Payment Method Management
+        Route::get('/admin/payment-methods', [\App\Http\Controllers\PaymentMethodController::class, 'index'])->name('admin.payment-methods.index');
+        Route::get('/admin/payment-methods/create', [\App\Http\Controllers\PaymentMethodController::class, 'create'])->name('admin.payment-methods.create');
+        Route::post('/admin/payment-methods', [\App\Http\Controllers\PaymentMethodController::class, 'store'])->name('admin.payment-methods.store');
+        Route::get('/admin/payment-methods/{payment_method}/edit', [\App\Http\Controllers\PaymentMethodController::class, 'edit'])->name('admin.payment-methods.edit');
+        Route::put('/admin/payment-methods/{payment_method}', [\App\Http\Controllers\PaymentMethodController::class, 'update'])->name('admin.payment-methods.update');
+        Route::delete('/admin/payment-methods/{payment_method}', [\App\Http\Controllers\PaymentMethodController::class, 'destroy'])->name('admin.payment-methods.destroy');
     });
     Route::middleware('permission:Tambah User')->group(function () {
         Route::get('/user/create', [UserController::class, 'create'])->name('user.create');

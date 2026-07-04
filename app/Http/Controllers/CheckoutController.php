@@ -177,16 +177,17 @@ class CheckoutController extends Controller
         }
     }
 
-    /**
-     * Show the invoice details to the customer.
-     */
     public function showInvoice($kode_transaksi)
     {
         $transaksi = \App\Models\Transaksi::with(['detailTransaksis.obat'])
             ->where('kode_transaksi', $kode_transaksi)
             ->firstOrFail();
 
-        return view('marketplace.invoice', compact('transaksi'));
+        $paymentMethods = \App\Models\PaymentMethod::where('is_active', true)
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return view('marketplace.invoice', compact('transaksi', 'paymentMethods'));
     }
 
     /**
