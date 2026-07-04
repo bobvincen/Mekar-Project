@@ -192,11 +192,18 @@
                                             {{ $p->nama_obat }}
                                         </h3>
                                     </a>
-                                    <div class="flex items-center gap-1 mb-2">
-                                        <span class="text-yellow-400 text-xs">★</span>
-                                        <span class="text-xs text-slate-500 font-semibold">{{ $rating }}</span>
-                                        <span class="text-slate-200 text-xs mx-1">|</span>
-                                        <span class="text-xs text-slate-400 font-light">{{ $sold }} terjual</span>
+                                    <div class="mb-2 flex items-center">
+                                        @if($p->stok > 0)
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                Tersedia
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                                Habis
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

@@ -42,11 +42,6 @@
                     </h1>
 
                     <div class="flex items-center gap-4 mb-6 text-xs sm:text-sm text-slate-400">
-                        <span class="flex items-center gap-1">
-                            <span class="text-yellow-400 text-lg">★</span>
-                            <span class="text-slate-800 font-bold">4.8</span>
-                        </span>
-                        <span class="text-slate-200">|</span>
                         <span>Stok: 
                             @if($product->stok > 0)
                                 <span class="text-emerald-600 font-bold">{{ $product->stok }} Pcs</span>
@@ -164,21 +159,36 @@
                                         {{ $rp->nama_obat }}
                                     </h3>
                                 </a>
-                                <div class="flex items-center gap-1 mb-2">
-                                    <span class="text-yellow-400 text-xs">★</span>
-                                    <span class="text-xs text-slate-500 font-semibold">{{ $rating }}</span>
+                                <div class="mb-2 flex items-center">
+                                    @if($rp->stok > 0)
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Tersedia
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                            Habis
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                         </div>
 
                         <div class="p-5 pt-0">
                             <div class="text-blue-600 text-base font-bold mb-4">{{ $formattedPrice }}</div>
-                            <form action="/cart/add/{{ $rp->id }}" method="POST">
-                                @csrf
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5">
-                                    Keranjang
+                            @if($rp->stok > 0)
+                                <form action="/cart/add/{{ $rp->id }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5">
+                                        Keranjang
+                                    </button>
+                                </form>
+                            @else
+                                <button disabled class="w-full bg-slate-100 text-slate-400 text-xs font-semibold py-2.5 rounded-xl cursor-not-allowed flex items-center justify-center">
+                                    Stok Habis
                                 </button>
-                            </form>
+                            @endif
                         </div>
                     </div>
                 @endforeach
