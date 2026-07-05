@@ -88,6 +88,7 @@ class TransaksiController extends Controller
                 'total_harga'       => $total,
                 'bayar'             => $bayar,
                 'kembalian'         => $kembalian,
+                'status'            => 'Selesai',
             ]);
 
             // Simpan detail + kurangi stok

@@ -138,7 +138,11 @@ class OtpVerificationController extends Controller
         }
 
         // Generate and send a new OTP
-        self::generateAndSendOtp($user);
+        $otpSent = self::generateAndSendOtp($user);
+
+        if (!$otpSent) {
+            return back()->with('error', 'Gagal mengirim kode OTP. Periksa nomor WhatsApp Anda atau coba beberapa saat lagi.');
+        }
 
         return back()->with('success', 'Kode OTP baru telah berhasil dikirim ke nomor WhatsApp Anda.');
     }
@@ -149,12 +153,10 @@ class OtpVerificationController extends Controller
      * @param  \App\Models\User  $user
      * @return string
      */
-    public static function generateAndSendOtp(User $user): string
+    public static function generateAndSendOtp(User $user): bool
     {
-        // 1. Generate 6 digit numeric OTP
         $otp = sprintf('%06d', rand(0, 999999));
 
-        // 2. Store OTP in database
         OtpVerification::create([
             'user_id' => $user->id,
             'otp' => $otp,
@@ -162,12 +164,17 @@ class OtpVerificationController extends Controller
             'attempts' => 0,
         ]);
 
-        // 3. Send message via Fonnte Service
         $message = "MEKAR PHARMACY\n\nKode OTP registrasi Anda adalah: *{$otp}*\n\nKode ini berlaku selama 5 menit. Harap JANGAN sebarkan kode ini kepada siapapun demi keamanan akun Anda.";
-        
+    
         Log::info('Sending OTP to user: ' . $user->id . ' - Phone: ' . $user->whatsapp);
-        FonnteService::send($user->whatsapp ?? '', $message);
+        $response = FonnteService::send($user->whatsapp ?? '', $message);
 
-        return $otp;
+        // Cek apakah pengiriman OTP berhasil
+        if (!$response || (isset($response['status']) && $response['status'] === false)) {
+            Log::error('Gagal mengirim OTP ke user: ' . $user->id . ' - Phone: ' . $user->whatsapp);
+            return false;
+        }
+
+        return true;
     }
 }

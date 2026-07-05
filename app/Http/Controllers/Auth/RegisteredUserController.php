@@ -85,8 +85,19 @@ class RegisteredUserController extends Controller
 
         // Generate and send OTP via Fonnte
         session(['otp_user_id' => $user->id]);
-        OtpVerificationController::generateAndSendOtp($user);
+        $otpSent = OtpVerificationController::generateAndSendOtp($user);
 
-        return redirect()->route('otp.verify')->with('success', 'Registrasi berhasil! Silakan masukkan kode OTP yang dikirim ke WhatsApp Anda.');
+        // Kalau OTP gagal dikirim, hapus user dan tampilkan error
+        if (!$otpSent) {
+            \App\Models\OtpVerification::where('user_id', $user->id)->delete();
+            $user->delete();
+            session()->forget('otp_user_id');
+
+        throw ValidationException::withMessages([
+            'whatsapp' => 'Gagal mengirim kode OTP ke WhatsApp Anda. Periksa nomor WhatsApp atau coba beberapa saat lagi.',
+        ]);
+    }
+
+    return redirect()->route('otp.verify')->with('success', 'Registrasi berhasil! Silakan masukkan kode OTP yang dikirim ke WhatsApp Anda.');
     }
 }
