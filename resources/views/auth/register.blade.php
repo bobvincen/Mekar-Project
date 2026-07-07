@@ -169,6 +169,9 @@
                         </div>
                         <input type="text" name="whatsapp" value="{{ old('whatsapp') }}" placeholder="08123456789" class="w-full bg-transparent border-none py-3 pl-1 pr-4 text-sm text-slate-800 placeholder-slate-400 focus:ring-0 font-medium">
                     </div>
+                    @error('whatsapp')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <!-- Input Password & Confirm -->

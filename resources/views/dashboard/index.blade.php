@@ -263,7 +263,7 @@
                                 {{ $trx->kode_transaksi }}
                             </td>
                             <td class="py-3.5">
-                                {{ $trx->user->name ?? $trx->pelanggan->nama_pelanggan ?? $trx->nama_pelanggan ?? '-' }}
+                                {{ $trx->pelanggan->nama_pelanggan ?? $trx->nama_pelanggan ?? $trx->user->name ?? '-' }}
                             </td>
                             <td class="py-3.5 text-emerald-600 font-semibold">
                                 Rp {{ number_format($trx->total_harga, 0, ',', '.') }}
