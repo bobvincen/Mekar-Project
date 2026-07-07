@@ -232,4 +232,26 @@ class CheckoutController extends Controller
 
         return redirect()->back()->with('success', 'Bukti transfer berhasil diunggah! Menunggu verifikasi dari admin.');
     }
+
+    /**
+     * Cancel customer order/invoice.
+     */
+    public function cancelOrder(Request $request, $kode_transaksi)
+    {
+        $transaksi = \App\Models\Transaksi::where('kode_transaksi', $kode_transaksi)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        // VALIDASI: Pembatalan hanya boleh dilakukan ketika status Menunggu Pembayaran
+        if ($transaksi->status !== 'Menunggu Pembayaran') {
+            abort(403, 'Aksi tidak diizinkan. Pembatalan hanya dapat dilakukan jika status Menunggu Pembayaran.');
+        }
+
+        // Ubah status menjadi Dibatalkan
+        $transaksi->update([
+            'status' => 'Dibatalkan'
+        ]);
+
+        return redirect()->route('marketplace.invoice', $kode_transaksi)->with('success', 'Pesanan berhasil dibatalkan.');
+    }
 }
