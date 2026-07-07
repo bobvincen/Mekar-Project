@@ -93,6 +93,7 @@ Route::middleware(['auth', 'phone_verified'])->group(function () {
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/invoice/{kode_transaksi}', [CheckoutController::class, 'showInvoice'])->name('marketplace.invoice');
     Route::post('/invoice/{kode_transaksi}/upload-bukti', [CheckoutController::class, 'uploadBukti'])->name('marketplace.invoice.upload-bukti');
+    Route::post('/invoice/{kode_transaksi}/cancel', [CheckoutController::class, 'cancelOrder'])->name('marketplace.invoice.cancel');
 
     // Customer Orders Route (Pesanan Saya)
     Route::get('/pesanan-saya', [\App\Http\Controllers\CustomerOrderController::class, 'index'])->name('marketplace.pesanan-saya');

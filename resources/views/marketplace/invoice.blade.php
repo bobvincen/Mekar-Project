@@ -7,7 +7,7 @@
         $formatRp = fn(int $amount): string => 'Rp ' . number_format($amount, 0, ',', '.');
     @endphp
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12" x-data="{ cancelModalOpen: false }">
 
         {{-- Breadcrumb --}}
         <div class="mb-6 flex items-center gap-2 text-sm text-slate-400">
@@ -237,10 +237,11 @@
 
             {{-- Right: Payment Instructions & Upload Bukti (40%) --}}
             <div class="space-y-6">                {{-- Rekening Transfer & QRIS --}}
-                <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-5">
-                    <h3 class="font-bold text-slate-800 text-sm border-b border-slate-50 pb-3 flex items-center gap-2">
-                        💳 Metode Pembayaran
-                    </h3>
+                @if (in_array($transaksi->status, ['Menunggu Pembayaran', 'Ditolak']))
+                    <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-5">
+                        <h3 class="font-bold text-slate-800 text-sm border-b border-slate-50 pb-3 flex items-center gap-2">
+                            💳 Metode Pembayaran
+                        </h3>
 
                     @php
                         $categories = [
@@ -484,76 +485,125 @@
                         </div>
                     @endif
 
-                    @if($paymentMethods->isEmpty())
-                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-center text-xs text-slate-450 font-medium">
-                            Belum ada metode pembayaran yang terdaftar. Hubungi admin untuk detail pembayaran.
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Form Upload Bukti --}}
-                <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm border-b border-slate-50 pb-3 flex items-center gap-2">
-                        📁 Bukti Pembayaran
-                    </h3>
-
-                    @if (in_array($transaksi->status, ['Menunggu Pembayaran', 'Ditolak']))
-                        <form action="{{ route('marketplace.invoice.upload-bukti', $transaksi->kode_transaksi) }}"
-                            method="POST" enctype="multipart/form-data" class="space-y-4">
-                            @csrf
-
-                            <div x-data="{ fileName: '' }" class="space-y-3">
-                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Unggah
-                                    Bukti Transfer</label>
-                                <div
-                                    class="relative group border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-2xl p-6 transition-all bg-slate-50 cursor-pointer flex flex-col items-center justify-center">
-                                    <input type="file" name="bukti_transfer" required accept="image/*"
-                                        @change="fileName = $event.target.files[0].name"
-                                        class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-                                    <span class="text-3xl">📷</span>
-                                    <span class="text-xs font-bold text-blue-600 mt-2 block"
-                                        x-text="fileName ? 'Ganti File' : 'Pilih Foto / Gambar'"></span>
-                                    <span class="text-[10px] text-slate-400 font-light mt-1 text-center"
-                                        x-text="fileName || 'Format: JPEG, PNG, JPG (Maks. 5MB)'"></span>
-                                </div>
-                            </div>
-
-                            <button type="submit"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3.5 px-4 rounded-xl shadow-md transition-colors uppercase tracking-wider">
-                                🚀 Kirim Bukti Transfer
-                            </button>
-                        </form>
-                    @elseif($transaksi->status === 'Menunggu Verifikasi')
-                        <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 text-center space-y-3">
-                            <span class="text-2xl block">⏳</span>
-                            <h4 class="font-bold text-blue-950 text-xs">Menunggu Verifikasi Admin</h4>
-                            <p class="text-[11px] text-blue-700 leading-relaxed">
-                                Bukti pembayaran telah berhasil dikirimkan. Mohon tunggu proses pengecekan oleh
-                                administrator apotek.
-                            </p>
-                        </div>
-                        @if ($transaksi->bukti_transfer)
-                            <div class="pt-2">
-                                <label
-                                    class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Bukti
-                                    yang Dikirim</label>
-                                <div
-                                    class="rounded-xl overflow-hidden border border-slate-200 max-h-48 bg-slate-50 flex items-center justify-center">
-                                    <img src="{{ asset('storage/' . $transaksi->bukti_transfer) }}" alt="Bukti Transfer"
-                                        class="object-contain max-h-48">
-                                </div>
+                        @if($paymentMethods->isEmpty())
+                            <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-center text-xs text-slate-450 font-medium">
+                                Belum ada metode pembayaran yang terdaftar. Hubungi admin untuk detail pembayaran.
                             </div>
                         @endif
-                    @else
-                        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-center space-y-2">
-                            <span class="text-2xl block">✓</span>
-                            <h4 class="font-bold text-emerald-950 text-xs">Pembayaran Terverifikasi</h4>
-                            <p class="text-[11px] text-emerald-700 leading-relaxed">
-                                Pembayaran telah diverifikasi secara penuh oleh administrator.
-                            </p>
-                        </div>
-                    @endif
-                </div>
+                    </div>
+                @else
+                    <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-800 text-sm border-b border-slate-50 pb-3 flex items-center gap-2">
+                            💳 Status Pembayaran
+                        </h3>
+                        
+                        @if($transaksi->status === 'Menunggu Verifikasi')
+                            <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 space-y-2 text-center">
+                                <span class="text-2xl block">⏳</span>
+                                <p class="font-bold text-blue-950 text-xs">Pembayaran sedang diverifikasi Admin.</p>
+                                <p class="text-[11px] text-blue-700 leading-relaxed font-semibold">Silakan menunggu hasil verifikasi.</p>
+                            </div>
+                        @elseif(in_array($transaksi->status, ['Diproses', 'Siap Diambil', 'Sedang Diantar']))
+                            <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-2 text-center">
+                                <span class="text-2xl block text-emerald-500">✔</span>
+                                <p class="font-bold text-emerald-950 text-xs">Pembayaran telah diverifikasi.</p>
+                                @if($transaksi->status === 'Diproses')
+                                    <p class="text-[11px] text-emerald-700 leading-relaxed font-semibold">Pesanan sedang diproses oleh apoteker.</p>
+                                @elseif($transaksi->status === 'Siap Diambil')
+                                    <p class="text-[11px] text-emerald-750 font-bold leading-relaxed">Pesanan siap diambil.</p>
+                                @elseif($transaksi->status === 'Sedang Diantar')
+                                    <p class="text-[11px] text-emerald-700 leading-relaxed font-semibold">Pesanan sedang diantar.</p>
+                                @endif
+                            </div>
+                        @elseif($transaksi->status === 'Selesai')
+                            <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-2 text-center">
+                                <span class="text-2xl block text-emerald-500">✔</span>
+                                <p class="font-bold text-emerald-950 text-xs">Pembayaran selesai.</p>
+                                <p class="text-[11px] text-emerald-700 leading-relaxed font-semibold">Terima kasih telah berbelanja di Mekar Pharmacy.</p>
+                            </div>
+                        @elseif($transaksi->status === 'Dibatalkan')
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-center">
+                                <span class="text-2xl block">🛑</span>
+                                <p class="font-bold text-slate-800 text-xs">Pesanan telah dibatalkan.</p>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
+                @if ($transaksi->status !== 'Dibatalkan')
+                    {{-- Form Upload Bukti --}}
+                    <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-800 text-sm border-b border-slate-50 pb-3 flex items-center gap-2">
+                            📁 Bukti Pembayaran
+                        </h3>
+
+                        @if (in_array($transaksi->status, ['Menunggu Pembayaran', 'Ditolak']))
+                            <form action="{{ route('marketplace.invoice.upload-bukti', $transaksi->kode_transaksi) }}"
+                                method="POST" enctype="multipart/form-data" class="space-y-4">
+                                @csrf
+
+                                <div x-data="{ fileName: '' }" class="space-y-3">
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Unggah
+                                        Bukti Transfer</label>
+                                    <div
+                                        class="relative group border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-2xl p-6 transition-all bg-slate-50 cursor-pointer flex flex-col items-center justify-center">
+                                        <input type="file" name="bukti_transfer" required accept="image/*"
+                                            @change="fileName = $event.target.files[0].name"
+                                            class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                                        <span class="text-3xl">📷</span>
+                                        <span class="text-xs font-bold text-blue-600 mt-2 block"
+                                            x-text="fileName ? 'Ganti File' : 'Pilih Foto / Gambar'"></span>
+                                        <span class="text-[10px] text-slate-400 font-light mt-1 text-center"
+                                            x-text="fileName || 'Format: JPEG, PNG, JPG (Maks. 5MB)'"></span>
+                                    </div>
+                                </div>
+
+                                <button type="submit"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3.5 px-4 rounded-xl shadow-md transition-colors uppercase tracking-wider">
+                                    🚀 Kirim Bukti Transfer
+                                </button>
+                            </form>
+
+                            @if ($transaksi->status === 'Menunggu Pembayaran')
+                                <hr class="border-slate-150 my-4">
+                                
+                                <button type="button" @click="cancelModalOpen = true"
+                                    class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-3.5 px-4 rounded-xl shadow-md transition-colors uppercase tracking-wider text-center">
+                                    🛑 Batalkan Pesanan
+                                </button>
+                            @endif
+                        @elseif($transaksi->status === 'Menunggu Verifikasi')
+                            <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 text-center space-y-3">
+                                <span class="text-2xl block">⏳</span>
+                                <h4 class="font-bold text-blue-950 text-xs">Menunggu Verifikasi Admin</h4>
+                                <p class="text-[11px] text-blue-700 leading-relaxed">
+                                    Bukti pembayaran telah berhasil dikirimkan. Mohon tunggu proses pengecekan oleh
+                                    administrator apotek.
+                                </p>
+                            </div>
+                            @if ($transaksi->bukti_transfer)
+                                <div class="pt-2">
+                                    <label
+                                        class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Bukti
+                                        yang Dikirim</label>
+                                    <div
+                                        class="rounded-xl overflow-hidden border border-slate-200 max-h-48 bg-slate-50 flex items-center justify-center">
+                                        <img src="{{ asset('storage/' . $transaksi->bukti_transfer) }}" alt="Bukti Transfer"
+                                            class="object-contain max-h-48">
+                                    </div>
+                                </div>
+                            @endif
+                        @else
+                            <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-center space-y-2">
+                                <span class="text-2xl block">✓</span>
+                                <h4 class="font-bold text-emerald-950 text-xs">Pembayaran Terverifikasi</h4>
+                                <p class="text-[11px] text-emerald-700 leading-relaxed">
+                                    Pembayaran telah diverifikasi secara penuh oleh administrator.
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+                @endif
 
                 {{-- Download PDF Button --}}
                 @auth
@@ -576,6 +626,57 @@
 
             </div>
 
+        </div>
+
+        {{-- Modal Konfirmasi Batal Pesanan --}}
+        <div x-show="cancelModalOpen" 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             style="display: none;">
+            {{-- Backdrop --}}
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" @click="cancelModalOpen = false"></div>
+
+            {{-- Modal Content --}}
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <div x-show="cancelModalOpen"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                     class="relative transform overflow-hidden rounded-3xl bg-white p-6 text-left shadow-2xl transition-all max-w-md w-full border border-slate-100">
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center shrink-0 text-lg text-rose-600">
+                            ⚠️
+                        </div>
+                        <div class="space-y-2">
+                            <h3 class="text-base font-bold text-slate-900 leading-6">Batalkan Pesanan?</h3>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                Pesanan yang dibatalkan tidak dapat dipulihkan.
+                            </p>
+                            <p class="text-xs text-slate-500 leading-relaxed font-semibold">
+                                Anda harus melakukan checkout ulang apabila ingin membeli obat ini kembali.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-end gap-3">
+                        <button type="button" @click="cancelModalOpen = false"
+                            class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+                            Kembali
+                        </button>
+                        
+                        <form action="{{ route('marketplace.invoice.cancel', $transaksi->kode_transaksi) }}" method="POST" class="m-0">
+                            @csrf
+                            <button type="submit"
+                                class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-xs font-bold text-white transition-colors shadow-sm">
+                                Ya, Batalkan Pesanan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
