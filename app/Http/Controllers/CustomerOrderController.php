@@ -13,7 +13,8 @@ class CustomerOrderController extends Controller
      */
     public function index()
     {
-        $transaksis = Transaksi::where('user_id', auth()->id())
+        $transaksis = Transaksi::with('feedbackLayanan')
+            ->where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get();
 

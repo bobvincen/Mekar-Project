@@ -30,14 +30,23 @@ class FeedbackLayananController extends Controller
     {
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'komentar' => 'required|string|min:10',
+            'komentar' => 'required|string|min:5',
             'nama_pelanggan' => 'nullable|string',
             'whatsapp' => 'nullable|string',
+            'transaksi_id' => 'nullable|exists:transaksis,id',
         ]);
+
+        if (auth()->check()) {
+            $validated['user_id'] = auth()->id();
+        }
 
         FeedbackLayanan::create($validated);
 
-        return response()->json(['success' => true, 'message' => 'Terima kasih atas penilaian Anda.']);
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Terima kasih atas penilaian Anda.']);
+        }
+        
+        return back()->with('success', 'Terima kasih atas penilaian Anda.');
     }
 
     public function destroy($id)

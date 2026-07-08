@@ -14,5 +14,17 @@ class FeedbackLayanan extends Model
         'whatsapp',
         'rating',
         'komentar',
+        'transaksi_id',
+        'user_id',
     ];
+
+    public function transaksi()
+    {
+        return $this->belongsTo(Transaksi::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
