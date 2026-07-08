@@ -29,7 +29,7 @@ class ResepDokterService
         $resep = ResepDokter::create([
             'user_id' => $user->id,
             'nama' => $user->name,
-            'whatsapp' => $user->whatsapp,
+            'whatsapp' => $user->whatsapp ?? '-',
             'catatan' => $catatan,
             'foto_resep' => 'private/prescriptions/' . $datePath . '/' . $filename,
             'status' => 'menunggu_verifikasi',

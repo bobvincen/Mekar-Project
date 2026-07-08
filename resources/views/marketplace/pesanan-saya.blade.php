@@ -96,6 +96,20 @@
 
                 {{-- Tombol Aksi: Lihat Invoice Detail & Cetak PDF --}}
                 <div class="flex flex-wrap gap-2 pt-2 justify-end">
+                    @if($trx->status === 'Selesai')
+                        @if($trx->feedbackLayanan)
+                            <span class="bg-amber-50 text-amber-600 border border-amber-100 font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-1">
+                                ⭐ {{ $trx->feedbackLayanan->rating }}/5
+                            </span>
+                        @else
+                            <button type="button" 
+                                x-data="" 
+                                x-on:click="$dispatch('open-rating-modal', { id: {{ $trx->id }}, kode: '{{ $trx->kode_transaksi }}' })"
+                                class="bg-amber-400 hover:bg-amber-500 text-white border border-amber-500 font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                                ⭐ Beri Penilaian
+                            </button>
+                        @endif
+                    @endif
                     <a href="{{ route('marketplace.invoice', $trx->kode_transaksi) }}"
                         class="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 hover:border-blue-200 font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm">
                         👁 Lihat Invoice / Upload Bukti
@@ -170,5 +184,75 @@
 
     </div>
 
+</div>
+
+{{-- Rating Modal --}}
+<div x-data="{ 
+        showRatingModal: false, 
+        transaksiId: null, 
+        kodeTransaksi: '',
+        rating: 0,
+        hoverRating: 0
+     }"
+     @open-rating-modal.window="showRatingModal = true; transaksiId = $event.detail.id; kodeTransaksi = $event.detail.kode; rating = 0; hoverRating = 0;"
+     @close-rating-modal.window="showRatingModal = false"
+     x-show="showRatingModal"
+     class="relative z-[100]"
+     style="display: none;">
+     
+     {{-- Overlay --}}
+     <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" x-show="showRatingModal" x-transition.opacity></div>
+
+     {{-- Modal Panel --}}
+     <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+             <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md p-6"
+                  x-show="showRatingModal"
+                  x-transition:enter="ease-out duration-300"
+                  x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                  x-transition:leave="ease-in duration-200"
+                  x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  @click.away="showRatingModal = false">
+                  
+                  <div class="text-center mb-6">
+                      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 mb-4">
+                          <span class="text-2xl">⭐</span>
+                      </div>
+                      <h3 class="text-lg font-bold leading-6 text-slate-900">Penilaian Pelayanan</h3>
+                      <p class="text-sm text-slate-500 mt-1">Pesanan: <span x-text="kodeTransaksi" class="font-mono text-slate-700 font-bold"></span></p>
+                  </div>
+
+                  <form action="{{ route('feedback.store') }}" method="POST">
+                      @csrf
+                      <input type="hidden" name="transaksi_id" x-model="transaksiId">
+                      <input type="hidden" name="rating" x-model="rating">
+                      
+                      <div class="flex justify-center gap-2 mb-6" @mouseleave="hoverRating = 0">
+                          <template x-for="i in 5">
+                              <button type="button" 
+                                  @mouseover="hoverRating = i" 
+                                  @click="rating = i"
+                                  class="text-4xl transition-transform hover:scale-110 focus:outline-none"
+                                  :class="(hoverRating >= i || rating >= i) ? 'text-amber-400 drop-shadow' : 'text-slate-200 grayscale'">
+                                  ★
+                              </button>
+                          </template>
+                      </div>
+
+                      <div class="mb-6">
+                          <label class="block text-sm font-semibold text-slate-700 mb-2">Bagaimana pelayanan kami? <span class="text-rose-500">*</span></label>
+                          <textarea name="komentar" rows="3" required class="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 text-sm" placeholder="Ceritakan pengalaman Anda berbelanja di Mekar Pharmacy..."></textarea>
+                      </div>
+
+                      <div class="flex justify-end gap-3">
+                          <button type="button" @click="showRatingModal = false" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors">Batal</button>
+                          <button type="submit" class="px-6 py-2.5 bg-amber-400 hover:bg-amber-500 text-white font-bold text-sm rounded-xl shadow-sm transition-all" :disabled="rating === 0" :class="{ 'opacity-50 cursor-not-allowed': rating === 0 }">Kirim Penilaian</button>
+                      </div>
+                  </form>
+             </div>
+         </div>
+     </div>
 </div>
 @endsection
