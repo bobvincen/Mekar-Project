@@ -11,6 +11,23 @@
             </div>
         </div>
 
+        <!-- Alerts -->
+        @if (session('status') === 'avatar-updated')
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm font-semibold">
+                Foto profil berhasil diperbarui!
+            </div>
+        @endif
+        @if (session('status') === 'avatar-deleted')
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm font-semibold">
+                Foto profil berhasil dihapus!
+            </div>
+        @endif
+        @error('avatar')
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-semibold">
+                {{ $message }}
+            </div>
+        @enderror
+
         <!-- Main Profile Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
@@ -21,22 +38,25 @@
                     <!-- Dynamic background pattern -->
                     <div class="absolute top-0 inset-x-0 h-24 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-90"></div>
                     
-                    <!-- Avatar section with camera hover -->
-                    <div class="relative mt-8 mb-4 inline-block z-10">
-                        <div id="avatarContainer" class="w-24 h-24 rounded-full border-4 border-white bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-extrabold text-3xl flex items-center justify-center shadow-md select-none transition group-hover:scale-105 duration-300">
-                            <span id="avatarInitials">{{ strtoupper(substr($user->name, 0, 2)) }}</span>
-                            <img id="avatarImage" src="" class="w-full h-full rounded-full object-cover hidden" alt="Avatar">
+                    <form id="avatarForm" action="{{ route('profile.avatar.update') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <!-- Avatar section with camera hover -->
+                        <div class="relative mt-8 mb-4 inline-block z-10">
+                            <div id="avatarContainer" class="w-24 h-24 rounded-full border-4 border-white bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-extrabold text-3xl flex items-center justify-center shadow-md select-none transition group-hover:scale-105 duration-300 overflow-hidden">
+                                <span id="avatarInitials" class="{{ $user->avatar ? 'hidden' : '' }}">{{ strtoupper(substr($user->name, 0, 2)) }}</span>
+                                <img id="avatarImage" src="{{ $user->avatar ? asset('storage/' . $user->avatar) : '' }}" class="w-full h-full rounded-full object-cover {{ $user->avatar ? '' : 'hidden' }}" alt="Avatar">
+                            </div>
+                            
+                            <!-- Camera overlay for photo upload -->
+                            <label for="avatarUploadInput" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-slate-900 hover:bg-blue-600 text-white flex items-center justify-center cursor-pointer shadow-sm hover:scale-110 active:scale-95 transition-all duration-300 border-2 border-white" title="Ubah Foto Profil">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </label>
+                            <input type="file" name="avatar" id="avatarUploadInput" accept="image/*" class="hidden">
                         </div>
-                        
-                        <!-- Camera overlay for mock photo upload -->
-                        <label for="avatarUploadInput" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-slate-900 hover:bg-blue-600 text-white flex items-center justify-center cursor-pointer shadow-sm hover:scale-110 active:scale-95 transition-all duration-300 border-2 border-white" title="Ubah Foto Profil">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </label>
-                        <input type="file" id="avatarUploadInput" accept="image/*" class="hidden">
-                    </div>
+                    </form>
                     
                     <h3 class="text-lg font-bold text-slate-800 mt-2 truncate">{{ $user->name }}</h3>
                     <p class="text-xs text-slate-400 font-medium truncate mt-0.5">{{ $user->email }}</p>
@@ -62,17 +82,22 @@
                         <button type="button" id="btnCancelAvatar" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold rounded-lg transition duration-200">
                             Batal
                         </button>
-                        <button type="button" id="btnRemoveAvatar" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 text-[10px] font-bold rounded-lg transition duration-200">
-                            Hapus
-                        </button>
-                        <button type="button" id="btnSaveAvatarMock" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-sm transition duration-200">
+                        <button type="button" id="btnSaveAvatar" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-sm transition duration-200">
                             Simpan
                         </button>
                     </div>
-                    
-                    <p id="avatarHelpText" class="text-[9px] text-slate-400 mt-2.5 italic">
-                        Pratinjau visual lokal. Fitur penyimpanan cloud akan segera hadir.
-                    </p>
+
+                    @if ($user->avatar)
+                        <div class="mt-3">
+                            <form action="{{ route('profile.avatar.destroy') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto profil?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-650 text-[10px] font-bold rounded-lg transition duration-200">
+                                    Hapus Foto
+                                </button>
+                            </form>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Account Information Summary Card -->
@@ -162,16 +187,6 @@
         const image = document.getElementById('avatarImage');
         const actionsContainer = document.getElementById('avatarActionsContainer');
         const btnCancel = document.getElementById('btnCancelAvatar');
-        const btnRemove = document.getElementById('btnRemoveAvatar');
-        const btnSave = document.getElementById('btnSaveAvatarMock');
-
-        // Load cached mock avatar if exists
-        const cachedAvatar = localStorage.getItem('mock_avatar_src');
-        if (cachedAvatar) {
-            image.src = cachedAvatar;
-            image.classList.remove('hidden');
-            initials.classList.add('hidden');
-        }
 
         fileInput.addEventListener('change', function () {
             const file = this.files[0];
@@ -189,9 +204,9 @@
 
         btnCancel.addEventListener('click', function () {
             fileInput.value = '';
-            const originalCache = localStorage.getItem('mock_avatar_src');
-            if (originalCache) {
-                image.src = originalCache;
+            const originalSrc = "{{ $user->avatar ? asset('storage/' . $user->avatar) : '' }}";
+            if (originalSrc) {
+                image.src = originalSrc;
                 image.classList.remove('hidden');
                 initials.classList.add('hidden');
             } else {
@@ -202,23 +217,12 @@
             actionsContainer.classList.add('hidden');
         });
 
-        btnRemove.addEventListener('click', function () {
-            fileInput.value = '';
-            image.src = '';
-            image.classList.add('hidden');
-            initials.classList.remove('hidden');
-            localStorage.removeItem('mock_avatar_src');
-            actionsContainer.classList.add('hidden');
-            alert('Foto profil dihapus (lokal).');
-        });
-
-        btnSave.addEventListener('click', function () {
-            if (image.src && image.src.startsWith('data:')) {
-                localStorage.setItem('mock_avatar_src', image.src);
-                actionsContainer.classList.add('hidden');
-                alert('Foto profil berhasil diunggah (simulasi pratinjau lokal).');
-            }
-        });
+        const btnSaveReal = document.getElementById('btnSaveAvatar');
+        if (btnSaveReal) {
+            btnSaveReal.addEventListener('click', function () {
+                document.getElementById('avatarForm').submit();
+            });
+        }
     });
     </script>
     @endpush

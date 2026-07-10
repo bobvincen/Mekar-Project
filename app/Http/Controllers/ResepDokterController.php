@@ -234,6 +234,25 @@ class ResepDokterController extends Controller
             'items.*.qty.min' => 'Jumlah obat minimal 1.',
         ]);
 
+        // Backend stock validation
+        foreach ($request->input('items') as $index => $item) {
+            if ($item['status'] === 'tersedia') {
+                $obat = Obat::find($item['obat_id']);
+                if ($obat && $item['qty'] > $obat->stok) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        "items.{$index}.qty" => "Stok obat {$obat->nama_obat} tidak mencukupi (Tersedia: {$obat->stok})."
+                    ]);
+                }
+            } elseif ($item['status'] === 'tidak_tersedia' && !empty($item['obat_pengganti_id'])) {
+                $obatPengganti = Obat::find($item['obat_pengganti_id']);
+                if ($obatPengganti && $item['qty'] > $obatPengganti->stok) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        "items.{$index}.qty" => "Stok obat pengganti {$obatPengganti->nama_obat} tidak mencukupi (Tersedia: {$obatPengganti->stok})."
+                    ]);
+                }
+            }
+        }
+
         $this->resepService->process(
             $resep->id,
             $request->input('items'),

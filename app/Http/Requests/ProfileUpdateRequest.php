@@ -26,6 +26,7 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'whatsapp' => ['required', 'string', 'regex:/^[0-9]+$/', 'min:10', 'max:15'],
         ];
     }
 
@@ -39,6 +40,10 @@ class ProfileUpdateRequest extends FormRequest
             'email.required' => 'Alamat email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah digunakan.',
+            'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
+            'whatsapp.regex' => 'Nomor WhatsApp hanya boleh berisi angka.',
+            'whatsapp.min' => 'Nomor WhatsApp minimal 10 digit.',
+            'whatsapp.max' => 'Nomor WhatsApp maksimal 15 digit.',
         ];
     }
 }
