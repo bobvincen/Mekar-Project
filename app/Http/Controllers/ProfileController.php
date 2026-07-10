@@ -32,9 +32,65 @@ class ProfileController extends Controller
             $request->user()->email_verified_at = null;
         }
 
+        $whatsappChanged = $request->user()->isDirty('whatsapp');
+        if ($whatsappChanged) {
+            $request->user()->phone_verified_at = null;
+        }
+
         $request->user()->save();
 
+        if ($whatsappChanged && $request->user()->role === 'pelanggan') {
+            try {
+                \App\Http\Controllers\Auth\OtpVerificationController::generateAndSendOtp($request->user());
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Gagal mengirim OTP setelah ganti nomor WhatsApp: ' . $e->getMessage());
+            }
+        }
+
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Update the user's profile photo (avatar).
+     */
+    public function updateAvatar(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ], [
+            'avatar.required' => 'Foto profil wajib diunggah.',
+            'avatar.image' => 'File harus berupa gambar.',
+            'avatar.mimes' => 'Format gambar harus jpeg, png, jpg, atau webp.',
+            'avatar.max' => 'Ukuran gambar maksimal 2MB.',
+        ]);
+
+        $user = $request->user();
+
+        if ($user->avatar) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+        }
+
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->avatar = $path;
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'avatar-updated');
+    }
+
+    /**
+     * Remove the user's profile photo (avatar).
+     */
+    public function destroyAvatar(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($user->avatar) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+            $user->avatar = null;
+            $user->save();
+        }
+
+        return Redirect::route('profile.edit')->with('status', 'avatar-deleted');
     }
 
     /**

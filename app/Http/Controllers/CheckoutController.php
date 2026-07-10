@@ -86,6 +86,23 @@ class CheckoutController extends Controller
             ], 400);
         }
 
+        // Validate stock availability
+        foreach ($cartItems as $id => $item) {
+            $obat = \App\Models\Obat::find($id);
+            if (!$obat) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Obat tidak ditemukan.'
+                ], 404);
+            }
+            if ($item['qty'] > $obat->stok) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Stok obat {$obat->nama_obat} tidak mencukupi (Tersedia: {$obat->stok})."
+                ], 422);
+            }
+        }
+
         // Generate Kode Transaksi
         $date = date('Ymd');
         $lastTrx = \App\Models\Transaksi::where('kode_transaksi', 'like', "TRX-{$date}-%")

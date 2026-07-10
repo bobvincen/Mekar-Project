@@ -21,13 +21,13 @@ class EnsurePhoneIsVerified
         $user = Auth::user();
 
         if ($user && $user->role === 'pelanggan' && $user->phone_verified_at === null) {
-            // Store user ID in session to allow verify OTP screen lookup
-            session(['otp_user_id' => $user->id]);
-
             // Immediately logout user
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
+            // Store user ID in session to allow verify OTP screen lookup
+            session(['otp_user_id' => $user->id]);
 
             return redirect()->route('otp.verify')->with('error', 'Nomor WhatsApp Anda belum terverifikasi. Silakan masukkan kode OTP yang dikirim.');
         }

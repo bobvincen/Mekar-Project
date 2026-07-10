@@ -36,6 +36,35 @@ class FeedbackLayananController extends Controller
             'transaksi_id' => 'nullable|exists:transaksis,id',
         ]);
 
+        if (!empty($validated['transaksi_id'])) {
+            $transaksi = \App\Models\Transaksi::find($validated['transaksi_id']);
+            
+            // Check ownership if user is logged in
+            if (auth()->check() && $transaksi->user_id && $transaksi->user_id !== auth()->id()) {
+                if ($request->wantsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Anda tidak memiliki akses ke transaksi ini.'], 403);
+                }
+                return back()->with('error', 'Anda tidak memiliki akses ke transaksi ini.');
+            }
+
+            // Check if status is completed (Selesai)
+            if ($transaksi->status !== 'Selesai') {
+                if ($request->wantsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Anda hanya dapat memberikan feedback untuk transaksi yang sudah selesai.'], 400);
+                }
+                return back()->with('error', 'Anda hanya dapat memberikan feedback untuk transaksi yang sudah selesai.');
+            }
+
+            // Check for duplicate feedback
+            $existing = FeedbackLayanan::where('transaksi_id', $validated['transaksi_id'])->first();
+            if ($existing) {
+                if ($request->wantsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Anda sudah memberikan feedback untuk transaksi ini.'], 422);
+                }
+                return back()->with('error', 'Anda sudah memberikan feedback untuk transaksi ini.');
+            }
+        }
+
         if (auth()->check()) {
             $validated['user_id'] = auth()->id();
         }

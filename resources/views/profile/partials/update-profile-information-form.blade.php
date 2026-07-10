@@ -50,6 +50,25 @@
             @enderror
         </div>
 
+        <!-- Nomor WhatsApp -->
+        <div>
+            <label for="whatsapp" class="block text-sm font-semibold text-slate-700 mb-2">
+                Nomor WhatsApp <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative rounded-xl shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <input id="whatsapp" name="whatsapp" type="text" value="{{ old('whatsapp', $user->whatsapp) }}" required autocomplete="tel"
+                    class="w-full border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 placeholder-slate-400 @error('whatsapp', 'updateProfileInformation') border-rose-300 bg-rose-50/20 @enderror">
+            </div>
+            @error('whatsapp')
+                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+            @enderror
+        </div>
+
         <!-- Tombol Aksi -->
         <div class="flex items-center gap-4 pt-2 border-t border-slate-100">
             <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-sm hover:shadow transition duration-200 disabled:opacity-50">
