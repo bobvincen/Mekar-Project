@@ -215,10 +215,10 @@ class CheckoutController extends Controller
         $request->validate([
             'bukti_transfer' => 'required|image|mimes:jpeg,png,jpg|max:5120'
         ], [
-            'bukti_transfer.required' => 'File bukti transfer wajib diunggah.',
-            'bukti_transfer.image' => 'File harus berupa gambar.',
-            'bukti_transfer.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
-            'bukti_transfer.max' => 'Ukuran gambar maksimal 5MB.',
+            'bukti_transfer.required' => 'Bukti pembayaran wajib diunggah.',
+            'bukti_transfer.image' => 'File bukti pembayaran harus berupa gambar.',
+            'bukti_transfer.mimes' => 'Format file harus berupa JPG, JPEG, atau PNG.',
+            'bukti_transfer.max' => 'Ukuran gambar maksimal 5 MB.',
         ]);
 
         $transaksi = \App\Models\Transaksi::where('kode_transaksi', $kode_transaksi)->firstOrFail();

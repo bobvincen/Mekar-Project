@@ -11,7 +11,7 @@
             <p class="text-sm text-slate-500 mt-1">Kelola data informasi pemasok dan distributor obat apotek Anda</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('supplier.create') }}" class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white rounded-xl font-semibold text-xs shadow-md hover:shadow-lg transition inline-flex items-center gap-1.5">
+            <a href="{{ route('supplier.create') }}" onclick="event.preventDefault(); openSupplierModal()" class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white rounded-xl font-semibold text-xs shadow-md hover:shadow-lg transition inline-flex items-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
@@ -149,4 +149,262 @@
         @endif
     </div>
 </div>
+
+<!-- Toast Success Notification -->
+<div id="toast-success" class="fixed top-4 right-4 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 bg-emerald-500 text-white px-4 py-3.5 rounded-2xl flex items-center gap-3 shadow-lg max-w-sm">
+    <svg class="w-5 h-5 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span id="toast-message" class="font-semibold text-sm"></span>
+</div>
+
+<!-- Modal Lengkapi Data Supplier (AJAX) -->
+<div id="supplierModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeSupplierModal()"></div>
+
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <div class="relative inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-100">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900" id="modal-title">Lengkapi Data Supplier Baru</h3>
+                    <p class="text-xs text-slate-500">Isi detail informasi supplier baru yang belum terdaftar</p>
+                </div>
+                <button type="button" onclick="closeSupplierModal()" class="text-slate-400 hover:text-slate-600 transition">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="ajaxSupplierForm" onsubmit="submitAjaxSupplier(event)" class="m-0">
+                @csrf
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label for="modal_nama_supplier" class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Supplier <span class="text-rose-500">*</span></label>
+                        <input type="text" id="modal_nama_supplier" name="nama_supplier" required
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_nama_supplier"></span>
+                    </div>
+
+                    <div>
+                        <label for="modal_kontak_pic" class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Kontak / PIC</label>
+                        <input type="text" id="modal_kontak_pic" name="kontak_pic"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_kontak_pic"></span>
+                    </div>
+
+                    <div>
+                        <label for="modal_telepon" class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor WhatsApp / Telepon</label>
+                        <input type="text" id="modal_telepon" name="telepon"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_telepon"></span>
+                    </div>
+
+                    <div>
+                        <label for="modal_email" class="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Email</label>
+                        <input type="email" id="modal_email" name="email"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_email"></span>
+                    </div>
+
+                    <div>
+                        <label for="modal_kota" class="block text-sm font-semibold text-slate-700 mb-1.5">Kota</label>
+                        <input type="text" id="modal_kota" name="kota"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_kota"></span>
+                    </div>
+
+                    <div>
+                        <label for="modal_alamat" class="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Lengkap</label>
+                        <textarea id="modal_alamat" name="alamat" rows="2"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_alamat"></span>
+                    </div>
+
+                    <div>
+                        <label for="modal_keterangan" class="block text-sm font-semibold text-slate-700 mb-1.5">Keterangan</label>
+                        <textarea id="modal_keterangan" name="keterangan" rows="1"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <span class="text-rose-500 text-xs font-semibold mt-1 block hidden" id="modal_error_keterangan"></span>
+                    </div>
+                </div>
+
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5 rounded-b-2xl">
+                    <button type="button" onclick="closeSupplierModal()" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition hover:bg-slate-100">
+                        Batal
+                    </button>
+                    <button type="submit" id="modalSubmitBtn" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white rounded-xl text-sm font-semibold shadow transition flex items-center gap-1.5">
+                        Simpan Supplier
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openSupplierModal() {
+        document.querySelectorAll('[id^="modal_error_"]').forEach(el => {
+            el.innerText = '';
+            el.classList.add('hidden');
+        });
+        
+        document.getElementById('ajaxSupplierForm').reset();
+        
+        const modal = document.getElementById('supplierModal');
+        modal.classList.remove('hidden');
+    }
+
+    function closeSupplierModal() {
+        const modal = document.getElementById('supplierModal');
+        modal.classList.add('hidden');
+    }
+
+    function submitAjaxSupplier(event) {
+        event.preventDefault();
+        
+        const form = document.getElementById('ajaxSupplierForm');
+        const submitBtn = document.getElementById('modalSubmitBtn');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Menyimpan...';
+        
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => data[key] = value);
+        
+        document.querySelectorAll('[id^="modal_error_"]').forEach(el => {
+            el.innerText = '';
+            el.classList.add('hidden');
+        });
+        
+        fetch("{{ route('supplier.store-ajax') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            return response.json().then(json => {
+                if (!response.ok) {
+                    return Promise.reject({ status: response.status, data: json });
+                }
+                return json;
+            });
+        })
+        .then(res => {
+            if (res.success && res.data) {
+                const newSupplier = res.data;
+                
+                // Add supplier to table dynamically
+                const tbody = document.querySelector('table tbody');
+                const emptyRow = tbody.querySelector('td[colspan="7"]');
+                if (emptyRow) {
+                    tbody.innerHTML = '';
+                }
+                
+                const csrfToken = "{{ csrf_token() }}";
+                
+                function escapeHtml(text) {
+                    if (!text) return '';
+                    return text
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#039;");
+                }
+                
+                const newRow = document.createElement('tr');
+                newRow.className = 'hover:bg-slate-50/50 transition duration-150 bg-blue-50/10 animate-fade-in';
+                newRow.innerHTML = `
+                    <td class="py-4 px-6 text-center font-bold text-slate-400">*</td>
+                    <td class="py-4 px-6 font-bold text-slate-800 whitespace-nowrap">
+                        ${escapeHtml(newSupplier.nama_supplier)}
+                    </td>
+                    <td class="py-4 px-6 text-slate-500 max-w-xs truncate" title="${escapeHtml(newSupplier.alamat || '')}">
+                        ${escapeHtml(newSupplier.alamat || '-')}
+                    </td>
+                    <td class="py-4 px-6 text-slate-500 font-semibold">
+                        ${escapeHtml(newSupplier.telepon || '-')}
+                    </td>
+                    <td class="py-4 px-6 text-slate-500">
+                        ${escapeHtml(newSupplier.email || '-')}
+                    </td>
+                    <td class="py-4 px-6 text-center">
+                        ${newSupplier.status === 'Lengkap' ? `
+                            <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg">
+                                Lengkap
+                            </span>
+                        ` : `
+                            <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-100 rounded-lg animate-pulse" title="Lengkapi data supplier ini">
+                                Perlu Dilengkapi
+                            </span>
+                        `}
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="flex justify-center gap-2">
+                            <a href="/supplier/${newSupplier.id}/edit" class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition" title="Edit / Lengkapi">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+
+                            <form action="/supplier/${newSupplier.id}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus supplier ini?')">
+                                <input type="hidden" name="_token" value="${csrfToken}">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition" title="Hapus">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                `;
+                tbody.insertBefore(newRow, tbody.firstChild);
+                
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Simpan Supplier';
+                
+                closeSupplierModal();
+                showSuccessToast('Supplier berhasil ditambahkan!');
+            }
+        })
+        .catch(err => {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Simpan Supplier';
+            
+            if (err.data && err.data.errors) {
+                const errors = err.data.errors;
+                for (const key in errors) {
+                    const errorEl = document.getElementById(`modal_error_${key}`);
+                    if (errorEl) {
+                        errorEl.innerText = errors[key][0];
+                        errorEl.classList.remove('hidden');
+                    }
+                }
+            } else {
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            }
+        });
+    }
+
+    function showSuccessToast(message) {
+        const toast = document.getElementById('toast-success');
+        const toastMsg = document.getElementById('toast-message');
+        toastMsg.innerText = message;
+        toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-[-100px]', 'opacity-0');
+        }, 4000);
+    }
+</script>
 @endsection

@@ -30,13 +30,20 @@ class AuthenticatedSessionController extends Controller
         $user = auth()->user();
 
         if ($user->role === 'pelanggan' && $user->phone_verified_at === null) {
-            session(['otp_user_id' => $user->id]);
-
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            OtpVerificationController::generateAndSendOtp($user);
+            session(['otp_user_id' => $user->id]);
+
+            $otpSent = OtpVerificationController::generateAndSendOtp($user);
+
+            if (!$otpSent) {
+                \App\Models\OtpVerification::where('user_id', $user->id)->delete();
+                session()->forget('otp_user_id');
+
+                return redirect()->route('login')->with('error', 'Gagal mengirim kode OTP ke WhatsApp Anda. Periksa nomor WhatsApp atau coba beberapa saat lagi.');
+            }
 
             return redirect()->route('otp.verify')->with('info', 'Nomor WhatsApp Anda belum terverifikasi. Kode OTP baru telah dikirim.');
         }

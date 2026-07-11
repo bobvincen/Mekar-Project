@@ -546,8 +546,8 @@
                                     <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Unggah
                                         Bukti Transfer</label>
                                     <div
-                                        class="relative group border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-2xl p-6 transition-all bg-slate-50 cursor-pointer flex flex-col items-center justify-center">
-                                        <input type="file" name="bukti_transfer" required accept="image/*"
+                                        class="relative group border-2 border-dashed @error('bukti_transfer') border-rose-300 bg-rose-50/20 @else border-slate-200 hover:border-blue-400 bg-slate-50 @enderror rounded-2xl p-6 transition-all cursor-pointer flex flex-col items-center justify-center">
+                                        <input type="file" name="bukti_transfer" accept="image/*"
                                             @change="fileName = $event.target.files[0].name"
                                             class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
                                         <span class="text-3xl">📷</span>
@@ -556,6 +556,9 @@
                                         <span class="text-[10px] text-slate-400 font-light mt-1 text-center"
                                             x-text="fileName || 'Format: JPEG, PNG, JPG (Maks. 5MB)'"></span>
                                     </div>
+                                    @error('bukti_transfer')
+                                        <p class="text-xs text-rose-600 font-semibold mt-1">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <button type="submit"

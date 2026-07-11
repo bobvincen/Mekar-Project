@@ -91,6 +91,9 @@ class LaporanController extends Controller
      */
     public function exportPdf(Request $request)
     {
+        ini_set('memory_limit', '512M');
+        set_time_limit(120);
+
         $query = $this->getFilteredQuery($request);
         $transaksis = $query->orderBy('tanggal_transaksi', 'asc')->get();
 
@@ -128,7 +131,7 @@ class LaporanController extends Controller
             'totalSelesai',
             'totalDibatalkan',
             'request'
-        ))->setPaper('a4', 'landscape');
+        ))->setPaper('a4', 'portrait');
 
         return $pdf->download($filename);
     }
