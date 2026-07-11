@@ -11,6 +11,10 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     // Seed default roles and permissions
     $this->seed(RolePermissionSeeder::class);
+
+    // Set test config variables for Fonnte
+    config(['services.fonnte.token' => 'test-token-123']);
+    config(['services.fonnte.base_url' => 'https://api.fonnte.com']);
 });
 
 test('otp verify screen requires verify session', function () {
@@ -155,4 +159,75 @@ test('phone_verified middleware blocks unverified customers from checkout', func
     $response->assertRedirect(route('otp.verify'));
     $response->assertSessionHas('error', 'Nomor WhatsApp Anda belum terverifikasi. Silakan masukkan kode OTP yang dikirim.');
     $this->assertGuest();
+});
+
+test('otp resend succeeds when Fonnte sends successfully', function () {
+    \Illuminate\Support\Facades\Http::fake([
+        'api.fonnte.com/send' => \Illuminate\Support\Facades\Http::response([
+            'status' => true,
+            'reason' => 'success'
+        ], 200)
+    ]);
+
+    $user = User::factory()->create([
+        'name' => 'Budi Customer',
+        'email' => 'budi@gmail.com',
+        'whatsapp' => '08123456789',
+        'phone_verified_at' => null,
+        'role' => 'pelanggan',
+    ]);
+    $user->assignRole('pelanggan');
+
+    // Create an old OTP so resend is not throttled
+    $otpRecord = OtpVerification::create([
+        'user_id' => $user->id,
+        'otp' => '123456',
+        'expired_at' => now()->addMinutes(5),
+        'attempts' => 0,
+    ]);
+    OtpVerification::where('id', $otpRecord->id)->update(['created_at' => now()->subSeconds(70)]);
+
+    $response = $this->withSession(['otp_user_id' => $user->id])
+        ->from(route('otp.verify'))
+        ->post(route('otp.resend'));
+
+    $response->assertRedirect(route('otp.verify'));
+    $response->assertSessionHas('success', 'Kode OTP baru telah berhasil dikirim ke nomor WhatsApp Anda.');
+
+    // Verify a new OTP record was created
+    expect(OtpVerification::where('user_id', $user->id)->count())->toBe(2);
+});
+
+test('otp resend fails when Fonnte fails to send', function () {
+    \Illuminate\Support\Facades\Http::fake([
+        'api.fonnte.com/send' => \Illuminate\Support\Facades\Http::response([
+            'status' => false,
+            'reason' => 'device disconnected'
+        ], 400)
+    ]);
+
+    $user = User::factory()->create([
+        'name' => 'Budi Customer',
+        'email' => 'budi@gmail.com',
+        'whatsapp' => '08123456789',
+        'phone_verified_at' => null,
+        'role' => 'pelanggan',
+    ]);
+    $user->assignRole('pelanggan');
+
+    // Create an old OTP so resend is not throttled
+    $otpRecord = OtpVerification::create([
+        'user_id' => $user->id,
+        'otp' => '123456',
+        'expired_at' => now()->addMinutes(5),
+        'attempts' => 0,
+    ]);
+    OtpVerification::where('id', $otpRecord->id)->update(['created_at' => now()->subSeconds(70)]);
+
+    $response = $this->withSession(['otp_user_id' => $user->id])
+        ->from(route('otp.verify'))
+        ->post(route('otp.resend'));
+
+    $response->assertRedirect(route('otp.verify'));
+    $response->assertSessionHas('error', 'Gagal mengirim kode OTP. Periksa nomor WhatsApp Anda atau coba beberapa saat lagi.');
 });

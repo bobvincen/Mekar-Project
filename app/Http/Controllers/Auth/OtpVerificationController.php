@@ -39,7 +39,7 @@ class OtpVerificationController extends Controller
             ->first();
 
         if ($lastOtp) {
-            $diff = now()->diffInSeconds($lastOtp->created_at);
+            $diff = abs(now()->diffInSeconds($lastOtp->created_at));
             if ($diff < 60) {
                 $secondsRemaining = 60 - $diff;
             }
@@ -132,8 +132,8 @@ class OtpVerificationController extends Controller
             ->latest()
             ->first();
 
-        if ($lastOtp && now()->diffInSeconds($lastOtp->created_at) < 60) {
-            $secondsLeft = 60 - now()->diffInSeconds($lastOtp->created_at);
+        if ($lastOtp && abs(now()->diffInSeconds($lastOtp->created_at)) < 60) {
+            $secondsLeft = 60 - abs(now()->diffInSeconds($lastOtp->created_at));
             return back()->with('error', "Harap tunggu {$secondsLeft} detik sebelum mengirim ulang OTP.");
         }
 
@@ -170,7 +170,7 @@ class OtpVerificationController extends Controller
         $response = FonnteService::send($user->whatsapp ?? '', $message);
 
         // Cek apakah pengiriman OTP berhasil
-        if (!$response || (isset($response['status']) && $response['status'] === false)) {
+        if (!$response || empty($response['success'])) {
             Log::error('Gagal mengirim OTP ke user: ' . $user->id . ' - Phone: ' . $user->whatsapp);
             return false;
         }

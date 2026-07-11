@@ -71,7 +71,7 @@
 
     <!-- Filters Section -->
     <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-6">
-        <form action="{{ route('laporan.index') }}" method="GET" class="m-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+        <form id="filter-form" action="{{ route('laporan.index') }}" method="GET" class="m-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
             <!-- Start Date -->
             <div>
                 <label for="start_date" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Mulai</label>
@@ -149,45 +149,27 @@
             </div>
 
             <!-- Export Buttons -->
-            <div x-data="{ exportingPdf: false, exportingExcel: false }" class="flex items-center gap-2">
+            <div class="flex items-center gap-2">
                 <!-- PDF -->
-                <button type="button" 
-                    @click="if(!exportingPdf) { exportingPdf = true; setTimeout(() => exportingPdf = false, 6000); window.location.href='{{ route('laporan.export-pdf', request()->query()) }}'; }"
-                    :disabled="exportingPdf"
-                    :class="exportingPdf ? 'opacity-60 cursor-not-allowed' : ''"
+                <button type="submit" 
+                    form="filter-form"
+                    formaction="{{ route('laporan.export-pdf') }}"
                     class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-xl font-bold transition text-xs">
-                    <template x-if="!exportingPdf">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </template>
-                    <template x-if="exportingPdf">
-                        <svg class="animate-spin h-4 w-4 text-rose-600" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </template>
-                    <span x-text="exportingPdf ? 'Mengunduh...' : 'Export PDF'"></span>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>Export PDF</span>
                 </button>
 
                 <!-- Excel -->
-                <button type="button" 
-                    @click="if(!exportingExcel) { exportingExcel = true; setTimeout(() => exportingExcel = false, 6000); window.location.href='{{ route('laporan.export-excel', request()->query()) }}'; }"
-                    :disabled="exportingExcel"
-                    :class="exportingExcel ? 'opacity-60 cursor-not-allowed' : ''"
+                <button type="submit" 
+                    form="filter-form"
+                    formaction="{{ route('laporan.export-excel') }}"
                     class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 rounded-xl font-bold transition text-xs">
-                    <template x-if="!exportingExcel">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </template>
-                    <template x-if="exportingExcel">
-                        <svg class="animate-spin h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </template>
-                    <span x-text="exportingExcel ? 'Mengunduh...' : 'Export Excel'"></span>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>Export Excel</span>
                 </button>
             </div>
         </div>

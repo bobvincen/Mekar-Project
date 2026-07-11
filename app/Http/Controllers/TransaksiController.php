@@ -310,4 +310,19 @@ class TransaksiController extends Controller
 
         return $pdf->download($namaFile);
     }
+
+    // ─────────────────────────────────────────
+    // PRINT NOTA — struk cetak PDF
+    // ─────────────────────────────────────────
+    public function printNota(Transaksi $transaksi)
+    {
+        $transaksi->load(['pelanggan', 'detailTransaksis.obat', 'user']);
+        
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('transaksi.nota', compact('transaksi'))
+            ->setPaper([0, 0, 226.77, 600], 'portrait');
+            
+        $namaFile = 'nota-' . $transaksi->kode_transaksi . '.pdf';
+        
+        return $pdf->stream($namaFile);
+    }
 }

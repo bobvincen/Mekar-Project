@@ -160,28 +160,126 @@ const obats = @json($obats);
 let barisIndex = 0;
 let totalHarga = 0;
 
-function tambahBaris(obatId = '', jumlah = 1, errorMsg = '') {
+function escapeHtml(text) {
+    if (!text) return '';
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeJsString(str) {
+    return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
+function closeAllDropdowns() {
+    document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('[id^="search-container-"]')) {
+        closeAllDropdowns();
+    }
+});
+
+window.showDropdown = function(idx) {
+    closeAllDropdowns();
+    const dropdown = document.getElementById(`dropdown-${idx}`);
+    if (dropdown) {
+        dropdown.classList.remove('hidden');
+        filterObat(idx);
+    }
+}
+
+window.filterObat = function(idx) {
+    const searchInput = document.getElementById(`search-input-${idx}`);
+    const dropdown = document.getElementById(`dropdown-${idx}`);
+    if (!searchInput || !dropdown) return;
+    
+    const query = searchInput.value.toLowerCase().trim();
+    const filtered = obats.filter(o => 
+        o.nama_obat.toLowerCase().includes(query) || 
+        (o.kode_obat && o.kode_obat.toLowerCase().includes(query))
+    );
+    
+    if (filtered.length === 0) {
+        dropdown.innerHTML = `<div class="px-4 py-2 text-xs text-slate-400 font-semibold">Obat tidak ditemukan</div>`;
+        return;
+    }
+    
+    dropdown.innerHTML = filtered.map(o => `
+        <button type="button" 
+                onclick="pilihObat(${idx}, ${o.id}, '${escapeJsString(o.nama_obat)}', ${o.harga_jual}, ${o.stok}, '${escapeJsString(o.kode_obat || '')}')"
+                class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 border-b border-slate-50/50 last:border-b-0 transition flex items-center justify-between">
+            <div class="min-w-0 pr-2">
+                <span class="font-bold text-slate-800 truncate block">${escapeHtml(o.nama_obat)}</span>
+                ${o.kode_obat ? `<span class="text-[10px] text-slate-400 font-mono block mt-0.5">${escapeHtml(o.kode_obat)}</span>` : ''}
+            </div>
+            <div class="text-right shrink-0">
+                <span class="text-blue-600 font-bold block">Rp ${Number(o.harga_jual).toLocaleString('id-ID')}</span>
+                <span class="text-[10px] text-slate-400 block">Stok: ${o.stok}</span>
+            </div>
+        </button>
+    `).join('');
+}
+
+window.pilihObat = function(idx, id, name, harga, stok, kode) {
+    const searchInput = document.getElementById(`search-input-${idx}`);
+    const hiddenInput = document.getElementById(`obat-id-${idx}`);
+    
+    let displayVal = name;
+    if (kode) {
+        displayVal += ` (${kode})`;
+    }
+    displayVal += ` — Rp ${Number(harga).toLocaleString('id-ID')} (Stok: ${stok})`;
+    
+    if (searchInput) searchInput.value = displayVal;
+    if (hiddenInput) {
+        hiddenInput.value = id;
+        // Trigger calculation
+        updateSubtotal(idx);
+    }
+    closeAllDropdowns();
+}
+
+window.tambahBaris = function(obatId = '', jumlah = 1, errorMsg = '') {
     document.getElementById('empty-msg').style.display = 'none';
     const idx = barisIndex++;
 
-    const options = obats.map(o =>
-        `<option value="${o.id}" data-harga="${o.harga_jual}" data-stok="${o.stok}"
-            ${o.id == obatId ? 'selected' : ''}>
-            ${o.nama_obat} (Stok: ${o.stok}) — Rp ${Number(o.harga_jual).toLocaleString('id-ID')}
-        </option>`
-    ).join('');
-
     const errorClass = errorMsg ? 'border-rose-300 bg-rose-50/20' : 'border-slate-200';
+    
+    let selectedText = '';
+    if (obatId) {
+        const selectedObat = obats.find(o => o.id == obatId);
+        if (selectedObat) {
+            selectedText = selectedObat.nama_obat;
+            if (selectedObat.kode_obat) {
+                selectedText += ` (${selectedObat.kode_obat})`;
+            }
+            selectedText += ` — Rp ${Number(selectedObat.harga_jual).toLocaleString('id-ID')} (Stok: ${selectedObat.stok})`;
+        }
+    }
 
     const html = `
     <div class="baris-item space-y-1" id="baris-${idx}">
         <div class="grid grid-cols-12 gap-2.5 items-center">
-            <div class="col-span-6">
-                <select name="obat_id[]" onchange="updateSubtotal(${idx})"
-                        class="w-full border ${errorClass} rounded-xl px-3 py-2 text-xs font-semibold text-slate-750 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">-- Pilih Obat --</option>
-                    ${options}
-                </select>
+            <div class="col-span-6 relative" id="search-container-${idx}">
+                <input type="text" 
+                       id="search-input-${idx}"
+                       placeholder="Ketik nama atau kode obat..."
+                       value="${escapeHtml(selectedText)}"
+                       autocomplete="off"
+                       onfocus="showDropdown(${idx})"
+                       oninput="filterObat(${idx})"
+                       class="w-full border ${errorClass} rounded-xl px-3 py-2 text-xs font-semibold text-slate-750 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                
+                <input type="hidden" name="obat_id[]" id="obat-id-${idx}" value="${obatId}">
+                
+                <div id="dropdown-${idx}" 
+                     class="hidden absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                </div>
             </div>
             <div class="col-span-2">
                 <input type="number" name="jumlah[]" value="${jumlah}" min="1"
@@ -207,7 +305,7 @@ function tambahBaris(obatId = '', jumlah = 1, errorMsg = '') {
     if (obatId) updateSubtotal(idx);
 }
 
-function hapusBaris(idx) {
+window.hapusBaris = function(idx) {
     document.getElementById(`baris-${idx}`)?.remove();
     hitungTotal();
     if (document.querySelectorAll('.baris-item').length === 0) {
@@ -215,24 +313,39 @@ function hapusBaris(idx) {
     }
 }
 
-function updateSubtotal(idx) {
-    const select   = document.querySelector(`#baris-${idx} select`);
-    const jumlah   = parseInt(document.getElementById(`jumlah-${idx}`)?.value) || 0;
-    const option   = select?.options[select.selectedIndex];
-    const harga    = parseFloat(option?.dataset?.harga || 0);
+window.updateSubtotal = function(idx) {
+    const obatId = document.getElementById(`obat-id-${idx}`)?.value;
+    const jumlah = parseInt(document.getElementById(`jumlah-${idx}`)?.value) || 0;
+    
+    let harga = 0;
+    if (obatId) {
+        const obat = obats.find(o => o.id == obatId);
+        if (obat) {
+            harga = parseFloat(obat.harga_jual || 0);
+        }
+    }
+    
     const subtotal = harga * jumlah;
     const el = document.getElementById(`subtotal-${idx}`);
     if (el) el.textContent = 'Rp ' + subtotal.toLocaleString('id-ID');
     hitungTotal();
 }
 
-function hitungTotal() {
+window.hitungTotal = function() {
     let total = 0;
     document.querySelectorAll('.baris-item').forEach(baris => {
-        const select  = baris.querySelector('select');
-        const jumlahEl = baris.querySelector('input[type=number]');
-        const harga   = parseFloat(select?.options[select?.selectedIndex]?.dataset?.harga || 0);
+        const idx = baris.id.split('-')[1];
+        const obatId = document.getElementById(`obat-id-${idx}`)?.value;
+        const jumlahEl = document.getElementById(`jumlah-${idx}`);
         const jumlah  = parseInt(jumlahEl?.value || 0);
+        
+        let harga = 0;
+        if (obatId) {
+            const obat = obats.find(o => o.id == obatId);
+            if (obat) {
+                harga = parseFloat(obat.harga_jual || 0);
+            }
+        }
         total += harga * jumlah;
     });
     totalHarga = total;
@@ -242,7 +355,7 @@ function hitungTotal() {
     hitungKembalian();
 }
 
-function hitungKembalian() {
+window.hitungKembalian = function() {
     const bayar     = parseFloat(document.getElementById('bayar')?.value || 0);
     const kembalian = bayar - totalHarga;
     const el = document.getElementById('display_kembalian');
